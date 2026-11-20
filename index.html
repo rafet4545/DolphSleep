@@ -94,6 +94,7 @@ svg.graf{width:100%;height:auto;display:block}
 .toast.gor{opacity:1}
 #giris{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;background:radial-gradient(120% 70% at 50% 0%,#1d2660 0%,var(--bg) 65%),var(--bg)}
 #giris[hidden]{display:none}
+#giris [hidden]{display:none!important}
 #kurKapi{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;background:radial-gradient(120% 70% at 50% 0%,#1d2660 0%,var(--bg) 65%),var(--bg)}
 #kurKapi[hidden]{display:none}
 #kurKapi img{width:110px;height:110px;border-radius:26px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -162,7 +163,7 @@ svg.graf{width:100%;height:auto;display:block}
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 3;
+var SURUM = 4;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
@@ -464,7 +465,7 @@ function fbYukle(){
     FBS = { A:A, F:F, auth:A.getAuth(app), db:F.getFirestore(app) };
     try{ FBS.auth.languageCode = "tr"; }catch(e){}
     A.getRedirectResult(FBS.auth).catch(function(e){ girisHata(e); });
-    A.onAuthStateChanged(FBS.auth, function(u){ kullanici = u || null; if(u && veri.uid && veri.uid !== u.uid){ veri = bosVeri(); yaz(false); } if(u){ veri.uid = u.uid; } girisKapisi(); if(u){ try{ localStorage.setItem("dolphsleep.girdi", "1"); }catch(e){} if(document.getElementById("gGir")) kapat(); bulutBasla(); } else { bulutDurum = "kapali"; } ciz(); });
+    A.onAuthStateChanged(FBS.auth, function(u){ authHazir = true; kullanici = u || null; if(!u){ try{ localStorage.removeItem("dolphsleep.girdi"); }catch(e){} } if(u && veri.uid && veri.uid !== u.uid){ veri = bosVeri(); yaz(false); } if(u){ veri.uid = u.uid; } girisKapisi(); if(u){ try{ localStorage.setItem("dolphsleep.girdi", "1"); }catch(e){} if(document.getElementById("gGir")) kapat(); bulutBasla(); } else { bulutDurum = "kapali"; } ciz(); });
     return FBS;
   });
   fbSoz.catch(function(){ fbSoz = null; });
@@ -487,10 +488,19 @@ function girisYap(){
 function cikisYap(){ if(!FBS) return; Promise.resolve(bulutYukle()).then(function(){ return FBS.A.signOut(FBS.auth); }).then(function(){ veri = bosVeri(); yaz(false); kapat(); ciz(); toast("Çıkış yapıldı. Kayıtların hesabında duruyor."); }); }
 var ADMIN_EPOSTA = "turkoglurafetemre@gmail.com";
 function adminMi(){ return !!(kullanici && kullanici.email && kullanici.email.toLowerCase()===ADMIN_EPOSTA && kullanici.emailVerified!==false); }
+var authHazir = false, baglantiYok = false;
+function dahaOnceGirdi(){ try{ return localStorage.getItem("dolphsleep.girdi") === "1"; }catch(e){ return false; } }
+/* v4: daha önce giriş yapılmışsa uygulama anında açılır (giriş arkada hazırlanır).
+   İlk açılışta önce sadece logo + "Yükleniyor…", giriş butonu ancak gerçekten gerekirse çıkar. */
 function girisKapisi(){
-  var g = document.getElementById("giris");
-  g.hidden = !!kullanici;
-  document.getElementById("girisDurum").textContent = FBS ? "" : "Yükleniyor…";
+  var g = document.getElementById("giris"), btn = document.getElementById("girisGoogle"), d = document.getElementById("girisDurum");
+  if(kullanici || (!authHazir && dahaOnceGirdi())){ g.hidden = true; }
+  else {
+    g.hidden = false;
+    var bekle = !authHazir && !baglantiYok;
+    btn.hidden = bekle || baglantiYok;
+    d.textContent = baglantiYok ? "Bağlanamadı. İnternetini kontrol edip sayfayı yenile." : bekle ? "Yükleniyor…" : "";
+  }
   document.getElementById("adminBtn").hidden = !adminMi();
 }
 document.getElementById("girisGoogle").onclick = girisYap;
@@ -625,7 +635,7 @@ function bulutHataYaz(e){ bulutHata = (e && e.code) || String(e); bulutDurum = /
 document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible"){ ciz(); if(kullanici && FBS && bulutDurum!=="izin") bulutBasla(); } });
 kurKapiCiz();
 girisKapisi();
-fbYukle().catch(function(){ document.getElementById("girisDurum").textContent = "Bağlanamadı. İnternetini kontrol edip sayfayı yenile."; try{ if(localStorage.getItem("dolphsleep.girdi")) document.getElementById("giris").hidden = true; }catch(e){} });
+fbYukle().catch(function(){ baglantiYok = true; girisKapisi(); });
 
 /* ---------- saat, yıldızlar, SW ---------- */
 function saatCiz(){ document.getElementById("saat").textContent = hm(Date.now()); }
