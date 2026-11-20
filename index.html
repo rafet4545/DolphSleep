@@ -94,6 +94,13 @@ svg.graf{width:100%;height:auto;display:block}
 .toast.gor{opacity:1}
 #giris{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;background:radial-gradient(120% 70% at 50% 0%,#1d2660 0%,var(--bg) 65%),var(--bg)}
 #giris[hidden]{display:none}
+#kurKapi{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;background:radial-gradient(120% 70% at 50% 0%,#1d2660 0%,var(--bg) 65%),var(--bg)}
+#kurKapi[hidden]{display:none}
+#kurKapi img{width:110px;height:110px;border-radius:26px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#kurKapi h2{margin:4px 0 0;font-size:24px}#kurKapi p{margin:0;color:var(--soluk);max-width:330px;line-height:1.5}
+#kurKapi ol{text-align:left;max-width:330px;margin:4px 0;padding-left:22px;line-height:1.8;font-size:15px}
+#kurKapi .ana{max-width:340px}
+#kurKapi .sem{display:inline-block;padding:0 6px;border-radius:6px;background:rgba(255,255,255,.12)}
 #giris img{width:120px;height:120px;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #giris h2{margin:6px 0 0;font-size:28px}#giris p{margin:0;color:var(--soluk);max-width:320px;line-height:1.5}
 #giris .ana{max-width:340px}
@@ -147,6 +154,7 @@ svg.graf{width:100%;height:auto;display:block}
   <p class="not">DolphSleep · Rafet Emre Türkoğlu · v<span id="surum"></span></p>
 </main>
 
+<div id="kurKapi" hidden></div>
 <div id="giris"><img src="icon-512.png" alt=""><h2>DolphSleep</h2><p>Uykunu takip et, düzenini gör, arkadaşlarınla yarış 🌙</p>
   <button class="ana mavi" id="girisGoogle"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Google ile giriş yap</button>
   <p id="girisDurum" style="font-size:13px"></p></div>
@@ -154,7 +162,7 @@ svg.graf{width:100%;height:auto;display:block}
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 2;
+var SURUM = 3;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
@@ -387,7 +395,37 @@ function anaEkranTarif(){
   ac(); document.getElementById("tm").onclick = kapat;
 }
 var kurOlay = null;
-window.addEventListener("beforeinstallprompt", function(e){ e.preventDefault(); kurOlay = e; });
+window.addEventListener("beforeinstallprompt", function(e){ e.preventDefault(); kurOlay = e; kurKapiCiz(); });
+window.addEventListener("appinstalled", function(){ kurOlay = null; window.__kuruldu = true; kurKapiCiz(); });
+/* ---------- yükleme kapısı: telefonda tarayıcıdan açılmaz, önce ana ekrana yüklenir ---------- */
+function kuruluMu(){ try{ return (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; }catch(e){ return false; } }
+function mobilMi(){ var u = navigator.userAgent || ""; return /Android|iPhone|iPad|iPod/.test(u) || (/Macintosh/.test(u) && navigator.maxTouchPoints > 1); }
+function iosMu(){ var u = navigator.userAgent || ""; return /iPad|iPhone|iPod/.test(u) || (/Macintosh/.test(u) && navigator.maxTouchPoints > 1); }
+function uygulamaIciMi(){ return /Instagram|FBAN|FBAV|FB_IAB|WhatsApp|Line\/|Snapchat|TikTok|musical_ly|Twitter|; wv\)/i.test(navigator.userAgent || ""); }
+function kurKapiGerekli(){ return mobilMi() && !kuruluMu(); }
+function kurKapiCiz(){
+  var k = document.getElementById("kurKapi");
+  if(!kurKapiGerekli()){ k.hidden = true; return; }
+  k.hidden = false;
+  var ua = navigator.userAgent || "", ios = iosMu(), iosBaska = ios && /CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(ua), h;
+  if(window.__kuruldu){
+    h = '<h2>Yüklendi ✅</h2><p>Şimdi bu sayfayı kapat ve ana ekrandaki <b>DolphSleep</b> 🐬 simgesinden aç.</p>';
+  } else if(uygulamaIciMi()){
+    h = '<h2>Tarayıcıda aç</h2><p>Bu sayfa bir uygulamanın içinde açıldı, buradan yüklenemiyor.</p><ol><li>Sağ üstteki <span class="sem">⋮</span> ya da <span class="sem">⋯</span> menüsüne dokun</li><li><b>'+(ios ? "Safari'de aç" : "Tarayıcıda aç / Chrome'da aç")+'</b>\'ı seç</li></ol><button class="ana" id="kkKopya">🔗 Linki kopyala</button>';
+  } else if(iosBaska){
+    h = '<h2>Safari\'de aç</h2><p>iPhone\'da uygulama sadece <b>Safari</b>\'den yüklenebilir.</p><ol><li>Linki kopyala</li><li><b>Safari</b>\'yi aç, adres çubuğuna yapıştır</li></ol><button class="ana" id="kkKopya">🔗 Linki kopyala</button>';
+  } else if(ios){
+    h = '<h2>Önce telefonuna yükle 📲</h2><p>DolphSleep sadece ana ekrandan açılır. 10 saniyelik iş:</p><ol><li>Alttaki <b>Paylaş</b> <span class="sem">⬆︎</span> düğmesine dokun</li><li>Listeyi kaydır, <b>Ana Ekrana Ekle</b>\'yi seç</li><li><b>Ekle</b>\'ye bas, sonra ana ekrandaki 🐬 simgesinden aç</li></ol>';
+  } else if(kurOlay){
+    h = '<h2>Önce telefonuna yükle 📲</h2><p>DolphSleep sadece ana ekrandan açılır. Uygulama gibi tam ekran çalışır, kayıtların hesabında saklanır.</p><button class="ana" id="kkYukle">📲 Yükle</button>';
+  } else {
+    h = '<h2>Önce telefonuna yükle 📲</h2><p>DolphSleep sadece ana ekrandan açılır.</p><ol><li>Sağ üstteki <span class="sem">⋮</span> menüsüne dokun</li><li><b>Uygulamayı yükle</b> ya da <b>Ana ekrana ekle</b>\'yi seç</li><li><b>Yükle</b>\'ye bas, sonra ana ekrandaki 🐬 simgesinden aç</li></ol><p style="font-size:13px">Samsung Internet\'te: alttaki <span class="sem">☰</span> → <b>Sayfayı ekle</b> → <b>Ana ekran</b></p>';
+  }
+  k.innerHTML = '<img src="icon-512.png" alt=""><h2 style="font-size:28px">DolphSleep</h2>'+h;
+  var y = document.getElementById("kkYukle"); if(y) y.onclick = function(){ var o = kurOlay; if(!o) return; kurOlay = null; o.prompt(); (o.userChoice || Promise.resolve({})).then(function(r){ if(r && r.outcome === "accepted") window.__kuruldu = true; kurKapiCiz(); }); };
+  var c = document.getElementById("kkKopya"); if(c) c.onclick = function(){ var u = location.origin + "/"; (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function(){ toast("Link kopyalandı ✅"); }, function(){ prompt("Linki kopyala:", u); }); };
+}
+try{ matchMedia("(display-mode: standalone)").addEventListener("change", kurKapiCiz); }catch(e){}
 
 /* ---------- 22:30 hatırlatması (uygulama açıkken / arka planda) ---------- */
 var hatZ = 0;
@@ -408,22 +446,22 @@ function hatirlatKur(){
   }, h - s);
 }
 
-/* ---------- hesap + bulut (Firebase, DolphEnglish projesi) ---------- */
+/* ---------- hesap + bulut (Firebase: kendi projesi dolphsleep-c5b8b) ---------- */
 var FB_CONFIG = {
-  apiKey: "AIzaSyDx6re3YuO4sIJpYsg1ih2ciQWGx7HqPqY",
-  authDomain: "scola-c89f9.firebaseapp.com",
-  projectId: "scola-c89f9",
-  storageBucket: "scola-c89f9.firebasestorage.app",
-  messagingSenderId: "578262995899",
-  appId: "1:578262995899:web:d2a3bde06112b3e50b6a9e"
+  apiKey: "AIzaSyAJ5yvy_dVwnHUO8XbhxWUQvUqd4FUMuO8",
+  authDomain: "dolphsleep-c5b8b.firebaseapp.com",
+  projectId: "dolphsleep-c5b8b",
+  storageBucket: "dolphsleep-c5b8b.firebasestorage.app",
+  messagingSenderId: "569319434740",
+  appId: "1:569319434740:web:0ba5c2ac4a569afdecf1a1"
 };
-var FB_DB_ID = "scola", FB_SURUM = "10.14.1", FBS = null, fbSoz = null, kullanici = null, bulutDurum = "kapali", bulutHata = "";
+var FB_DB_ID = "(default)", FB_SURUM = "10.14.1", FBS = null, fbSoz = null, kullanici = null, bulutDurum = "kapali", bulutHata = "";
 function fbYukle(){
   if(fbSoz) return fbSoz;
   var b = "https://www.gstatic.com/firebasejs/"+FB_SURUM+"/";
   fbSoz = Promise.all([import(b+"firebase-app.js"), import(b+"firebase-auth.js"), import(b+"firebase-firestore.js")]).then(function(m){
     var app = m[0].initializeApp(FB_CONFIG), A = m[1], F = m[2];
-    FBS = { A:A, F:F, auth:A.getAuth(app), db:F.getFirestore(app, FB_DB_ID) };
+    FBS = { A:A, F:F, auth:A.getAuth(app), db:F.getFirestore(app) };
     try{ FBS.auth.languageCode = "tr"; }catch(e){}
     A.getRedirectResult(FBS.auth).catch(function(e){ girisHata(e); });
     A.onAuthStateChanged(FBS.auth, function(u){ kullanici = u || null; if(u && veri.uid && veri.uid !== u.uid){ veri = bosVeri(); yaz(false); } if(u){ veri.uid = u.uid; } girisKapisi(); if(u){ try{ localStorage.setItem("dolphsleep.girdi", "1"); }catch(e){} if(document.getElementById("gGir")) kapat(); bulutBasla(); } else { bulutDurum = "kapali"; } ciz(); });
@@ -544,7 +582,7 @@ function hesapCiz(){
 }
 document.getElementById("hesapBtn").onclick = function(){
   if(!kullanici){
-    sayfa.innerHTML = '<div class="sonuc"><img src="icon-192.png" alt="" style="width:72px;height:72px;border-radius:18px"><h3>DolphSleep\'e giriş yap</h3><p>Kayıtların hesabında saklanır, telefon ve tablette aynı olur. DolphEnglish hesabınla aynı Google hesabını kullanabilirsin.</p></div>'+
+    sayfa.innerHTML = '<div class="sonuc"><img src="icon-192.png" alt="" style="width:72px;height:72px;border-radius:18px"><h3>DolphSleep\'e giriş yap</h3><p>Kayıtların hesabında saklanır, telefon ve tablette aynı olur. </p></div>'+
       '<button class="ana mavi" id="gGir"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Google ile giriş yap</button>'+
       '<button class="ikinci" id="tm">Şimdi değil</button>';
     ac(); document.getElementById("gGir").onclick = girisYap; document.getElementById("tm").onclick = kapat;
@@ -585,6 +623,7 @@ function bulutYukle(){
 }
 function bulutHataYaz(e){ bulutHata = (e && e.code) || String(e); bulutDurum = /permission/.test(bulutHata) ? "izin" : "hata"; hesapCiz(); }
 document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible"){ ciz(); if(kullanici && FBS && bulutDurum!=="izin") bulutBasla(); } });
+kurKapiCiz();
 girisKapisi();
 fbYukle().catch(function(){ document.getElementById("girisDurum").textContent = "Bağlanamadı. İnternetini kontrol edip sayfayı yenile."; try{ if(localStorage.getItem("dolphsleep.girdi")) document.getElementById("giris").hidden = true; }catch(e){} });
 
