@@ -155,7 +155,10 @@ body.aydin .kart,body.aydin .yeniRuya,body.aydin .uyari,body.aydin .kapanBtn,bod
   box-shadow:inset 0 1px 1.5px rgba(255,255,255,.85),inset 0 -1px 1px rgba(255,255,255,.35),inset 1px 0 1px rgba(255,255,255,.3),inset -1px 0 1px rgba(255,255,255,.3),inset 0 -10px 16px rgba(255,255,255,.06),0 4px 14px rgba(0,0,0,.18);
   -webkit-backdrop-filter:brightness(1.06);backdrop-filter:brightness(1.06);
   transform:translateX(0);will-change:transform;transition:background .25s,box-shadow .25s}
-.lens.tut{background:radial-gradient(120% 140% at 30% 0%,rgba(255,255,255,.16),rgba(255,255,255,.01) 55%,rgba(255,255,255,.05));box-shadow:inset 0 1px 2px rgba(255,255,255,.95),inset 0 -1px 1.5px rgba(255,255,255,.45),inset 1px 0 1px rgba(255,255,255,.4),inset -1px 0 1px rgba(255,255,255,.4),0 10px 26px rgba(0,0,0,.25)}
+.lens.tut{background:radial-gradient(120% 140% at 30% 0%,rgba(255,255,255,.2),rgba(255,255,255,.02) 55%,rgba(255,255,255,.06));box-shadow:inset 0 1px 2px rgba(255,255,255,1),inset 0 -1px 1.5px rgba(255,255,255,.5),inset 1px 0 1px rgba(255,255,255,.45),inset -1px 0 1px rgba(255,255,255,.45),0 14px 30px rgba(0,0,0,.38),0 3px 8px rgba(0,0,0,.2);-webkit-backdrop-filter:blur(1px) brightness(1.12);backdrop-filter:blur(1px) brightness(1.12)}
+.lens.yay{transition:transform .5s cubic-bezier(.25,1.45,.45,1),background .25s,box-shadow .25s}
+#cubuk button.hedef svg{transform:scale(1.25)}
+#cubuk button.hedef{color:#fff}
 /* rüyalar */
 .kilitEkran{text-align:center;padding:40px 6px 10px}
 .kilitEkran .kilitI{width:92px;height:92px;margin:0 auto 14px;border-radius:28px;display:grid;place-items:center;font-size:44px;background:linear-gradient(160deg,rgba(141,123,255,.35),rgba(106,184,228,.15));border:1px solid rgba(255,255,255,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 20px 50px rgba(0,0,0,.35)}
@@ -209,6 +212,17 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 @keyframes don{to{transform:rotate(360deg)}}
 .bilgiK{font-size:12.5px;color:var(--soluk);background:rgba(255,255,255,.04);border:1px dashed var(--cizgi);border-radius:14px;padding:10px 12px;margin:10px 0;line-height:1.45}
 /* gün */
+.puanBuyuk{display:flex;flex-direction:column;align-items:center;gap:2px;margin:2px 0 10px}
+.puanBuyuk #pE{font-size:56px;line-height:1.1}
+.puanBuyuk b{font-size:30px;font-variant-numeric:tabular-nums}.puanBuyuk b small{font-size:15px;color:var(--soluk);font-weight:600}
+.puanBuyuk #pA{color:var(--soluk);font-size:14px}
+.ruhKay{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:99px;margin:6px 0 4px;background:linear-gradient(90deg,#ff6b7f,#ffc857 50%,#4fe0a0);outline:none}
+.ruhKay::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:50%;background:#fff;border:0;box-shadow:0 2px 10px rgba(0,0,0,.4),inset 0 -2px 4px rgba(0,0,0,.12)}
+.ruhKay::-moz-range-thumb{width:32px;height:32px;border-radius:50%;background:#fff;border:0}
+.kayUc{display:flex;justify-content:space-between;font-size:12px;color:var(--soluk);margin-bottom:14px}
+.duyOzet{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.duyOzet span{font-size:12.5px;padding:4px 9px;border-radius:99px;background:rgba(255,255,255,.07)}
+.an .anE{display:flex;flex-direction:column;align-items:center;gap:1px}.an .anE small{font-size:11px;font-weight:800}
+.anD{display:block;font-size:16px;letter-spacing:2px;margin-bottom:2px}
 .ruhSec{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:4px 0 6px}
 .ruhSec button{aspect-ratio:1;border-radius:20px;border:1px solid var(--cizgi);background:rgba(255,255,255,.05);font-size:30px;cursor:pointer;transition:transform .15s}
 .ruhSec button:active{transform:scale(.9)}
@@ -236,7 +250,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <canvas class="yildiz" id="yildiz"></canvas>
 <main>
   <header>
-    <div class="logo"><img src="icon-192.png" alt=""><div><h1>DolphSleep</h1><small id="tarih"></small></div></div>
+    <div class="logo"><img src="icon-192.png" alt=""><div><small id="tarih" style="font-size:15px;font-weight:600;color:var(--yazi)"></small></div></div>
     <div class="ustBtn"><button class="hesapBtn" id="liderBtn" style="padding:6px 12px"><span>🏆</span></button><button class="hesapBtn" id="hesapBtn"><span class="bos">👤</span><span>Giriş yap</span></button></div>
   </header>
 <div id="kaydir">
@@ -286,7 +300,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 7;
+var SURUM = 8;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
@@ -797,42 +811,46 @@ function temiz(o){ return JSON.parse(JSON.stringify(o)); }
 var kaydir = document.getElementById("kaydir"), lens = document.getElementById("lens"), cubuk = document.getElementById("cubuk"), cubukB = [].slice.call(document.querySelectorAll("#cubuk button")), aktifSekme = 1, LW = 88, lensRaf = 0;
 var sur = null, surBitZ = 0;   // sürükleme durumu
 function sekmeGit(i, hizli){ kaydir.scrollTo({ left:i*kaydir.clientWidth, behavior:hizli ? "auto" : "smooth" }); }
+var birak = null, birakZ = 0, sonHedef = -1;
+function titre(ms){ try{ navigator.vibrate && navigator.vibrate(ms); }catch(e){} }
 function lensCiz(){
-  var k = kaydir.scrollLeft / Math.max(1, kaydir.clientWidth), sx, sy;
-  if(sur){ var v = Math.min(1, Math.abs(sur.v)/2.2); sx = 1.16 + .32*v; sy = 1.16 - .14*v; k = sur.k; }
-  else { var f = k - Math.floor(k), e = Math.sin(Math.PI*f); sx = 1 + .3*e; sy = 1 - .1*e; }
-  lens.style.transform = "translateX("+(k*LW).toFixed(1)+"px) scale("+sx.toFixed(3)+","+sy.toFixed(3)+")";
-  var i = Math.max(0, Math.min(2, Math.round(k)));
-  if(i !== aktifSekme){ aktifSekme = i; cubukB.forEach(function(b, j){ b.classList.toggle("on", j===i); }); sekmeAcildi(i); try{ navigator.vibrate && navigator.vibrate(8); }catch(e){} }
+  var ks = kaydir.scrollLeft / Math.max(1, kaydir.clientWidth), k, sx, sy, ty = 0;
+  if(sur){ var v = Math.min(1, Math.abs(sur.v)/2.2); k = sur.k; sx = 1.3 + .28*v; sy = 1.3 - .12*v; ty = -7; }
+  else if(birak != null){ k = birak; sx = sy = 1; }
+  else { k = ks; var f = k - Math.floor(k), e = Math.sin(Math.PI*f); sx = 1 + .3*e; sy = 1 - .1*e; }
+  lens.style.transform = "translateX("+(k*LW).toFixed(1)+"px) translateY("+ty+"px) scale("+sx.toFixed(3)+","+sy.toFixed(3)+")";
+  var i = Math.max(0, Math.min(2, Math.round(ks)));
+  if(i !== aktifSekme){ aktifSekme = i; cubukB.forEach(function(b, j){ b.classList.toggle("on", j===i); }); sekmeAcildi(i); }
+  var h = sur ? Math.max(0, Math.min(2, Math.round(sur.k))) : -1;
+  if(h !== sonHedef){ cubukB.forEach(function(b, j){ b.classList.toggle("hedef", j===h); }); if(sur && sonHedef !== -1) titre(6); sonHedef = h; }
 }
 kaydir.addEventListener("scroll", function(){ if(lensRaf) return; lensRaf = requestAnimationFrame(function(){ lensRaf = 0; lensCiz(); }); }, { passive:true });
 addEventListener("resize", function(){ sekmeGit(aktifSekme, true); });
-/* merceği parmakla tutup sağa sola oynatma (iOS gibi) */
+/* merceği basılı tut: titreşir, havaya kalkar, sağa sola oynar; ekran ancak bırakınca değişir */
 cubuk.addEventListener("pointerdown", function(e){
-  var r = cubuk.getBoundingClientRect(), k0 = kaydir.scrollLeft / Math.max(1, kaydir.clientWidth);
-  clearTimeout(surBitZ);
-  sur = { x0:e.clientX, k0:k0, k:k0, v:0, son:e.clientX, sonT:performance.now(), oynadi:false, id:e.pointerId, sol:r.left + 6 };
-  var parmakK = (e.clientX - sur.sol - LW/2)/LW;        // parmağın altındaki sekme
-  if(Math.abs(parmakK - k0) > .6){ sur.k0 = sur.k = Math.max(0, Math.min(2, parmakK)); }   // başka sekmeye dokunduysa mercek oraya zıplar
+  var r = cubuk.getBoundingClientRect(), k0 = birak != null ? birak : kaydir.scrollLeft / Math.max(1, kaydir.clientWidth);
+  clearTimeout(birakZ); birak = null; lens.classList.remove("yay");
+  sur = { x0:e.clientX, k0:k0, k:k0, v:0, son:e.clientX, sonT:performance.now(), id:e.pointerId, sol:r.left + 6 };
+  var parmakK = (e.clientX - sur.sol - LW/2)/LW;
+  if(Math.abs(parmakK - k0) > .6){ lens.classList.add("yay"); sur.k0 = sur.k = Math.max(0, Math.min(2, parmakK)); setTimeout(function(){ lens.classList.remove("yay"); }, 250); }
   try{ cubuk.setPointerCapture(e.pointerId); }catch(_){}
-  lens.classList.add("tut"); cubuk.classList.add("tut"); kaydir.style.scrollSnapType = "none";
-  kaydir.scrollLeft = sur.k * kaydir.clientWidth; lensCiz();
+  lens.classList.add("tut"); cubuk.classList.add("tut"); titre(14); sonHedef = -1; lensCiz();
 });
 cubuk.addEventListener("pointermove", function(e){
   if(!sur || e.pointerId !== sur.id) return;
-  var dx = e.clientX - sur.x0; if(Math.abs(dx) > 4) sur.oynadi = true;
-  var t = performance.now(), dt = Math.max(1, t - sur.sonT);
+  var dx = e.clientX - sur.x0, t = performance.now(), dt = Math.max(1, t - sur.sonT);
   sur.v = sur.v*.6 + ((e.clientX - sur.son)/dt)*.4; sur.son = e.clientX; sur.sonT = t;
   var k = sur.k0 + dx/LW; if(k < 0) k = k*.25; if(k > 2) k = 2 + (k-2)*.25;   // kenarda lastik gibi esner
-  sur.k = k; kaydir.scrollLeft = Math.max(0, Math.min(2, k)) * kaydir.clientWidth; lensCiz();
+  sur.k = k; lensCiz();
 });
 function surBitir(e){
   if(!sur || (e && e.pointerId !== sur.id)) return;
-  var hedef = Math.round(sur.k + (Math.abs(sur.v) > .5 ? Math.sign(sur.v)*.45 : 0));
-  hedef = Math.max(0, Math.min(2, hedef));
-  sur = null; lens.classList.remove("tut"); cubuk.classList.remove("tut");
+  var hedef = Math.max(0, Math.min(2, Math.round(sur.k + (Math.abs(sur.v) > .6 ? Math.sign(sur.v)*.4 : 0))));
+  sur = null; birak = hedef;
+  lens.classList.remove("tut"); cubuk.classList.remove("tut"); lens.classList.add("yay"); lensCiz();
+  if(hedef !== aktifSekme) titre(10);
   sekmeGit(hedef);
-  surBitZ = setTimeout(function(){ kaydir.style.scrollSnapType = ""; }, 500);
+  birakZ = setTimeout(function(){ birak = null; lens.classList.remove("yay"); lensCiz(); }, 600);
 }
 cubuk.addEventListener("pointerup", surBitir); cubuk.addEventListener("pointercancel", surBitir);
 cubukB.forEach(function(b){ b.onclick = function(e){ e.preventDefault(); }; });
@@ -1183,19 +1201,31 @@ function unuttumSayfa(){
 }
 
 /* ---------- GÜN sekmesi ---------- */
-var RUH = [["😞","Çok kötü"],["😕","Kötü"],["😐","İdare"],["🙂","İyi"],["😄","Çok iyi"]];
-var RUH_RENK = ["#ff6b7f","#ff9f6b","#ffc857","#8fd9a8","#4fe0a0"];
+var RUH10 = [["😫","Berbat"],["😣","Çok kötü"],["😞","Kötü"],["😕","Biraz kötü"],["😐","İdare"],["🙂","Fena değil"],["😊","İyi"],["😄","Çok iyi"],["😁","Harika"],["🤩","Muhteşem"]];
+var RUH = [RUH10[1],RUH10[3],RUH10[4],RUH10[6],RUH10[8]];   // eski 1–5 kayıtlar için
+var DUYGU = [["ofke","😠","Öfkeli"],["kaygi","😰","Kaygılı"],["uzgun","😢","Üzgün"],["stres","😩","Stresli"],["yorgun","😴","Yorgun"],["sikilmis","😑","Sıkılmış"],["gergin","😤","Gergin"],["yalniz","😔","Yalnız"],
+  ["mutlu","😊","Mutlu"],["heyecan","🤩","Heyecanlı"],["huzur","😌","Huzurlu"],["motive","💪","Motive"],["minnet","🙏","Minnettar"],["sevgi","🥰","Sevgi dolu"]];
+var DUY = {}; DUYGU.forEach(function(d){ DUY[d[0]] = d; });
+function p10(a){ return a.v === 2 ? a.p : Math.min(10, a.p*2); }
+function ruh(p){ return RUH10[Math.max(1, Math.min(10, Math.round(p))) - 1]; }
+function ruhRenk(p){ var t = (p - 1)/9, a = t < .5 ? [255,107,127] : [255,200,87], b = t < .5 ? [255,200,87] : [79,224,160], u = t < .5 ? t*2 : (t-.5)*2; return rgb(karis(a, b, u)); }
 var gGun = null;
 function gunCiz(){
   gHazir();
   var bugun = isoGun(Date.now()); if(!gGun || gGun > bugun) gGun = bugun;
   var d = gunGorunur(gunDoc(gGun)), bu = gGun === bugun, k = document.getElementById("gunIc");
+  var son = d.anlar[d.anlar.length - 1];
   var h = '<div class="baslikS">Gün</div><p class="altS">Gün içinde nasıl hissettiğini kaydet, akşam günü kapat.</p>'+
     '<div class="gunNav"><button id="gGeri">‹</button><b>'+(bu ? 'Bugün · ' : '')+gunKisa(gGun)+' '+GUNTAM[new Date(kodTs(gGun)).getDay()]+'</b><button id="gIleri" '+(bu ? 'disabled' : '')+'>›</button></div>'+
-    '<section class="kart"><h2>'+(bu ? 'Şu an nasılsın?' : 'Bu güne kayıt ekle')+'</h2><div class="ruhSec">'+RUH.map(function(r, i){ return '<button data-v="'+(i+1)+'">'+r[0]+'</button>'; }).join("")+'</div><div class="ruhAd">'+RUH.map(function(r){ return '<span>'+r[1]+'</span>'; }).join("")+'</div></section>';
+    '<button class="yeniRuya" id="anYeni" style="margin-top:10px"><span>'+(son && bu ? ruh(p10(son))[0] : '💭')+'</span><span>'+(bu ? 'Şu an nasılsın?' : 'Bu güne kayıt ekle')+'<small>'+(son && bu ? 'Son kayıt '+hm(son.t)+' · '+p10(son)+'/10' : '1–10 puan ver, duygunu seç, istersen not bırak')+'</small></span></button>';
   if(d.anlar.length){
-    h += '<section class="kart"><h2>Duygu çizgin <small>'+d.anlar.length+' kayıt · ort. '+RUH[Math.round(d.anlar.reduce(function(t,a){ return t+a.p; },0)/d.anlar.length)-1][0]+'</small></h2>'+ruhGrafik(d.anlar)+'</section>'+
-      '<section class="kart"><h2>Kayıtlar</h2>'+d.anlar.slice().reverse().map(function(a){ return '<div class="an"><span class="anS">'+hm(a.t)+'</span><span class="anE">'+RUH[a.p-1][0]+'</span><span class="anN'+(a.not ? '' : ' bosN')+'">'+(a.not ? esc(a.not) : RUH[a.p-1][1])+'</span><button data-a="'+a.id+'" aria-label="Düzenle">✎</button></div>'; }).join("")+'</section>';
+    var ort = d.anlar.reduce(function(t,a){ return t + p10(a); },0)/d.anlar.length, say = {};
+    d.anlar.forEach(function(a){ (a.duygu || []).forEach(function(x){ say[x] = (say[x] || 0) + 1; }); });
+    var sk = Object.keys(say).sort(function(a,b){ return say[b] - say[a]; });
+    h += '<section class="kart"><h2>Duygu çizgin <small>'+d.anlar.length+' kayıt · ort. '+(Math.round(ort*10)/10)+'/10</small></h2>'+ruhGrafik(d.anlar)+
+      (sk.length ? '<div class="duyOzet">'+sk.map(function(x){ return '<span>'+DUY[x][1]+' '+DUY[x][2]+(say[x] > 1 ? ' ×'+say[x] : '')+'</span>'; }).join("")+'</div>' : '')+'</section>'+
+      '<section class="kart"><h2>Kayıtlar</h2>'+d.anlar.slice().reverse().map(function(a){ var p = p10(a), du = (a.duygu || []).map(function(x){ return DUY[x] ? DUY[x][1] : ''; }).join("");
+        return '<div class="an"><span class="anS">'+hm(a.t)+'</span><span class="anE">'+ruh(p)[0]+'<small style="color:'+ruhRenk(p)+'">'+p+'</small></span><span class="anN'+(a.not || du ? '' : ' bosN')+'">'+(du ? '<span class="anD">'+du+'</span>' : '')+(a.not ? esc(a.not) : du ? '' : ruh(p)[1])+'</span><button data-a="'+a.id+'" aria-label="Düzenle">✎</button></div>'; }).join("")+'</section>';
   }
   if(d.kapanis){
     var kp = d.kapanis;
@@ -1208,46 +1238,56 @@ function gunCiz(){
   k.innerHTML = h;
   document.getElementById("gGeri").onclick = function(){ gGun = gunEkle(gGun, -1); gunCiz(); };
   document.getElementById("gIleri").onclick = function(){ gGun = gunEkle(gGun, 1); gunCiz(); };
-  k.querySelectorAll(".ruhSec button").forEach(function(b){ b.onclick = function(){ anSayfa(null, +b.getAttribute("data-v")); }; });
+  document.getElementById("anYeni").onclick = function(){ anSayfa(null); };
   k.querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){ anSayfa(b.getAttribute("data-a")); }; });
   var kb = document.getElementById("gKapat"); if(kb) kb.onclick = function(){ kapanisSayfa(); };
   var kd = document.getElementById("gKapDuz"); if(kd) kd.onclick = function(){ kapanisSayfa(); };
   var ka = document.getElementById("gKapAi"); if(ka) ka.onclick = function(){ gunAnaliz(gGun, (d.kapanis || {}).metin || "", ka); };
 }
 function ruhGrafik(l){
-  var W = 340, H = 150, sol = 26, sag = 10, ust = 14, alt = 22;
+  var W = 340, H = 170, sol = 24, sag = 12, ust = 22, alt = 22;
   var t0 = new Date(kodTs(isoGun(l[0].t))).getTime(), basS = Math.min(8, Math.floor((l[0].t - t0)/36e5)), sonS = Math.max(23, Math.ceil((l[l.length-1].t - t0)/36e5));
-  var X = function(ts){ return sol + ((ts - t0)/36e5 - basS)/(sonS - basS)*(W - sol - sag); }, Y = function(p){ return ust + (5 - p)/4*(H - ust - alt); };
+  var X = function(ts){ return sol + ((ts - t0)/36e5 - basS)/(sonS - basS)*(W - sol - sag); }, Y = function(p){ return ust + (10 - p)/9*(H - ust - alt); };
   var s = '<svg class="graf" viewBox="0 0 '+W+' '+H+'"><defs><linearGradient id="rg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8d7bff" stop-opacity=".45"/><stop offset="1" stop-color="#8d7bff" stop-opacity="0"/></linearGradient></defs>';
-  for(var p=1;p<=5;p++) s += '<line x1="'+sol+'" x2="'+(W-sag)+'" y1="'+Y(p)+'" y2="'+Y(p)+'" stroke="rgba(255,255,255,.06)"/><circle cx="'+(sol-10)+'" cy="'+Y(p)+'" r="4" fill="'+RUH_RENK[p-1]+'"/>';
+  [1,4,7,10].forEach(function(p){ s += '<line x1="'+sol+'" x2="'+(W-sag)+'" y1="'+Y(p)+'" y2="'+Y(p)+'" stroke="rgba(255,255,255,.07)"/><text x="'+(sol-6)+'" y="'+(Y(p)+4)+'" fill="'+ruhRenk(p)+'" font-size="10" font-weight="700" text-anchor="end">'+p+'</text>'; });
   for(var h=basS; h<=sonS; h+=3) s += '<text x="'+X(t0 + h*36e5)+'" y="'+(H-6)+'" fill="#9aa3c7" font-size="10" text-anchor="middle">'+pad(h%24)+'</text>';
-  var pts = l.map(function(a){ return [X(a.t), Y(a.p)]; });
+  var pts = l.map(function(a){ return [X(a.t), Y(p10(a))]; });
   if(pts.length > 1){
     var yol = "M"+pts.map(function(q){ return q[0].toFixed(1)+","+q[1].toFixed(1); }).join(" L");
     s += '<path d="'+yol+' L'+pts[pts.length-1][0].toFixed(1)+','+(H-alt)+' L'+pts[0][0].toFixed(1)+','+(H-alt)+' Z" fill="url(#rg)"/><path d="'+yol+'" fill="none" stroke="#b9b0ff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
   }
-  l.forEach(function(a, i){ s += '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="5" fill="'+RUH_RENK[a.p-1]+'" stroke="#0b1026" stroke-width="2"/>'; });
+  l.forEach(function(a, i){
+    var du = (a.duygu || []).filter(function(x){ return DUY[x]; });
+    s += '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'" r="5" fill="'+ruhRenk(p10(a))+'" stroke="#0b1026" stroke-width="2"/>';
+    if(du.length) s += '<text x="'+pts[i][0].toFixed(1)+'" y="'+(pts[i][1]-9).toFixed(1)+'" font-size="13" text-anchor="middle">'+DUY[du[0]][1]+'</text>';
+  });
   return s + '</svg>';
 }
-function anSayfa(id, p){
+function anSayfa(id){
   var d = gunGorunur(gunDoc(gGun)), a = id ? d.anlar.filter(function(x){ return x.id === id; })[0] : null, bu = gGun === isoGun(Date.now());
   if(id && !a) return;
-  p = a ? a.p : p;
+  var p = a ? p10(a) : 6, du = a ? (a.duygu || []).slice() : [];
   var saat = a ? hm(a.t) : bu ? hm(Date.now()) : "12:00";
   perdeSabit = true;
-  sayfa.innerHTML = '<h3 id="anB">'+RUH[p-1][0]+' '+RUH[p-1][1]+'</h3><p>'+gunUzun(gGun)+'</p>'+
-    '<div class="ruhSec" id="anSec" style="margin-bottom:12px">'+RUH.map(function(r, i){ return '<button data-v="'+(i+1)+'" class="'+(p===i+1 ? 'on' : '')+'" style="font-size:24px">'+r[0]+'</button>'; }).join("")+'</div>'+
-    '<div class="alan" style="grid-template-columns:1fr"><label>Saat<input type="time" id="anSaat" value="'+saat+'"></label></div>'+
-    '<textarea class="yaziAlan" id="anNot" style="min-height:110px" placeholder="Not bırak (isteğe bağlı): ne oldu, neden böyle hissediyorsun?">'+esc(a ? a.not : "")+'</textarea>'+
+  sayfa.innerHTML = '<div class="puanBuyuk"><span id="pE">'+ruh(p)[0]+'</span><b id="pS">'+p+'<small>/10</small></b><span id="pA">'+ruh(p)[1]+'</span></div>'+
+    '<input type="range" min="1" max="10" step="1" value="'+p+'" id="pR" class="ruhKay">'+
+    '<div class="kayUc"><span>😫 1</span><span>10 🤩</span></div>'+
+    '<p class="etk2">Ne hissediyorsun? <span style="color:var(--soluk);font-weight:400">(birden fazla seçebilirsin)</span></p>'+
+    '<div class="cipler" id="anDu">'+DUYGU.map(function(x){ return '<button data-e="'+x[0]+'" class="'+(du.indexOf(x[0])>=0 ? 'on' : '')+'">'+x[1]+' '+x[2]+'</button>'; }).join("")+'</div>'+
+    '<div class="alan" style="grid-template-columns:1fr"><label>Saat · '+gunUzun(gGun)+'<input type="time" id="anSaat" value="'+saat+'"></label></div>'+
+    '<textarea class="yaziAlan" id="anNot" style="min-height:96px" placeholder="Not bırak (isteğe bağlı): ne oldu, neden böyle hissediyorsun?">'+esc(a ? a.not : "")+'</textarea>'+
     '<button class="ana" id="anKay">Kaydet</button>'+(a ? '<button class="ikinci" id="anSil" style="color:var(--kirmizi)">Sil</button>' : '')+'<button class="ikinci" id="anVaz">Vazgeç</button>';
   ac();
-  sayfa.querySelectorAll("#anSec button").forEach(function(b){ b.onclick = function(){ p = +b.getAttribute("data-v"); sayfa.querySelectorAll("#anSec button").forEach(function(c){ c.classList.toggle("on", c===b); }); document.getElementById("anB").textContent = RUH[p-1][0]+" "+RUH[p-1][1]; }; });
+  var r = document.getElementById("pR");
+  function guncelle(){ p = +r.value; document.getElementById("pE").textContent = ruh(p)[0]; document.getElementById("pS").innerHTML = p+'<small>/10</small>'; document.getElementById("pS").style.color = ruhRenk(p); document.getElementById("pA").textContent = ruh(p)[1]; r.style.setProperty("--y", ((p-1)/9*100)+"%"); }
+  r.oninput = function(){ guncelle(); titre(5); }; guncelle();
+  sayfa.querySelectorAll("#anDu button").forEach(function(b){ b.onclick = function(){ var e = b.getAttribute("data-e"), i = du.indexOf(e); if(i>=0) du.splice(i,1); else du.push(e); b.classList.toggle("on", i<0); }; });
   document.getElementById("anVaz").onclick = kapat;
   document.getElementById("anKay").onclick = function(){
     var s = (document.getElementById("anSaat").value || saat).split(":"), t = new Date(kodTs(gGun)); t.setHours(+s[0], +s[1], 0, 0);
-    var yeni = { id:a ? a.id : rid(), t:t.getTime(), p:p, not:document.getElementById("anNot").value.trim(), d:Date.now() };
+    var yeni = { id:a ? a.id : rid(), t:t.getTime(), p:p, v:2, duygu:du, not:document.getElementById("anNot").value.trim(), d:Date.now() };
     gunGuncelle(gGun, function(x){ x.anlar = x.anlar.filter(function(y){ return y.id !== yeni.id; }); x.anlar.push(yeni); x.anlar.sort(function(m,n){ return m.t - n.t; }); });
-    kapat(); gunCiz(); toast(RUH[p-1][0]+" Kaydedildi");
+    kapat(); gunCiz(); toast(ruh(p)[0]+" Kaydedildi");
   };
   var sb = document.getElementById("anSil"); if(sb) sb.onclick = function(){ gunGuncelle(gGun, function(x){ x.anlar.forEach(function(y){ if(y.id === a.id){ y.cop = Date.now(); y.d = y.cop; } }); }); kapat(); gunCiz(); toast("🗑 Çöp kutusuna taşındı (Ayarlar)"); };
 }
@@ -1272,7 +1312,7 @@ function kapanisSayfa(){
 }
 function gunAnaliz(gun, metin, btn){
   var d = gunGorunur(gunDoc(gun));
-  var anlar = d.anlar.map(function(a){ return hm(a.t)+" — "+RUH[a.p-1][0]+" "+RUH[a.p-1][1]+" ("+a.p+"/5)"+(a.not ? " — "+a.not : ""); }).join("\n");
+  var anlar = d.anlar.map(function(a){ var du = (a.duygu || []).filter(function(x){ return DUY[x]; }).map(function(x){ return DUY[x][2]; }); return hm(a.t)+" — "+p10(a)+"/10 ("+ruh(p10(a))[1]+")"+(du.length ? " — duygular: "+du.join(", ") : "")+(a.not ? " — not: "+a.not : ""); }).join("\n");
   if(btn){ btn.disabled = true; btn.textContent = "Analiz ediliyor…"; } else dusunCiz("Yapay zekâ gününü analiz ediyor…");
   aiIste("gun", { metin:metin, anlar:anlar, gun:gunUzun(gun) }).then(function(j){
     gunGuncelle(gun, function(x){ x.kapanis = { metin:metin, baslik:j.baslik || "", analiz:j.metin, d:Date.now() }; });
@@ -1304,7 +1344,7 @@ function copListe(){
   Object.keys(R.kayit).forEach(function(id){ var k = R.kayit[id]; if(k.cop && !k.sil){ var o = rAcik[id];
     l.push({ tur:"ruya", id:id, cop:k.cop, ad:o && !o.bozuk ? (o.gordu ? "💭 "+(o.baslik || "İsimsiz rüya") : "😶 Rüya görmedim") : "💭 🔒 Kilitli rüya", gun:k.gun ? gunKisa(k.gun) : "" }); } });
   Object.keys(G.gunler).forEach(function(gk){ var d = G.gunler[gk];
-    (d.anlar || []).forEach(function(a){ if(a.cop) l.push({ tur:"an", id:a.id, gk:gk, cop:a.cop, ad:"☀️ "+hm(a.t)+" "+RUH[a.p-1][0]+" "+(a.not || RUH[a.p-1][1]), gun:gunKisa(gk) }); });
+    (d.anlar || []).forEach(function(a){ if(a.cop) l.push({ tur:"an", id:a.id, gk:gk, cop:a.cop, ad:"☀️ "+hm(a.t)+" "+ruh(p10(a))[0]+" "+p10(a)+"/10 "+(a.not || ""), gun:gunKisa(gk) }); });
     if(d.kapanis && d.kapanis.cop && !d.kapanis.yok) l.push({ tur:"kapanis", id:"k"+gk, gk:gk, cop:d.kapanis.cop, ad:"📝 "+(d.kapanis.baslik || "Gün özeti"), gun:gunKisa(gk) });
   });
   return l.sort(function(a,b){ return b.cop - a.cop; });
