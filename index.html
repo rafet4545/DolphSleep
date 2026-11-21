@@ -210,6 +210,11 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 .dusun{display:flex;flex-direction:column;align-items:center;gap:14px;padding:30px 0;color:var(--soluk);font-size:14px}
 .dusun .top{width:64px;height:64px;border-radius:50%;background:conic-gradient(from 0deg,#8d7bff,#6ab8e4,#ffd98a,#8d7bff);animation:don 1.4s linear infinite;-webkit-mask:radial-gradient(circle,transparent 52%,#000 54%);mask:radial-gradient(circle,transparent 52%,#000 54%)}
 @keyframes don{to{transform:rotate(360deg)}}
+.taslakB{width:100%;display:flex;align-items:center;gap:12px;padding:13px 14px;margin:10px 0 0;border-radius:18px;border:1px dashed rgba(255,217,138,.55);background:rgba(255,217,138,.1);color:var(--yazi);font-family:inherit;text-align:left;cursor:pointer}
+.taslakB>span:first-child{font-size:24px}.taslakB b{display:block;font-size:15px}.taslakB small{display:block;color:var(--soluk);font-size:12.5px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}.taslakB .ok{margin-left:auto;font-size:22px;color:var(--soluk)}
+.taslakB.hazir{border-style:solid;border-color:rgba(141,123,255,.7);background:linear-gradient(135deg,rgba(141,123,255,.3),rgba(106,184,228,.15));animation:nefes2 2.4s ease-in-out infinite}
+@keyframes nefes2{50%{box-shadow:0 0 24px rgba(141,123,255,.45)}}
+.taslakNot{font-size:12px;color:var(--yesil);margin:-6px 0 10px;min-height:14px}
 .bilgiK{font-size:12.5px;color:var(--soluk);background:rgba(255,255,255,.04);border:1px dashed var(--cizgi);border-radius:14px;padding:10px 12px;margin:10px 0;line-height:1.45}
 /* gün */
 .puanBuyuk{display:flex;flex-direction:column;align-items:center;gap:2px;margin:2px 0 10px}
@@ -300,7 +305,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 8;
+var SURUM = 9;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
@@ -431,8 +436,8 @@ function listeCiz(){
 /* ---------- akış ---------- */
 var perde = document.getElementById("perde"), sayfa = document.getElementById("sayfa");
 var perdeSabit = false;
-function kapat(){ perde.classList.remove("ac"); perdeSabit = false; }
-function ac(){ perde.classList.add("ac"); }
+function kapat(){ perde.classList.remove("ac"); perdeSabit = false; if(window.geriYigin) geriYigin.length = 0; }
+function ac(){ perde.classList.add("ac"); if(window.guardGuncelle) guardGuncelle(); }
 perde.onclick = function(e){ if(e.target===perde && !perdeSabit) kapat(); };
 document.getElementById("buyuk").onclick = function(){
   if(!veri.aktif){ veri.aktif = Date.now(); veri.aktifT = Date.now(); yaz(); ciz(); try{ navigator.vibrate && navigator.vibrate(40); }catch(e){} iyiGeceler(); return; }
@@ -520,7 +525,7 @@ function ayarAc(){
     if(!sfo){ sfo = true; sf.textContent = "Emin misin?"; return; }
     hepsiniCopeAt(); kapat(); toast("🗑 Hepsi çöp kutusuna taşındı");
   };
-  document.getElementById("copAc").onclick = copAc;
+  document.getElementById("copAc").onclick = function(){ geriEkle(ayarAc); copAc(); };
   document.getElementById("konDug").onclick = function(){
     if(ayar.konum){ ayar.konum = null; ayarYaz(); havaGetir(true); ayarAc(); return; }
     if(!navigator.geolocation){ toast("Konum desteklenmiyor"); return; }
@@ -810,7 +815,7 @@ function temiz(o){ return JSON.parse(JSON.stringify(o)); }
 /* ---------- sekmeler + liquid glass çubuk ---------- */
 var kaydir = document.getElementById("kaydir"), lens = document.getElementById("lens"), cubuk = document.getElementById("cubuk"), cubukB = [].slice.call(document.querySelectorAll("#cubuk button")), aktifSekme = 1, LW = 88, lensRaf = 0;
 var sur = null, surBitZ = 0;   // sürükleme durumu
-function sekmeGit(i, hizli){ kaydir.scrollTo({ left:i*kaydir.clientWidth, behavior:hizli ? "auto" : "smooth" }); }
+function sekmeGit(i, hizli){ sonSekme = i; kaydir.scrollTo({ left:i*kaydir.clientWidth, behavior:hizli ? "auto" : "smooth" }); }
 var birak = null, birakZ = 0, sonHedef = -1;
 function titre(ms){ try{ navigator.vibrate && navigator.vibrate(ms); }catch(e){} }
 function lensCiz(){
@@ -820,7 +825,7 @@ function lensCiz(){
   else { k = ks; var f = k - Math.floor(k), e = Math.sin(Math.PI*f); sx = 1 + .3*e; sy = 1 - .1*e; }
   lens.style.transform = "translateX("+(k*LW).toFixed(1)+"px) translateY("+ty+"px) scale("+sx.toFixed(3)+","+sy.toFixed(3)+")";
   var i = Math.max(0, Math.min(2, Math.round(ks)));
-  if(i !== aktifSekme){ aktifSekme = i; cubukB.forEach(function(b, j){ b.classList.toggle("on", j===i); }); sekmeAcildi(i); }
+  if(i !== aktifSekme){ aktifSekme = i; sonSekme = i; cubukB.forEach(function(b, j){ b.classList.toggle("on", j===i); }); sekmeAcildi(i); }
   var h = sur ? Math.max(0, Math.min(2, Math.round(sur.k))) : -1;
   if(h !== sonHedef){ cubukB.forEach(function(b, j){ b.classList.toggle("hedef", j===h); }); if(sur && sonHedef !== -1) titre(6); sonHedef = h; }
 }
@@ -857,7 +862,7 @@ cubukB.forEach(function(b){ b.onclick = function(e){ e.preventDefault(); }; });
 kaydir.scrollLeft = kaydir.clientWidth * aktifSekme; lensCiz();
 
 var S_RUYA = 0, S_UYKU = 1, S_GUN = 2;
-function sekmeAcildi(i){ if(i===S_RUYA) ruyaCiz(); if(i===S_GUN) gunCiz(); }
+function sekmeAcildi(i){ if(i===S_RUYA) ruyaCiz(); if(i===S_GUN) gunCiz(); guardGuncelle(); }
 
 /* ---------- şifreleme (AES-GCM, şifreden PBKDF2 ile anahtar) ---------- */
 var KRIPTO = { key:null };
@@ -951,10 +956,10 @@ function ozelSenk(){
 }
 
 /* ---------- yapay zekâ (Gemini, Worker üzerinden) ---------- */
-function aiIste(gorev, v){
+function aiIste(gorev, v, sinyal){
   if(!kullanici) return Promise.reject(new Error("giris"));
   return kullanici.getIdToken().then(function(tok){
-    return fetch("/api/ai", { method:"POST", headers:{ "content-type":"application/json", "authorization":"Bearer "+tok }, body:JSON.stringify(Object.assign({ gorev:gorev, ad:(kullanici.displayName || "").split(" ")[0] }, v)) });
+    return fetch("/api/ai", { method:"POST", headers:{ "content-type":"application/json", "authorization":"Bearer "+tok }, body:JSON.stringify(Object.assign({ gorev:gorev, ad:(kullanici.displayName || "").split(" ")[0] }, v)), signal:sinyal || undefined });
   }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok || !j.metin) throw new Error(j.hata || ("http"+r.status)); return j; }); });
 }
 function aiHataYazi(e){
@@ -1008,7 +1013,7 @@ function ruyaAnaCiz(){
   var bugunVar = l.some(function(x){ return x.gun === bugun; });
   var h = '<div class="baslikS">Rüyalar</div><p class="altS">'+gorulen.length+' rüya'+(kilitli() ? ' · 🔒 şifreli' : '')+'</p>'+
     '<button class="yeniRuya" id="rYeni"><span>💭</span><span>'+(bugunVar ? 'Bir rüya daha ekle' : 'Bu sabahki rüyan')+'<small>'+(bugunVar ? 'Bugünün kaydı var ✓' : 'Puanla, anlat, istersen yapay zekâ düzenlesin')+'</small></span></button>'+
-    '<section class="kart" id="rTakvim">'+takvimHtml(l)+'</section>'+
+    '<div id="taslakKutu"></div>'+'<section class="kart" id="rTakvim">'+takvimHtml(l)+'</section>'+
     '<section class="kart"><h2>'+(rGor.sec ? gunUzun(rGor.sec) : 'Son rüyalar')+(rGor.sec ? '<button class="kucuk" id="rSecTemiz" style="padding:6px 10px;font-size:13px">Tümü</button>' : '')+'</h2><div id="rListe"></div></section>'+
     '<div class="ust3"><button class="kucuk" id="rAyar">🔒 Şifre ayarları</button>'+(kilitli() ? '<button class="kucuk" id="rKilitle">Şimdi kilitle</button>' : '')+'</div>'+
     (ozelDurum==="izin" ? '<div class="bilgiK">☁️ Bulut kuralı eksik: rüyaların şimdilik sadece bu cihazda duruyor.</div>' : ozelDurum==="hata" ? '<div class="bilgiK">☁️ Bulutla eşitlenemedi, sonra tekrar denenecek.</div>' : '');
@@ -1023,7 +1028,7 @@ function ruyaAnaCiz(){
   document.getElementById("rAyar").onclick = sifreAyarSayfa;
   var kl = document.getElementById("rKilitle"); if(kl) kl.onclick = function(){ KRIPTO.key = null; rAcik = {}; rAcikT = {}; ruyaCiz(); toast("🔒 Kilitlendi"); };
   var st = document.getElementById("rSecTemiz"); if(st) st.onclick = function(){ rGor.sec = null; ruyaAnaCiz(); };
-  takvimBagla();
+  takvimBagla(); taslakKutuCiz(); guardGuncelle();
   if(bekleyenRuya){ var g = bekleyenRuya; bekleyenRuya = null; ruyaYeni({ gun:g }); }
 }
 function rKartHtml(x){
@@ -1072,78 +1077,220 @@ function ruyaDetay(id){
     document.getElementById("rSil").onclick = function(){ ruyaCope(id); kapat(); ruyaCiz(); };
     return;
   }
-  var p = R_PUAN[(x.puan || 3) - 1], mod = x.mod==="duzen" ? " · ✨ AI düzenledi" : x.mod==="ozet" ? " · 📝 AI özetledi" : "";
+  var p = R_PUAN[(x.puan || 3) - 1], mod = AI_AD[x.mod] ? " · "+AI_AD[x.mod][2] : x.mod==="duzen" ? " · ✨ AI düzenledi" : "";
   sayfa.innerHTML = '<h3>'+p[0]+' '+esc(x.baslik || "İsimsiz rüya")+'</h3><p>'+gunUzun(gun)+' · '+p[1]+mod+'</p>'+
     ((x.etiket || []).length ? '<div class="etiketS">'+x.etiket.map(function(e){ return '<span>'+esc(R_ETAD[e] || e)+'</span>'; }).join("")+'</div>' : '')+
     '<div class="ruyaMetin">'+(esc(x.metin) || '<span style="color:var(--soluk)">Yazı yok.</span>')+'</div>'+
     (x.ham && x.ham !== x.metin ? '<details class="bilgiK"><summary>Orijinal notum</summary><div class="ruyaMetin" style="font-size:14px">'+esc(x.ham)+'</div></details>' : '')+
     '<div class="ikiBtn"><button class="ikinci" id="rDuz">✏️ Düzenle</button><button class="ikinci" id="rSil" style="color:var(--kirmizi)">🗑 Sil</button></div><button class="ana" id="tm" style="margin-top:10px">Kapat</button>';
   ac(); document.getElementById("tm").onclick = kapat;
-  document.getElementById("rDuz").onclick = function(){ ruyaForm(Object.assign({}, x, { id:id, gun:gun })); };
+  document.getElementById("rDuz").onclick = function(){ geriEkle(function(){ ruyaDetay(id); }); ruyaForm(Object.assign({}, x, { id:id, gun:gun })); };
   var sb = document.getElementById("rSil"), onay = false;
   sb.onclick = function(){ ruyaCope(id); kapat(); ruyaCiz(); toast("🗑 Çöp kutusuna taşındı (Ayarlar)"); };
 }
 function ruyaYeni(o){
-  var gun = o.gun || isoGun(Date.now());
-  sayfa.innerHTML = '<h3>💭 Rüya gördün mü?</h3><p>Hangi gecenin sabahı: <input type="date" id="rGun" value="'+gun+'" style="background:rgba(255,255,255,.07);border:1px solid var(--cizgi);color:var(--yazi);border-radius:10px;padding:6px 8px;color-scheme:dark;font-family:inherit;font-size:14px"></p>'+
-    '<button class="ana" id="rGordum">🌙 Gördüm</button><button class="ikinci" id="rGormedim">Görmedim / hatırlamıyorum</button><button class="ikinci" id="tm">Vazgeç</button>';
-  ac(); document.getElementById("tm").onclick = kapat;
-  function secGun(){ return document.getElementById("rGun").value || gun; }
-  document.getElementById("rGordum").onclick = function(){ ruyaForm({ gun:secGun(), puan:0, etiket:[], baslik:"", metin:"" }); };
-  document.getElementById("rGormedim").onclick = function(){
-    var g = secGun();
-    ruyaKaydet(null, g, { gordu:false, puan:0, etiket:[], baslik:"", metin:"", ham:"", mod:"yok" }).then(function(){ kapat(); ruyaCiz(); toast("Kaydedildi 👍"); });
+  taslakOku().then(function(t){
+    if(t && !o.yeniZorla){ taslakAc(t); return; }
+    var gun = o.gun || isoGun(Date.now());
+    sayfa.innerHTML = '<h3>💭 Rüya gördün mü?</h3><p>Hangi gecenin sabahı: <input type="date" id="rGun" value="'+gun+'" style="background:rgba(255,255,255,.07);border:1px solid var(--cizgi);color:var(--yazi);border-radius:10px;padding:6px 8px;color-scheme:dark;font-family:inherit;font-size:14px"></p>'+
+      '<button class="ana" id="rGordum">🌙 Gördüm</button><button class="ikinci" id="rGormedim">Görmedim / hatırlamıyorum</button><button class="ikinci" id="tm">Vazgeç</button>';
+    ac(); document.getElementById("tm").onclick = kapat;
+    function secGun(){ return document.getElementById("rGun").value || gun; }
+    document.getElementById("rGordum").onclick = function(){ var g = secGun(); geriEkle(function(){ ruyaYeni({ gun:g, yeniZorla:true }); }); ruyaForm({ gun:g, puan:0, etiket:[], baslik:"", metin:"" }); };
+    document.getElementById("rGormedim").onclick = function(){
+      ruyaKaydet(null, secGun(), { gordu:false, puan:0, etiket:[], baslik:"", metin:"", ham:"", mod:"yok" }).then(function(){ kapat(); ruyaCiz(); toast("Kaydedildi 👍"); });
+    };
+  });
+}
+/* ---------- taslak: yazdığın her şey anında saklanır ---------- */
+var taslakAcik = null, taslakZ = 0;
+function tKey(){ return "dolphsleep.taslak."+uidAnahtar(); }
+function taslakVarMi(){ try{ return !!localStorage.getItem(tKey()); }catch(e){ return false; } }
+function taslakOku(){
+  var x = null; try{ x = JSON.parse(localStorage.getItem(tKey())); }catch(e){}
+  if(!x) return Promise.resolve(null);
+  if(x.enc){ if(!KRIPTO.key) return Promise.resolve(null); return coz(KRIPTO.key, x.enc).catch(function(){ return null; }); }
+  return Promise.resolve(x.acik || null);
+}
+function taslakKaydetSimdi(o){
+  clearTimeout(taslakZ); taslakAcik = o; o.t = Date.now();
+  (kilitli() && KRIPTO.key ? sifrele(KRIPTO.key, o).then(function(e){ return { enc:e }; }) : Promise.resolve({ acik:o })).then(function(z){
+    if(taslakAcik !== o) return;   // bu arada silindiyse geri yazma
+    try{ localStorage.setItem(tKey(), JSON.stringify(z)); }catch(e){}
+  });
+}
+function taslakYaz(o){ taslakAcik = o; clearTimeout(taslakZ); taslakZ = setTimeout(function(){ taslakKaydetSimdi(o); }, 250); }
+function taslakSil(){ clearTimeout(taslakZ); taslakAcik = null; try{ localStorage.removeItem(tKey()); }catch(e){} }
+function taslakAc(t){
+  if(t.sonuc){ geriEkle(function(){ t.sonuc = null; t.adim = "form"; taslakKaydetSimdi(t); ruyaForm(t); }); onizle(t); }
+  else if(t.ai) aiBekle(t);
+  else ruyaForm(t);
+}
+/* taslak/yapay zekâ durumu Rüyalar sayfasının üstünde */
+var isPoll = 0, isTakipAktif = null, iptalEdilen = {};
+function taslakKutuCiz(){
+  var k = document.getElementById("taslakKutu"); if(!k) return;
+  taslakOku().then(function(t){
+    if(!t){ k.innerHTML = ""; return; }
+    var y = t.sonuc ? ['✨','Rüyan hazır!','Yapay zekâ yazdı, bakıp kaydet'] : t.ai ? ['⏳','Yapay zekâ rüyanı yazıyor…','Uygulamadan çıksan da devam eder'] : ['✏️','Yarım kalan rüyan var', gunKisa(t.gun)+(t.metin ? ' · "'+t.metin.slice(0, 40)+(t.metin.length > 40 ? '…' : '')+'"' : '')];
+    k.innerHTML = '<button class="taslakB'+(t.sonuc ? ' hazir' : '')+'" id="taslakAc"><span>'+y[0]+'</span><span><b>'+y[1]+'</b><small>'+esc(y[2])+'</small></span><span class="ok">›</span></button>';
+    document.getElementById("taslakAc").onclick = function(){ taslakAc(t); };
+    if(t.ai) isTakip(t);
+  });
+}
+/* ---------- yapay zekâ işi: sunucuda biter, sonuç hesabındaki geçici kutuya yazılır ---------- */
+function isKontrol(id){
+  if(!kullanici || !FBS) return Promise.resolve(null);
+  return FBS.F.getDoc(altRef("isler", id)).then(function(s){ return s.exists() ? s.data() : null; }).catch(function(){ return null; });
+}
+function isSil(id){ if(kullanici && FBS && id) FBS.F.deleteDoc(altRef("isler", id)).catch(function(){}); }
+function isTakip(t, ic){
+  if(!t.ai || iptalEdilen[t.ai.id]) return;
+  if(!ic && isTakipAktif === t.ai.id) return;
+  clearTimeout(isPoll); isTakipAktif = t.ai.id;
+  isKontrol(t.ai.id).then(function(d){
+    if(!t.ai || iptalEdilen[t.ai.id]){ isTakipAktif = null; return; }   // bu arada iptal edildi ya da bitti
+    if(d && d.durum === "hazir"){ isBitti(t, { baslik:d.baslik, metin:d.metin }); return; }
+    if((d && d.durum === "hata") || Date.now() - t.ai.t > 3*6e4){
+      isTakipAktif = null; var id = t.ai.id; t.ai = null; taslakKaydetSimdi(t); isSil(id); toast(d ? aiHataYazi(new Error(d.hata)) : "Yapay zekâ cevap vermedi, tekrar dene."); taslakKutuCiz();
+      if(perde.classList.contains("ac") && document.getElementById("aiIptal")){ geriYigin.pop(); ruyaForm(t); }
+      return;
+    }
+    isPoll = setTimeout(function(){ isTakip(t, true); }, 3000);
+  });
+}
+function isBitti(t, j){
+  clearTimeout(isPoll); isTakipAktif = null;
+  if(!t.ai || iptalEdilen[t.ai.id]) return;
+  var id = t.ai.id, gorev = t.ai.gorev, ham = t.ai.ham;
+  t.ai = null; t.sonuc = { baslik:j.baslik || "", metin:j.metin, gorev:gorev, ham:ham }; t.adim = "onizle";
+  taslakKaydetSimdi(t); isSil(id);
+  if(document.visibilityState === "hidden") hazirBildir(t.sonuc.baslik);
+  if(perde.classList.contains("ac") && document.getElementById("aiIptal")){
+    geriYigin.pop();   // "iptal" adımı bitti
+    geriEkle(function(){ t.sonuc = null; t.adim = "form"; taslakKaydetSimdi(t); ruyaForm(t); });
+    onizle(t);
+  } else { taslakKutuCiz(); toast("✨ Rüyan hazır"); }
+}
+function hazirBildir(b){
+  try{ if(!("Notification" in window) || Notification.permission !== "granted") return;
+    navigator.serviceWorker.ready.then(function(r){ r.showNotification("✨ Rüyan hazır", { body:(b ? b+" · " : "")+"Bakıp kaydetmek için dokun", icon:"icon-192.png", badge:"icon-192.png", tag:"ruya-hazir" }); }); }catch(e){}
+}
+var AI_AD = { hikaye:["✨","Yapay zekâ rüyanı hikâyeleştiriyor…","✨ AI hikâyeleştirdi","✨ Rüya hikâyen"], ozet:["📝","Yapay zekâ rüyanı özetliyor…","📝 AI özetledi","📝 Kısa özet"], imla:["✏️","Yazım hataları düzeltiliyor…","✏️ AI düzeltti","✏️ Düzeltilmiş hali"] };
+var aiKontrol = null;
+function aiBekle(t){
+  perdeSabit = true;
+  var a = AI_AD[t.ai.gorev] || AI_AD.hikaye;
+  sayfa.innerHTML = '<div class="dusun"><div class="top"></div>'+a[1]+'<small style="font-size:12.5px;max-width:260px;text-align:center;line-height:1.45">Uygulamadan çıkabilirsin, rüyan sunucuda yazılmaya devam eder. Geri geldiğinde hazır olur.</small></div>'+
+    '<button class="ikinci" id="aiIptal">✕ İptal et</button>';
+  ac();
+  var iptal = function(){
+    if(aiKontrol){ aiKontrol.abort(); aiKontrol = null; }
+    clearTimeout(isPoll); isTakipAktif = null;
+    var id = t.ai && t.ai.id; if(id) iptalEdilen[id] = 1; t.ai = null; taslakKaydetSimdi(t); isSil(id);
+    ruyaForm(t); toast("İptal edildi, yazdıkların duruyor");
   };
+  var arkaGit = geriEkle(function(){ kapat(); taslakKutuCiz(); toast("Yapay zekâ arkada yazmaya devam ediyor ✨"); });
+  document.getElementById("aiIptal").onclick = function(){ geriCikar(arkaGit); iptal(); };
+  isTakip(t);
+}
+function aiBaslat(t, gorev){
+  var ham = t.metin;
+  t.ai = { id:rid().replace(/[^a-z0-9]/g, ""), gorev:gorev, ham:ham, t:Date.now() }; t.sonuc = null;
+  taslakKaydetSimdi(t);
+  aiBekle(t);
+  var benim = t.ai.id;
+  aiKontrol = ("AbortController" in window) ? new AbortController() : null;
+  aiIste(gorev, { metin:ham, is:benim }, aiKontrol && aiKontrol.signal).then(function(j){
+    if(!t.ai || t.ai.id !== benim) return;   // iptal edildi
+    aiKontrol = null; isBitti(t, j);
+  }).catch(function(e){
+    if(!t.ai || t.ai.id !== benim) return;   // iptal edildi
+    var ag = /fetch|network|Load failed|aborted/i.test((e && e.message) || "") || document.visibilityState === "hidden";
+    if(ag) return;   // bağlantı koptu: iş sunucuda sürüyor, isTakip sonucu alacak
+    aiKontrol = null; clearTimeout(isPoll); t.ai = null; taslakKaydetSimdi(t); isSil(benim);
+    toast(aiHataYazi(e));
+    if(perde.classList.contains("ac") && document.getElementById("aiIptal")){ geriYigin.pop(); ruyaForm(t); } else taslakKutuCiz();
+  });
+}
+function onizle(t){
+  perdeSabit = true;
+  var s = t.sonuc, a = AI_AD[s.gorev] || AI_AD.hikaye;
+  sayfa.innerHTML = '<h3>'+a[3]+'</h3><p>'+gunUzun(t.gun)+' · İstersen değiştir, sonra kaydet.</p>'+
+    '<input class="baslikIn" id="oBas" maxlength="80" value="'+esc(t.baslik || s.baslik || "")+'">'+
+    '<textarea class="yaziAlan" id="oMetin" style="min-height:260px">'+esc(s.metin)+'</textarea>'+
+    '<button class="ana" id="oKaydet">Kaydet</button><div class="ikiBtn"><button class="ikinci" id="oTekrar">↻ Tekrar yaz</button><button class="ikinci" id="oGeri">‹ Kendi yazdığım</button></div>';
+  ac();
+  var ob = document.getElementById("oBas"), om = document.getElementById("oMetin");
+  ob.oninput = om.oninput = function(){ s.baslik = ob.value; s.metin = om.value; taslakYaz(t); };
+  document.getElementById("oKaydet").onclick = function(){ ruyaBitir(t, { baslik:ob.value.trim(), metin:om.value.trim(), ham:s.ham, mod:s.gorev }); };
+  document.getElementById("oTekrar").onclick = function(){ t.metin = s.ham; aiBaslat(t, s.gorev); };
+  document.getElementById("oGeri").onclick = function(){ var f = geriYigin.pop(); if(f) f(); else { t.sonuc = null; ruyaForm(t); } };
+}
+function ruyaBitir(t, obj){
+  obj = Object.assign({ gordu:true, puan:t.puan, etiket:t.etiket || [] }, obj);
+  Object.keys(rAcik).filter(function(id){ return id !== t.id && R.kayit[id] && !R.kayit[id].sil && R.kayit[id].gun === t.gun && rAcik[id] && rAcik[id].gordu === false; }).forEach(ruyaSil);
+  ruyaKaydet(t.id || null, t.gun, obj).then(function(){ taslakSil(); kapat(); rGor.y = +t.gun.slice(0,4); rGor.m = +t.gun.slice(5,7) - 1; ruyaCiz(); toast("Rüya kaydedildi 🌙"); });
 }
 function ruyaForm(x){
   perdeSabit = true;
-  var puan = x.puan || 0, et = (x.etiket || []).slice();
-  sayfa.innerHTML = '<h3>'+(x.id && x.gordu ? '✏️ Rüyayı düzenle' : '💭 Rüyanı anlat')+'</h3><p>'+gunUzun(x.gun)+'</p>'+
-    '<p class="etk2">Rüyan nasıldı?</p><div class="puanSec" id="fPuan">'+R_PUAN.map(function(p, i){ return '<button data-v="'+(i+1)+'" class="'+(puan===i+1 ? 'on' : '')+'"><i>'+p[0]+'</i><small>'+p[1]+'</small></button>'; }).join("")+'</div>'+
-    '<p class="etk2">Nasıl bir rüyaydı? <span style="color:var(--soluk);font-weight:400">(birden fazla seçebilirsin)</span></p><div class="cipler" id="fEt">'+R_ETIKET.map(function(e){ return '<button data-e="'+e[0]+'" class="'+(et.indexOf(e[0])>=0 ? 'on' : '')+'">'+e[1]+'</button>'; }).join("")+'</div>'+
-    '<input class="baslikIn" id="fBas" maxlength="80" placeholder="Başlık (isteğe bağlı)" value="'+esc(x.baslik || "")+'">'+
-    '<textarea class="yaziAlan" id="fMetin" placeholder="Ne gördün? Aklında kalan her şeyi yaz. Vaktin yoksa birkaç kelime yeter, yapay zekâ özetler.">'+esc(x.metin || "")+'</textarea>'+
-    '<button class="ana aiBtn" id="fDuzen">✨ Yapay zekâ ile düzenle</button>'+
-    '<div class="ikiBtn"><button class="ikinci" id="fOzet">📝 Kısa notlardan özetle</button><button class="ikinci" id="fKaydet">Düzenlemeden kaydet</button></div>'+
-    '<button class="ikinci" id="fVaz" style="border:0;background:none;color:var(--soluk)">Vazgeç</button>';
+  var t = x; t.puan = t.puan || 0; t.etiket = (t.etiket || []).slice(); t.adim = "form"; t.ai = null; t.sonuc = null;
+  sayfa.innerHTML = '<h3>'+(t.id ? '✏️ Rüyayı düzenle' : '💭 Rüyanı anlat')+'</h3><p>'+gunUzun(t.gun)+'</p>'+
+    '<p class="etk2">Rüyan nasıldı?</p><div class="puanSec" id="fPuan">'+R_PUAN.map(function(p, i){ return '<button data-v="'+(i+1)+'" class="'+(t.puan===i+1 ? 'on' : '')+'"><i>'+p[0]+'</i><small>'+p[1]+'</small></button>'; }).join("")+'</div>'+
+    '<p class="etk2">Nasıl bir rüyaydı? <span style="color:var(--soluk);font-weight:400">(birden fazla seçebilirsin)</span></p><div class="cipler" id="fEt">'+R_ETIKET.map(function(e){ return '<button data-e="'+e[0]+'" class="'+(t.etiket.indexOf(e[0])>=0 ? 'on' : '')+'">'+e[1]+'</button>'; }).join("")+'</div>'+
+    '<input class="baslikIn" id="fBas" maxlength="80" placeholder="Başlık (isteğe bağlı)" value="'+esc(t.baslik || "")+'">'+
+    '<textarea class="yaziAlan" id="fMetin" placeholder="Ne gördün? Aklında kalan her şeyi yaz. Yazdıkların anında taslak olarak saklanır.">'+esc(t.metin || "")+'</textarea>'+
+    '<p class="taslakNot" id="fNot">'+(t.metin ? '✓ Taslak kayıtlı' : '')+'</p>'+
+    '<button class="ana aiBtn" id="fHikaye">✨ Hikâyeleştir</button>'+
+    '<div class="ikiBtn"><button class="ikinci" id="fOzet">📝 Kısa özet</button><button class="ikinci" id="fKaydet">Olduğu gibi kaydet</button></div>'+
+    '<button class="ikinci" id="fImla" style="font-size:13.5px">✏️ Sadece yazım hatalarını düzelt</button>'+
+    '<button class="ikinci" id="fVaz" style="border:0;background:none;color:var(--soluk)">Taslağı sil, vazgeç</button>';
   ac();
-  sayfa.querySelectorAll("#fPuan button").forEach(function(b){ b.onclick = function(){ puan = +b.getAttribute("data-v"); sayfa.querySelectorAll("#fPuan button").forEach(function(c){ c.classList.toggle("on", c===b); }); }; });
-  sayfa.querySelectorAll("#fEt button").forEach(function(b){ b.onclick = function(){ var e = b.getAttribute("data-e"), i = et.indexOf(e); if(i>=0) et.splice(i,1); else et.push(e); b.classList.toggle("on", i<0); }; });
-  function oku_(){ return { baslik:document.getElementById("fBas").value.trim(), metin:document.getElementById("fMetin").value.trim() }; }
-  function bitir(obj){
-    obj = Object.assign({ gordu:true, puan:puan, etiket:et }, obj);
-    var eskiYok = Object.keys(rAcik).filter(function(id){ return id !== x.id && R.kayit[id] && !R.kayit[id].sil && R.kayit[id].gun === x.gun && rAcik[id] && rAcik[id].gordu === false; });
-    eskiYok.forEach(ruyaSil);
-    ruyaKaydet(x.id || null, x.gun, obj).then(function(){ kapat(); rGor.y = +x.gun.slice(0,4); rGor.m = +x.gun.slice(5,7) - 1; ruyaCiz(); toast("Rüya kaydedildi 🌙"); });
-  }
+  var fb = document.getElementById("fBas"), fm = document.getElementById("fMetin"), fn = document.getElementById("fNot");
+  function oku_(){ t.baslik = fb.value; t.metin = fm.value; }
+  function degisti(){ oku_(); taslakYaz(t); fn.textContent = "✓ Taslak kayıtlı"; }
+  fb.oninput = fm.oninput = degisti;
+  sayfa.querySelectorAll("#fPuan button").forEach(function(b){ b.onclick = function(){ t.puan = +b.getAttribute("data-v"); sayfa.querySelectorAll("#fPuan button").forEach(function(c){ c.classList.toggle("on", c===b); }); degisti(); }; });
+  sayfa.querySelectorAll("#fEt button").forEach(function(b){ b.onclick = function(){ var e = b.getAttribute("data-e"), i = t.etiket.indexOf(e); if(i>=0) t.etiket.splice(i,1); else t.etiket.push(e); b.classList.toggle("on", i<0); degisti(); }; });
   function ai(gorev){
-    var f = oku_();
-    if(!puan){ toast("Önce rüyanı puanla 🙂"); return; }
-    if(f.metin.length < 3){ toast("Önce birkaç kelime yaz"); return; }
-    var ham = f.metin;
-    dusunCiz(gorev==="duzenle" ? "Yapay zekâ rüyanı düzenliyor…" : "Yapay zekâ rüyanı özetliyor…");
-    aiIste(gorev, { metin:ham }).then(function(j){ onizle(j, ham, gorev==="duzenle" ? "duzen" : "ozet", gorev); })
-      .catch(function(e){ toast(aiHataYazi(e)); ruyaForm(Object.assign({}, x, { puan:puan, etiket:et, baslik:f.baslik, metin:ham })); });
+    oku_();
+    if(!t.puan){ toast("Önce rüyanı puanla 🙂"); return; }
+    if(t.metin.trim().length < 3){ toast("Önce birkaç kelime yaz"); return; }
+    t.metin = t.metin.trim(); aiBaslat(t, gorev);
   }
-  function onizle(j, ham, mod, gorev){
-    sayfa.innerHTML = '<h3>'+(mod==="duzen" ? '✨ Düzenlenmiş hali' : '📝 Özet')+'</h3><p>İstersen değiştir, sonra kaydet.</p>'+
-      '<input class="baslikIn" id="oBas" maxlength="80" value="'+esc(oku_baslik || j.baslik || "")+'">'+
-      '<textarea class="yaziAlan" id="oMetin" style="min-height:220px">'+esc(j.metin)+'</textarea>'+
-      '<button class="ana" id="oKaydet">Kaydet</button><div class="ikiBtn"><button class="ikinci" id="oTekrar">↻ Tekrar dene</button><button class="ikinci" id="oGeri">‹ Orijinale dön</button></div>';
-    document.getElementById("oKaydet").onclick = function(){ bitir({ baslik:document.getElementById("oBas").value.trim(), metin:document.getElementById("oMetin").value.trim(), ham:ham, mod:mod }); };
-    document.getElementById("oTekrar").onclick = function(){
-      dusunCiz("Tekrar deniyor…");
-      aiIste(gorev, { metin:ham }).then(function(j2){ onizle(j2, ham, mod, gorev); }).catch(function(e){ toast(aiHataYazi(e)); onizle(j, ham, mod, gorev); });
-    };
-    document.getElementById("oGeri").onclick = function(){ ruyaForm(Object.assign({}, x, { puan:puan, etiket:et, baslik:oku_baslik, metin:ham })); };
-  }
-  var oku_baslik = "";
-  document.getElementById("fDuzen").onclick = function(){ oku_baslik = oku_().baslik; ai("duzenle"); };
-  document.getElementById("fOzet").onclick = function(){ oku_baslik = oku_().baslik; ai("ozet"); };
-  document.getElementById("fKaydet").onclick = function(){ var f = oku_(); if(!puan){ toast("Önce rüyanı puanla 🙂"); return; } bitir({ baslik:f.baslik, metin:f.metin, ham:"", mod:"ham" }); };
+  document.getElementById("fHikaye").onclick = function(){ ai("hikaye"); };
+  document.getElementById("fOzet").onclick = function(){ ai("ozet"); };
+  document.getElementById("fImla").onclick = function(){ ai("imla"); };
+  document.getElementById("fKaydet").onclick = function(){ oku_(); if(!t.puan){ toast("Önce rüyanı puanla 🙂"); return; } ruyaBitir(t, { baslik:t.baslik.trim(), metin:t.metin.trim(), ham:"", mod:"ham" }); };
   var vb = document.getElementById("fVaz"), vo = false;
-  vb.onclick = function(){ if(!vo && oku_().metin.length > 20){ vo = true; vb.textContent = "Yazdıkların silinecek, emin misin?"; return; } kapat(); };
+  vb.onclick = function(){ oku_(); if(!vo && t.metin.trim().length > 0){ vo = true; vb.textContent = "Yazdıkların silinecek, emin misin?"; vb.style.color = "var(--kirmizi)"; return; } taslakSil(); kapat(); taslakKutuCiz(); };
 }
+/* ---------- geri tuşu / hareketi: her zaman son adımı geri alır ---------- */
+var geriYigin = [], guardVar = false, sonSekme = 1;
+function geriEkle(fn){ geriYigin.push(fn); guardGuncelle(); return fn; }
+function geriCikar(fn){ var i = geriYigin.lastIndexOf(fn); if(i >= 0) geriYigin.splice(i, 1); }
+function geriGerekli(){
+  var bugun = isoGun(Date.now());
+  return geriYigin.length > 0 || perde.classList.contains("ac") || sonSekme !== S_UYKU ||
+    (sonSekme === S_RUYA && (rGor.yil || rGor.sec)) || (sonSekme === S_GUN && gGun && gGun !== bugun);
+}
+function guardGuncelle(){ if(!guardVar && geriGerekli()){ try{ history.pushState({ ds:Date.now() }, ""); guardVar = true; }catch(e){} } }
+addEventListener("popstate", function(){
+  guardVar = false;
+  var bugun = isoGun(Date.now());
+  if(perde.classList.contains("ac")){
+    if(taslakAcik) taslakKaydetSimdi(taslakAcik);   // çıkarken yazdıkların kaybolmasın
+    var fn = geriYigin.pop(); if(fn) fn(); else { kapat(); if(sonSekme === S_RUYA) taslakKutuCiz(); }
+  }
+  else if(sonSekme === S_RUYA && (rGor.yil || rGor.sec)){ rGor.yil = false; rGor.sec = null; ruyaAnaCiz(); }
+  else if(sonSekme === S_GUN && gGun && gGun !== bugun){ gGun = bugun; gunCiz(); }
+  else if(sonSekme !== S_UYKU){ sekmeGit(S_UYKU); }
+  guardGuncelle();
+});
+document.addEventListener("visibilitychange", function(){
+  if(document.visibilityState === "hidden" && taslakAcik) taslakKaydetSimdi(taslakAcik);
+  if(document.visibilityState === "visible" && taslakAcik && taslakAcik.ai) isTakip(taslakAcik);
+});
 
 /* ---------- şifre ayarları ---------- */
 function kilitKur(sifre){
@@ -1182,7 +1329,7 @@ function sifreKoySayfa(){
 function sifreAyarSayfa(){
   if(!kilitli()){ sifreKoySayfa(); return; }
   sayfa.innerHTML = '<h3>🔒 Şifre ayarları</h3><p>Rüyaların şu an şifreli.</p><button class="ana" id="sDeg">Şifreyi değiştir</button><button class="ikinci" id="sKal">Şifreyi kaldır</button><button class="ikinci" id="tm">Kapat</button>';
-  ac(); document.getElementById("tm").onclick = kapat; document.getElementById("sDeg").onclick = sifreKoySayfa;
+  ac(); document.getElementById("tm").onclick = kapat; document.getElementById("sDeg").onclick = function(){ geriEkle(sifreAyarSayfa); sifreKoySayfa(); };
   var k = document.getElementById("sKal"), o = false;
   k.onclick = function(){ if(!o){ o = true; k.textContent = "Rüyalar şifresiz kalacak. Emin misin?"; return; } kilitKaldir().then(function(){ kapat(); ruyaCiz(); toast("Şifre kaldırıldı"); }); };
 }
@@ -1236,6 +1383,7 @@ function gunCiz(){
   if(ozelDurum==="izin") h += '<div class="bilgiK">☁️ Bulut kuralı eksik: gün kayıtların şimdilik sadece bu cihazda.</div>';
   else h += '<p class="not">Gün kayıtların sadece sana açık.</p>';
   k.innerHTML = h;
+  guardGuncelle();
   document.getElementById("gGeri").onclick = function(){ gGun = gunEkle(gGun, -1); gunCiz(); };
   document.getElementById("gIleri").onclick = function(){ gGun = gunEkle(gGun, 1); gunCiz(); };
   document.getElementById("anYeni").onclick = function(){ anSayfa(null); };
