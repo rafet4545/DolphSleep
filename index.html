@@ -28,6 +28,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;pa
 header h1{font-size:20px;margin:0;letter-spacing:.2px}
 header small{color:var(--soluk);font-size:13px}
 .hesapBtn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid var(--cizgi);color:var(--yazi);border-radius:99px;padding:6px 12px 6px 6px;font-size:13px;cursor:pointer;max-width:48%}
+#liderBtn[hidden]{display:none!important}
 .hesapBtn img,.hesapBtn .bos{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;background:rgba(255,255,255,.1);font-size:14px}
 .hesapBtn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .saat{font-size:56px;font-weight:800;text-align:center;margin:14px 0 2px;font-variant-numeric:tabular-nums;letter-spacing:1px}
@@ -279,7 +280,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <main>
   <header>
     <div class="logo"><img src="icon-192.png" alt=""><div><small id="tarih" style="font-size:15px;font-weight:600;color:var(--yazi)"></small></div></div>
-    <div class="ustBtn"><button class="hesapBtn" id="liderBtn" style="padding:6px 12px"><span>🏆</span></button><button class="hesapBtn" id="hesapBtn"><span class="bos">👤</span><span>Giriş yap</span></button></div>
+    <div class="ustBtn"><button class="hesapBtn" id="liderBtn" style="padding:6px 12px" hidden><span>🏆</span></button><button class="hesapBtn" id="hesapBtn"><span class="bos">👤</span><span>Giriş yap</span></button></div>
   </header>
   <div id="bulutUyari" hidden></div>
 <div id="kaydir">
@@ -329,7 +330,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 12;
+var SURUM = 13;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
@@ -695,6 +696,7 @@ function girisKapisi(){
     d.textContent = baglantiYok ? "Bağlanamadı. İnternetini kontrol edip sayfayı yenile." : bekle ? "Yükleniyor…" : "";
   }
   document.getElementById("adminBtn").hidden = !adminMi();
+  document.getElementById("liderBtn").hidden = !adminMi();
 }
 document.getElementById("girisGoogle").onclick = girisYap;
 function profil(){ return veri.profil || {}; }
@@ -714,17 +716,17 @@ function takmaSor(zorunlu){
 function liderVerisi(){
   var hp = haftaPuan(aktifGeceler()), h = istatHesap(aktifGeceler().filter(function(g){ return g.k >= haftaBas().getTime(); }));
   var seri = (istatHesap(aktifGeceler()) || {}).seri || 0;
-  return { takma:profil().takma || "", hafta:haftaKod(), puan:hp.puan, gece:hp.gece, seri:seri, ortYat: h ? h.ortYat : null, uyuyor:!!veri.aktif, guncel:Date.now() };
+  var ad = profil().takma || ((kullanici && (kullanici.displayName || kullanici.email || "")) || "").split(/[ @]/)[0];
+  return { takma:ad, hafta:haftaKod(), puan:hp.puan, gece:hp.gece, seri:seri, ortYat: h ? h.ortYat : null, uyuyor:!!veri.aktif, guncel:Date.now() };
 }
 function liderYukle(){
-  if(!kullanici || !FBS || !profil().takma) return Promise.resolve();
+  if(!kullanici || !FBS) return Promise.resolve();
   return FBS.F.setDoc(FBS.F.doc(FBS.db, "dolphsleepLider", kullanici.uid), liderVerisi()).catch(function(){});
 }
 function liderAc(){
-  if(!kullanici || !FBS) return;
-  if(!profil().takma){ takmaSor(false); return; }
-  sayfa.innerHTML = '<h3>🏆 Bu haftanın liderleri</h3><p>Her pazartesi sıfırlanır. Hedefe uyduğun her gece +10, seriye +5, düzenli uyursan bonus.</p><div id="liderListe"><div class="bos">Yükleniyor…</div></div><button class="ikinci" id="takmaDeg">✏️ Takma adımı değiştir</button><button class="ana" id="tm" style="margin-top:10px">Kapat</button>';
-  ac(); document.getElementById("tm").onclick = kapat; document.getElementById("takmaDeg").onclick = function(){ takmaSor(false); };
+  if(!kullanici || !FBS || !adminMi()) return;
+  sayfa.innerHTML = '<h3>🏆 Bu haftanın liderleri</h3><p>Her pazartesi sıfırlanır. Hedefe uyduğun her gece +10, seriye +5, düzenli uyursan bonus.</p><div id="liderListe"><div class="bos">Yükleniyor…</div></div><button class="ana" id="tm" style="margin-top:10px">Kapat</button>';
+  ac(); document.getElementById("tm").onclick = kapat; 
   liderYukle().then(function(){ return FBS.F.getDocs(FBS.F.collection(FBS.db, "dolphsleepLider")); }).then(function(q){
     var l = []; q.forEach(function(d){ var x = d.data() || {}; if(x.hafta === haftaKod() && x.takma) l.push(Object.assign({ uid:d.id }, x)); });
     l.sort(function(a,b){ return (b.puan||0)-(a.puan||0) || (b.seri||0)-(a.seri||0); });
@@ -791,8 +793,8 @@ document.getElementById("hesapBtn").onclick = function(){
     ac(); document.getElementById("gGir").onclick = girisYap; document.getElementById("tm").onclick = kapat;
   } else {
     sayfa.innerHTML = '<h3>👤 Hesabın</h3><p>'+esc(kullanici.email || "")+'</p><p>'+esc(document.getElementById("bulutYazi").textContent)+'</p>'+
-      '<button class="ana" id="tm">Tamam</button><button class="ikinci" id="tkm">🏆 Takma ad: '+esc(profil().takma || "yok")+'</button><button class="ikinci" id="cik">Çıkış yap</button>';
-    ac(); document.getElementById("tm").onclick = kapat; document.getElementById("cik").onclick = cikisYap; document.getElementById("tkm").onclick = function(){ takmaSor(false); };
+      '<button class="ana" id="tm">Tamam</button><button class="ikinci" id="cik">Çıkış yap</button>';
+    ac(); document.getElementById("tm").onclick = kapat; document.getElementById("cik").onclick = cikisYap;
   }
 };
 function birlestir(a, b){
@@ -811,7 +813,6 @@ function bulutBasla(){
     var b = s.exists() ? (s.data() || {}) : {};
     var pr = (b.profilT || 0) > (veri.profilT || 0) ? b.profil : veri.profil, prT = Math.max(b.profilT || 0, veri.profilT || 0);
     veri = birlestir(veri, b); veri.uid = kullanici.uid; veri.profil = pr || {}; veri.profilT = prT; yaz(false); ciz(); ozelSenk();
-    if(!profil().takma) takmaSor(true);
     return bulutYukle();
   }).catch(bulutHataYaz);
 }
