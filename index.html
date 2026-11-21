@@ -59,6 +59,7 @@ svg.graf{width:100%;height:auto;display:block}
 .gece .s{flex:1;font-size:14px;font-variant-numeric:tabular-nums}
 .gece .s small{display:block;color:var(--soluk);font-size:12px}
 .etk{font-size:12px;padding:3px 8px;border-radius:99px;background:rgba(255,255,255,.07);white-space:nowrap}
+.gece.sek .s{color:var(--soluk)}
 .etk.ok{color:var(--yesil)}.etk.no{color:var(--kirmizi)}.etk.er{color:var(--sari)}
 .gece button{background:none;border:0;color:var(--soluk);font-size:16px;cursor:pointer;padding:6px}
 .kucuk{background:rgba(255,255,255,.07);border:1px solid var(--cizgi);color:var(--yazi);border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer;font-family:inherit}
@@ -119,6 +120,10 @@ svg.graf{width:100%;height:auto;display:block}
 .ozet div{background:rgba(255,255,255,.05);border-radius:12px;padding:10px;text-align:center}.ozet b{display:block;font-size:20px}.ozet span{font-size:11px;color:var(--soluk)}
 .takmaGir{width:100%;padding:13px;border-radius:14px;border:1px solid var(--cizgi);background:rgba(255,255,255,.06);color:var(--yazi);font-size:16px;margin-bottom:12px;font-family:inherit}
 .bulut{font-size:12px;color:var(--soluk);text-align:center;margin-top:6px}
+#bulutUyari{margin:0 16px 8px;max-width:460px;align-self:center;width:calc(100% - 32px);display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(220,40,60,.92);color:#fff;font-size:13px;font-weight:600;line-height:1.35;box-shadow:0 8px 24px rgba(0,0,0,.35);flex:none}
+#bulutUyari[hidden]{display:none}
+#bulutUyari button{margin-left:auto;flex:none;background:#fff;color:#b0102a;border:0;border-radius:10px;padding:7px 10px;font-weight:800;font-family:inherit;font-size:12.5px;cursor:pointer}
+.bulutIs{font-size:11.5px;color:var(--soluk);flex:none}.bulutIs.yok{color:#ff9aa8}
 .havaY{text-align:center;color:var(--soluk);font-size:13px;margin-top:4px;min-height:18px}
 body.aydin{--soluk:#e6ebff;--cizgi:rgba(255,255,255,.18)}
 main{text-shadow:0 1px 8px rgba(0,20,60,.4)}
@@ -214,6 +219,24 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 .taslakB>span:first-child{font-size:24px}.taslakB b{display:block;font-size:15px}.taslakB small{display:block;color:var(--soluk);font-size:12.5px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}.taslakB .ok{margin-left:auto;font-size:22px;color:var(--soluk)}
 .taslakB.hazir{border-style:solid;border-color:rgba(141,123,255,.7);background:linear-gradient(135deg,rgba(141,123,255,.3),rgba(106,184,228,.15));animation:nefes2 2.4s ease-in-out infinite}
 @keyframes nefes2{50%{box-shadow:0 0 24px rgba(141,123,255,.45)}}
+.canli{padding:4px 2px 8px}
+.canliUst{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--soluk);margin-bottom:6px}
+.canliUst .nokta{width:8px;height:8px;border-radius:50%;background:#8d7bff;box-shadow:0 0 0 0 rgba(141,123,255,.6);animation:nab 1.2s infinite}
+@keyframes nab{70%{box-shadow:0 0 0 8px rgba(141,123,255,0)}}
+.canli .ruyaMetin{max-height:52vh;overflow:auto}
+.canli .ruyaMetin::after{content:"▍";color:#b9b0ff;animation:yanip 1s steps(2) infinite}
+@keyframes yanip{50%{opacity:0}}
+.bdtBtn{width:100%;display:flex;align-items:center;gap:12px;padding:13px 16px;margin-top:10px;border-radius:18px;border:1px solid rgba(106,184,228,.4);background:linear-gradient(135deg,rgba(106,184,228,.2),rgba(141,123,255,.1));color:var(--yazi);font-family:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer}
+.bdtBtn>span:first-child{font-size:26px}.bdtBtn small{display:block;font-weight:500;color:var(--soluk);font-size:12.5px}.bdtBtn .ok{margin-left:auto;font-size:22px;color:var(--soluk)}
+.bdtK{display:block;width:100%;text-align:left;padding:12px 14px;border-radius:16px;margin:8px 0;background:rgba(255,255,255,.045);border:1px solid var(--cizgi);color:var(--yazi);font-family:inherit;cursor:pointer}
+.bdtK .rkU{display:flex;align-items:center;gap:8px;margin-bottom:2px}.bdtK .rkU b{flex:1;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bdtK .rkU small{color:var(--soluk);font-size:12px;flex:none}
+.bdtK p{margin:3px 0 0;font-size:13.5px;color:#d2d7f2;line-height:1.4}
+.bdtUst{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bdtNokta{display:flex;gap:5px}.bdtNokta i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18)}.bdtNokta i.oldu{background:var(--mor)}.bdtNokta i.su{background:var(--ay);transform:scale(1.25)}
+.bdtDuy{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:8px;margin:8px 0;font-size:14px}
+.bdtDuy input{width:100%;accent-color:var(--mor)}.bdtDuy b{text-align:right;font-variant-numeric:tabular-nums}
+.bdtAi{margin:4px 0 10px;padding:12px;border-radius:14px;background:rgba(141,123,255,.12);border:1px solid rgba(141,123,255,.3)}
+.bdtHata{margin:6px 0;font-size:13.5px;line-height:1.4}.bdtHata b{display:block;color:#cfc8ff}.bdtHata span{color:#d2d7f2}
 .taslakNot{font-size:12px;color:var(--yesil);margin:-6px 0 10px;min-height:14px}
 .bilgiK{font-size:12.5px;color:var(--soluk);background:rgba(255,255,255,.04);border:1px dashed var(--cizgi);border-radius:14px;padding:10px 12px;margin:10px 0;line-height:1.45}
 /* gün */
@@ -258,6 +281,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
     <div class="logo"><img src="icon-192.png" alt=""><div><small id="tarih" style="font-size:15px;font-weight:600;color:var(--yazi)"></small></div></div>
     <div class="ustBtn"><button class="hesapBtn" id="liderBtn" style="padding:6px 12px"><span>🏆</span></button><button class="hesapBtn" id="hesapBtn"><span class="bos">👤</span><span>Giriş yap</span></button></div>
   </header>
+  <div id="bulutUyari" hidden></div>
 <div id="kaydir">
 <section class="sekme" id="sekRuya"><div class="ic" id="ruyaIc"></div></section>
 <section class="sekme" id="sekUyku"><div class="ic">
@@ -279,7 +303,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
   </section>
 
   <section class="kart">
-    <h2>Geceler <button class="kucuk" id="ekleBtn" style="padding:6px 10px;font-size:13px">＋ Gece ekle</button></h2>
+    <h2>Geceler <span><button class="kucuk" id="sekBtn" style="padding:6px 10px;font-size:13px">😴 Şekerleme</button> <button class="kucuk" id="ekleBtn" style="padding:6px 10px;font-size:13px">＋ Gece</button></span></h2>
     <div id="liste"></div>
   </section>
 
@@ -305,7 +329,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 10;
+var SURUM = 12;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
@@ -338,7 +362,9 @@ function degerlendir(g){
 }
 function aktifGeceler(l){ return (l || veri.geceler).filter(function(g){ return !g.cop; }); }
 function sirali(){ return aktifGeceler().slice().sort(function(a,b){ return b.y-a.y; }); }
-function sonGeceler(n){ return sirali().slice(0, n); }
+function sekMi(g){ if(g.sek != null) return !!g.sek; var m = dk(g.y); return m >= 11*60 && m < 20*60 && (g.k - g.y) <= 4*36e5; }
+function gercekGeceler(l){ return aktifGeceler(l).filter(function(g){ return !sekMi(g); }); }
+function sonGeceler(n){ return sirali().filter(function(g){ return !sekMi(g); }).slice(0, n); }
 function sd(a){ if(a.length<2) return 0; var o = a.reduce(function(x,y){return x+y;},0)/a.length; return Math.sqrt(a.reduce(function(x,y){return x+(y-o)*(y-o);},0)/a.length); }
 
 /* ---------- çizim ---------- */
@@ -362,7 +388,7 @@ function uyariCiz(){
     h = '<div class="uyari"><span>⏰</span><div><b>Uyandım\'a basmayı unuttun</b>'+gunEt(veri.aktif)+' '+hm(veri.aktif)+'\'den beri açık.</div><button class="kucuk" id="uyFix">Düzelt</button></div>';
   } else if(!veri.aktif && m >= 5*60 && m < 15*60){
     var bugun = new Date(); bugun.setHours(0,0,0,0);
-    var var_ = aktifGeceler().some(function(g){ return g.k >= bugun.getTime(); });
+    var var_ = gercekGeceler().some(function(g){ return g.k >= bugun.getTime(); });
     var dun = (ayar.unuttumGec || "") === bugun.toDateString();
     if(!var_ && !dun) h = '<div class="uyari"><span>🌙</span><div><b>Dün gece butona basmadın</b>Kaçta yattın, kaçta kalktın?</div><button class="kucuk" id="uyEkle">Ekle</button></div>';
   }
@@ -371,10 +397,12 @@ function uyariCiz(){
   var e = document.getElementById("uyEkle"); if(e) e.onclick = function(){ duzenle(null); };
 }
 function istatHesap(geceler){
+  var sekler = geceler.filter(sekMi); geceler = geceler.filter(function(g){ return !sekMi(g); });
+  function sekDk(g){ var gun = isoGun(g.k); return sekler.filter(function(s){ return isoGun(s.y) === gun; }).reduce(function(t,s){ return t + (s.k - s.y)/60000; }, 0); }
   var l = geceler.slice().sort(function(a,b){ return b.y-a.y; }), l7 = l.slice(0, 7);
   if(!l7.length) return null;
   var d = l7.map(degerlendir), ort = d.reduce(function(x,y){return x+y.sure;},0)/d.length;
-  var borc = d.reduce(function(x,y){ return x + Math.max(0, HEDEF.sure - y.sure); },0);
+  var borc = d.reduce(function(x,y,i){ return x + Math.max(0, HEDEF.sure - y.sure - sekDk(l7[i])); },0);
   var duzen = l7.length > 1 ? Math.max(0, Math.round(100 - (sd(l7.map(function(g){return geceDk(g.y);})) + sd(l7.map(function(g){return dk(g.k);})))/2 * 1.4)) : null;
   var seri = 0; for(var i=0;i<l.length;i++){ if(degerlendir(l[i]).tam) seri++; else break; }
   var ortYat = Math.round(l7.reduce(function(x,g){ return x + geceDk(g.y); },0)/l7.length);
@@ -385,7 +413,7 @@ function haftaBas(ts){ var d = new Date(ts || Date.now()); d.setHours(0,0,0,0); 
 function haftaKod(ts){ var d = haftaBas(ts); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
 /* haftalık puan: hedefe tam uyulan gece +10, sadece yatış zamanında +5, seri devam ediyorsa +5; haftada en az 3 gece varsa düzen bonusu (düzen/10) */
 function haftaPuan(geceler){
-  var bas = haftaBas().getTime(), tum = geceler.slice().sort(function(a,b){ return a.y-b.y; }), seri = 0, puan = 0, bu = [];
+  var bas = haftaBas().getTime(), tum = geceler.filter(function(g){ return !sekMi(g); }).sort(function(a,b){ return a.y-b.y; }), seri = 0, puan = 0, bu = [];
   tum.forEach(function(g){ var d = degerlendir(g); seri = d.tam ? seri+1 : 0; if(g.k >= bas){ bu.push(g); puan += d.tam ? 10 : (d.yat!=="no" ? 5 : 0); if(d.tam && seri > 1) puan += 5; } });
   if(bu.length >= 3){ var h = istatHesap(bu); if(h && h.duzen!=null) puan += Math.round(h.duzen/10); }
   return { puan:puan, gece:bu.length };
@@ -420,11 +448,12 @@ function grafSvg(l){
   return s + '</svg>';
 }
 function listeCiz(){
-  var l = sonGeceler(30), k = document.getElementById("liste");
+  var l = sirali().slice(0, 30), k = document.getElementById("liste");
   if(!l.length){ k.innerHTML = '<div class="bos">Kayıt yok.</div>'; return; }
   var yuz = ["","😫","😕","😐","🙂","😄"], uy = ["Hiç uyanmadım","1–2 kez uyandım","Çok uyandım"];
   k.innerHTML = l.map(function(g){
     var d = degerlendir(g);
+    if(sekMi(g)) return '<div class="gece sek"><div class="g"><b>'+gunEt(g.y).split(" ").slice(1).join(" ")+'</b>'+GUN[new Date(g.y).getDay()]+'</div><div class="s">'+hm(g.y)+' → '+hm(g.k)+' · '+sureYaz(d.sure)+'<small>Uyku borcundan düşüldü</small></div><span class="etk">😴 şekerleme</span><button data-d="'+esc(g.id)+'" aria-label="Düzenle">✎</button></div>';
     var yat = d.yat==="ok" ? '<span class="etk ok">✅ zamanında</span>' : d.yat==="er" ? '<span class="etk er">⏰ erken</span>' : '<span class="etk no">❌ geç yattın</span>';
     return '<div class="gece"><div class="g"><b>'+gunEt(g.k).split(" ").slice(1).join(" ")+'</b>'+GUN[new Date(g.k).getDay()]+'</div>'+
       '<div class="s">'+hm(g.y)+' → '+hm(g.k)+' · '+sureYaz(d.sure)+'<small>'+(g.p?yuz[g.p]+" ":"")+(g.u!=null?uy[g.u]:"")+'</small></div>'+yat+
@@ -444,6 +473,8 @@ document.getElementById("buyuk").onclick = function(){
   sabahSor({ y:veri.aktif, k:Date.now() }, true);
 };
 function iyiGeceler(){
+  var gm = dk(veri.aktif);
+  if(gm >= 11*60 && gm < 20*60){ sayfa.innerHTML = '<div class="sonuc"><div class="b">😴</div><h3>İyi şekerlemeler</h3><p>'+hm(veri.aktif)+' · Şekerleme olarak kaydedilecek, gece hedefini bozmaz. Kalkınca ☀️ butonuna bas.</p></div><button class="ana" id="tm">Tamam</button>'; ac(); document.getElementById("tm").onclick = kapat; return; }
   var m = geceDk(veri.aktif), mesaj = m < HEDEF.yatBas ? "Erkencisin bu gece 👏" : m <= HEDEF.yatSon ? "Tam hedefte! ✅" : "Biraz geç oldu ama yarın düzeltiriz 🙂";
   sayfa.innerHTML = '<div class="sonuc"><div class="b">🌙</div><h3>İyi geceler</h3><p>'+hm(veri.aktif)+' · '+mesaj+'<br>Telefonu bırak, sabah ☀️ butonuna basmayı unutma.</p></div><button class="ana" id="tm">Tamam</button>';
   ac(); document.getElementById("tm").onclick = kapat;
@@ -451,7 +482,7 @@ function iyiGeceler(){
 function sabahSor(g, yeni, aktifKapat){
   var p = g.p || 0, u = g.u!=null ? g.u : null;
   function c(){
-    sayfa.innerHTML = '<h3>☀️ Günaydın!</h3><p>'+hm(g.y)+' → '+hm(g.k)+' · '+sureYaz((g.k-g.y)/60000)+'</p>'+
+    sayfa.innerHTML = '<h3>'+(sekMi(g) ? '😴 Şekerleme bitti' : '☀️ Günaydın!')+'</h3><p>'+hm(g.y)+' → '+hm(g.k)+' · '+sureYaz((g.k-g.y)/60000)+'</p>'+
       '<p style="margin-bottom:8px;color:var(--yazi)">Nasıl uyudun?</p><div class="sec" id="sp">'+["😫","😕","😐","🙂","😄"].map(function(e,i){ return '<button data-v="'+(i+1)+'" class="'+(p===i+1?"on":"")+'">'+e+'</button>'; }).join("")+'</div>'+
       '<p style="margin-bottom:8px;color:var(--yazi)">Gece uyandın mı?</p><div class="sec yazi" id="su">'+["Hayır","1–2 kez","Çok"].map(function(e,i){ return '<button data-v="'+i+'" class="'+(u===i?"on":"")+'">'+e+'</button>'; }).join("")+'</div>'+
       '<button class="ana" id="kaydet" '+(p&&u!=null?"":"disabled")+'>Kaydet</button>';
@@ -468,6 +499,9 @@ function sabahSor(g, yeni, aktifKapat){
 }
 function sonucGoster(g){
   var d = degerlendir(g);
+  if(sekMi(g)){ var h = istatHesap(gercekGeceler().concat(aktifGeceler().filter(sekMi)));
+    sayfa.innerHTML = '<div class="sonuc"><div class="b">😴</div><h3>'+sureYaz(d.sure)+' şekerleme</h3><p>Uyku borcundan düşüldü'+(h ? ' · kalan borç: '+(h.borc ? sureYaz(h.borc) : 'yok 🎉') : '')+'</p></div><button class="ana" id="tm">Harika</button>';
+    document.getElementById("tm").onclick = kapat; return; }
   var b = d.tam ? "🏆" : d.yat==="no" ? "🦉" : "☕";
   var m = d.tam ? "Mükemmel gece! Hedefe tam uydun." : d.yat==="no" ? "Geç yattın. Bu akşam 23:30'u kaçırma." : "Kalkış saatin kaçtı. Yarın 07:30'u dene.";
   sayfa.innerHTML = '<div class="sonuc"><div class="b">'+b+'</div><h3>'+sureYaz(d.sure)+' uyudun</h3><p>'+m+'</p></div><button class="ana aiBtn" id="ruyaGec">💭 Rüya gördün mü? Kaydet</button><button class="ikinci" id="tm">Sonra</button>';
@@ -480,24 +514,28 @@ function duzenle(id, onDeger){
   var g = id ? veri.geceler.filter(function(x){ return x.id===id; })[0] : null, simdi = Date.now();
   var o = onDeger || {}, dunAksam = new Date(); dunAksam.setDate(dunAksam.getDate()-1); dunAksam.setHours(23,15,0,0);
   var y0 = g ? g.y : (o.y || dunAksam.getTime()), k0 = g ? g.k : (o.k || (function(){ var d = new Date(); d.setHours(7,30,0,0); return d.getTime(); })());
-  sayfa.innerHTML = '<h3>'+(g ? "Geceyi düzenle" : o.aktifKapat ? "Ne zaman uyandın?" : "Unuttuğun geceyi ekle")+'</h3><p>Butona basmayı unuttuysan saatleri buradan gir.</p>'+
+  sayfa.innerHTML = '<h3>'+(g ? (sekMi(g) ? "Şekerlemeyi düzenle" : "Geceyi düzenle") : o.aktifKapat ? "Ne zaman uyandın?" : o.sek ? "😴 Şekerleme ekle" : "Unuttuğun geceyi ekle")+'</h3><p>Butona basmayı unuttuysan saatleri buradan gir.</p>'+
     '<div class="alan"><label>Yattığın gün<input type="date" id="yg" value="'+isoGun(y0)+'"></label><label>Saat<input type="time" id="ys" value="'+hm(y0)+'"></label>'+
     '<label>Kalktığın gün<input type="date" id="kg" value="'+isoGun(k0)+'"></label><label>Saat<input type="time" id="ks" value="'+hm(k0)+'"></label></div>'+
+    '<div class="satir" style="border:0;padding:4px 0 12px"><div class="yz">😴 Bu bir şekerleme<small>Gündüz uykusu: uyku borcundan düşer, gece hedefini bozmaz</small></div><button type="button" class="dugme'+((g ? sekMi(g) : (o.sek || false)) ? ' on' : '')+'" id="sekDug" aria-label="Şekerleme"></button></div>'+
     '<button class="ana" id="ileri">Devam</button>'+
     (g ? '<button class="ikinci" id="sil" style="color:var(--kirmizi)">Bu geceyi sil</button>' : '')+
-    (!g && !o.aktifKapat && dk(simdi) >= 5*60 && dk(simdi) < 15*60 ? '<button class="ikinci" id="gec">Dün gece kayıt tutmayayım</button>' : '');
+    (!g && !o.aktifKapat && !o.sek && dk(simdi) >= 5*60 && dk(simdi) < 15*60 ? '<button class="ikinci" id="gec">Dün gece kayıt tutmayayım</button>' : '');
   ac();
   var v = function(i){ return document.getElementById(i).value; };
+  document.getElementById("sekDug").onclick = function(){ this.classList.toggle("on"); };
   document.getElementById("ileri").onclick = function(){
     var y = tsYap(v("yg"), v("ys")), k = tsYap(v("kg"), v("ks"));
     if(!(k > y) || k - y > 16*36e5){ toast("Saatleri kontrol et: kalkış yatıştan sonra olmalı."); return; }
-    if(g){ g.y = y; g.k = k; sabahSor(g, false); }
-    else sabahSor({ id:"g"+y, y:y, k:k }, true, o.aktifKapat);
+    var sek = document.getElementById("sekDug").classList.contains("on");
+    if(g){ g.y = y; g.k = k; g.sek = sek; sabahSor(g, false); }
+    else sabahSor({ id:"g"+y, y:y, k:k, sek:sek }, true, o.aktifKapat);
   };
   if(g) document.getElementById("sil").onclick = function(){ g.cop = Date.now(); g.t = g.cop; yaz(); ciz(); kapat(); toast("🗑 Çöp kutusuna taşındı (Ayarlar)"); };
   var gc = document.getElementById("gec"); if(gc) gc.onclick = function(){ ayar.unuttumGec = new Date().toDateString(); ayarYaz(); kapat(); ciz(); };
 }
 document.getElementById("ekleBtn").onclick = function(){ duzenle(null); };
+document.getElementById("sekBtn").onclick = function(){ var k = Date.now(); duzenle(null, { y:k - 30*60000, k:k, sek:true }); };
 
 /* ---------- ayarlar ---------- */
 function bildirimDurum(){ if(!("Notification" in window)) return "yok"; return Notification.permission; }
@@ -527,9 +565,9 @@ function ayarAc(){
   };
   document.getElementById("copAc").onclick = function(){ geriEkle(ayarAc); copAc(); };
   document.getElementById("konDug").onclick = function(){
-    if(ayar.konum){ ayar.konum = null; ayarYaz(); havaGetir(true); ayarAc(); return; }
+    if(ayar.konum){ ayar.konum = null; ayarYaz(); gunOn = {}; havaGetir(true); gokHazirla(); ayarAc(); return; }
     if(!navigator.geolocation){ toast("Konum desteklenmiyor"); return; }
-    navigator.geolocation.getCurrentPosition(function(p){ ayar.konum = { lat:+p.coords.latitude.toFixed(3), lon:+p.coords.longitude.toFixed(3) }; ayarYaz(); havaGetir(true); ayarAc(); toast("📍 Konumun kullanılıyor"); },
+    navigator.geolocation.getCurrentPosition(function(p){ ayar.konum = { lat:+p.coords.latitude.toFixed(2), lon:+p.coords.longitude.toFixed(2) }; ayarYaz(); gunOn = {}; havaGetir(true); gokHazirla(); konumAdiBul(ayar.konum); ayarAc(); toast("📍 Konumun kullanılıyor"); },
       function(){ toast("Konum izni verilmedi"); }, { timeout:15000, maximumAge:36e5 });
   };
 }
@@ -726,7 +764,7 @@ function adminKisi(x){
   var yuz = ["","😫","😕","😐","🙂","😄"];
   sayfa.innerHTML = '<h3>'+esc(p.ad || p.email || "Kullanıcı")+'</h3><p>'+esc(p.email || "")+(p.takma ? ' · '+esc(p.takma) : '')+(x.aktif ? '<br>🌙 '+hm(x.aktif)+'\'den beri uyuyor' : '')+'</p>'+
     (h ? '<div class="ozet"><div><b>'+sureYaz(h.ort)+'</b><span>ort. uyku</span></div><div><b>'+(h.duzen!=null ? h.duzen : '—')+'</b><span>düzen</span></div><div><b>🔥'+h.seri+'</b><span>seri</span></div></div>' : '')+
-    grafSvg(g.slice(0, 7).reverse())+
+    grafSvg(g.filter(function(n){ return !sekMi(n); }).slice(0, 7).reverse())+
     '<div style="margin-top:10px">'+(g.slice(0, 30).map(function(n){ var d = degerlendir(n);
       return '<div class="gece"><div class="g"><b>'+gunEt(n.k).split(" ").slice(1).join(" ")+'</b>'+GUN[new Date(n.k).getDay()]+'</div><div class="s">'+hm(n.y)+' → '+hm(n.k)+' · '+sureYaz(d.sure)+'<small>'+(n.p ? yuz[n.p] : '')+'</small></div>'+
         (d.yat==="ok" ? '<span class="etk ok">✅</span>' : d.yat==="er" ? '<span class="etk er">⏰</span>' : '<span class="etk no">❌</span>')+'</div>'; }).join("") || '<div class="bos">Kayıt yok.</div>')+'</div>'+
@@ -786,7 +824,7 @@ function bulutYukle(){
   return FBS.F.setDoc(bulutRef(), { geceler:veri.geceler, aktif:veri.aktif, aktifT:veri.aktifT, silinen:veri.silinen, profil:pr, profilT:veri.profilT || 0, guncel:Date.now(), sonGorulme:Date.now(), surum:SURUM })
     .then(function(){ bulutDurum = "tamam"; hesapCiz(); liderYukle(); }).catch(bulutHataYaz);
 }
-function bulutHataYaz(e){ bulutHata = (e && e.code) || String(e); bulutDurum = /permission/.test(bulutHata) ? "izin" : "hata"; hesapCiz(); }
+function bulutHataYaz(e){ bulutHata = (e && e.code) || String(e); bulutDurum = /permission/.test(bulutHata) ? "izin" : "hata"; hesapCiz(); if(window.bulutUyariCiz) bulutUyariCiz(); }
 document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible"){ ciz(); if(kullanici && FBS && bulutDurum!=="izin") bulutBasla(); } });
 kurKapiCiz();
 girisKapisi();
@@ -897,7 +935,7 @@ function rHazirla(){
 }
 function tumRuyalar(){
   return Object.keys(rAcik).filter(function(id){ return R.kayit[id] && !R.kayit[id].sil && !R.kayit[id].cop; })
-    .map(function(id){ return Object.assign({}, rAcik[id], { id:id, gun:R.kayit[id].gun, t:R.kayit[id].t }); })
+    .map(function(id){ return Object.assign({}, rAcik[id], { id:id, gun:R.kayit[id].gun, t:R.kayit[id].t, bulutta:!!R.kayit[id].b }); })
     .sort(function(a,b){ return a.gun < b.gun ? 1 : a.gun > b.gun ? -1 : b.t - a.t; });
 }
 function ruyaKaydet(id, gun, obj){
@@ -913,32 +951,43 @@ function gKey(){ return "dolphsleep.gun."+uidAnahtar(); }
 function gOku(){ var x = null; try{ x = JSON.parse(localStorage.getItem(gKey())); }catch(e){} G = (x && x.gunler) ? x : { gunler:{} }; G._uid = uidAnahtar(); return G; }
 function gYaz(){ try{ localStorage.setItem(gKey(), JSON.stringify(G)); }catch(e){} }
 function gHazir(){ if(!G || G._uid !== uidAnahtar()) gOku(); }
-function bosGun(){ return { anlar:[], sil:{}, kapanis:null, t:0 }; }
+function bosGun(){ return { anlar:[], kayitlar:[], sil:{}, kapanis:null, t:0 }; }
 function gunDoc(k){ return G.gunler[k] || bosGun(); }
 function gunBirlestir(a, b){
   a = a || bosGun(); b = b || bosGun();
   var sil = Object.assign({}, a.sil || {}); Object.keys(b.sil || {}).forEach(function(k){ sil[k] = Math.max(sil[k] || 0, b.sil[k]); });
-  var m = {}; (a.anlar || []).concat(b.anlar || []).forEach(function(x){ if(x && x.id && (!m[x.id] || (x.d||0) > (m[x.id].d||0))) m[x.id] = x; });
-  var anlar = Object.keys(m).map(function(k){ return m[k]; }).filter(function(x){ return !(sil[x.id] && sil[x.id] >= (x.d||0)); }).sort(function(x,y){ return x.t - y.t; });
+  function bir(l1, l2){ var m = {}; (l1 || []).concat(l2 || []).forEach(function(x){ if(x && x.id && (!m[x.id] || (x.d||0) > (m[x.id].d||0))) m[x.id] = x; });
+    return Object.keys(m).map(function(k){ return m[k]; }).filter(function(x){ return !(sil[x.id] && sil[x.id] >= (x.d||0)); }).sort(function(x,y){ return x.t - y.t; }); }
+  var anlar = bir(a.anlar, b.anlar), kayitlar = bir(a.kayitlar, b.kayitlar);
   var ka = a.kapanis, kb = b.kapanis, kap = !ka ? kb : !kb ? ka : ((kb.d||0) > (ka.d||0) ? kb : ka);
-  return { anlar:anlar, sil:sil, kapanis:kap || null, t:Math.max(a.t||0, b.t||0) };
+  return { anlar:anlar, kayitlar:kayitlar, sil:sil, kapanis:kap || null, t:Math.max(a.t||0, b.t||0) };
 }
-function gunGuncelle(k, f){ var d = temiz(gunDoc(k)); f(d); d.t = Date.now(); G.gunler[k] = d; gYaz(); gBulutaYaz(k); }
+function gunGuncelle(k, f){ var d = temiz(gunDoc(k)); f(d); d.t = Date.now(); delete d.b; G.gunler[k] = d; gYaz(); gBulutaYaz(k); }
 
 /* ---------- bulut (dolphsleep/{uid}/ruyalar, /gunler, /ozel/kilit) ---------- */
 function altRef(kol, id){ return FBS.F.doc(FBS.db, "dolphsleep", kullanici.uid, kol, id); }
 function altKol(kol){ return FBS.F.collection(FBS.db, "dolphsleep", kullanici.uid, kol); }
-function ozelHata(e){ ozelDurum = /permission/.test((e && e.code) || "") ? "izin" : "hata"; if(aktifSekme===S_RUYA) ruyaCiz(); if(aktifSekme===S_GUN) gunCiz(); }
-function rBulutaYaz(k){ if(!kullanici || !FBS || ozelDurum==="izin") return Promise.resolve(); return FBS.F.setDoc(altRef("ruyalar", k.id), temiz(k)).catch(ozelHata); }
+function ozelHata(e){ ozelDurum = /permission/.test((e && e.code) || "") ? "izin" : "hata"; bulutUyariCiz(); if(aktifSekme===S_RUYA) ruyaCiz(); if(aktifSekme===S_GUN) gunCiz(); }
+function bsiz(o){ var c = temiz(o); delete c.b; return c; }
+function bulutUyariCiz(){
+  var k = document.getElementById("bulutUyari"); if(!k) return;
+  var sorun = kullanici && (ozelDurum === "izin" || bulutDurum === "izin");
+  k.hidden = !sorun;
+  if(sorun){ k.innerHTML = '<span>⚠️</span><span>Kayıtların buluta gidemiyor, sadece bu telefonda duruyor. Uygulamayı silme!</span><button id="bulutNasil">Nasıl?</button>';
+    document.getElementById("bulutNasil").onclick = function(){
+      sayfa.innerHTML = '<h3>☁️ Bulut kuralı eksik</h3><p>Firebase → Firestore → <b>Rules</b> sayfasında var olan <code>dolphsleep</code> kuralının altına şunu ekleyip <b>Publish</b>\'e bas. Sonra uygulamayı kapatıp aç; telefondaki kayıtların otomatik buluta yüklenir.</p><pre style="white-space:pre-wrap;background:rgba(0,0,0,.35);padding:12px;border-radius:12px;font-size:12px;color:#d7dcff">match /dolphsleep/{uid}/{alt=**} {\n  allow read, write: if request.auth != null && request.auth.uid == uid;\n}</pre><button class="ana" id="tm">Tamam</button>';
+      ac(); document.getElementById("tm").onclick = kapat; }; }
+}
+function rBulutaYaz(k){ if(!kullanici || !FBS || ozelDurum==="izin") return Promise.resolve(); return FBS.F.setDoc(altRef("ruyalar", k.id), bsiz(k)).then(function(){ var y = R.kayit[k.id]; if(y && y.t === k.t && !y.b){ y.b = 1; rYaz(); if(aktifSekme===S_RUYA && !perde.classList.contains("ac")) ruyaAnaCizSessiz(); } }).catch(ozelHata); }
 function kilitBulutaYaz(){ if(!kullanici || !FBS || ozelDurum==="izin") return Promise.resolve(); return FBS.F.setDoc(altRef("ozel", "kilit"), temiz(R.kilit || { aktif:false, t:Date.now() })).catch(ozelHata); }
-function gBulutaYaz(k){ if(!kullanici || !FBS || ozelDurum==="izin") return; FBS.F.setDoc(altRef("gunler", k), temiz(G.gunler[k])).catch(ozelHata); }
+function gBulutaYaz(k){ if(!kullanici || !FBS || ozelDurum==="izin") return; var d = G.gunler[k], t = d.t; FBS.F.setDoc(altRef("gunler", k), bsiz(d)).then(function(){ var y = G.gunler[k]; if(y && y.t === t && !y.b){ y.b = 1; gYaz(); var e = document.getElementById("gunBulut"); if(e && gGun === k){ e.textContent = "☁️ Buluta kaydedildi"; e.className = "bulutIs"; } } }).catch(ozelHata); }
 function ozelSenk(){
   if(!kullanici || !FBS) return;
   rHazir(); gHazir();
   Promise.all([FBS.F.getDocs(altKol("ruyalar")), FBS.F.getDoc(altRef("ozel", "kilit")), FBS.F.getDocs(altKol("gunler"))]).then(function(s){
-    ozelDurum = "";
+    ozelDurum = ""; bulutUyariCiz();
     var bulut = {}; s[0].forEach(function(d){ bulut[d.id] = d.data(); });
-    Object.keys(bulut).forEach(function(id){ var b = bulut[id], y = R.kayit[id]; if(!y || (b.t||0) > (y.t||0)) R.kayit[id] = b; });
+    Object.keys(bulut).forEach(function(id){ var b = bulut[id], y = R.kayit[id]; if(!y || (b.t||0) > (y.t||0)){ b.b = 1; R.kayit[id] = b; } else if((b.t||0) === (y.t||0)) y.b = 1; });
     Object.keys(R.kayit).forEach(function(id){ var b = bulut[id], y = R.kayit[id]; if(!b || (y.t||0) > (b.t||0)) rBulutaYaz(y); });
     var bk = s[1].exists() ? s[1].data() : null;
     if(bk && (!R.kilit || (bk.t||0) > (R.kilit.t||0))){
@@ -948,8 +997,8 @@ function ozelSenk(){
     if(bk || Object.keys(bulut).length) R.soruldu = true;
     rYaz();
     var gb = {}; s[2].forEach(function(d){ gb[d.id] = d.data(); });
-    Object.keys(gb).forEach(function(k){ G.gunler[k] = gunBirlestir(G.gunler[k], gb[k]); });
-    Object.keys(G.gunler).forEach(function(k){ if(!gb[k] || JSON.stringify(gb[k]) !== JSON.stringify(G.gunler[k])) gBulutaYaz(k); });
+    Object.keys(gb).forEach(function(k){ var m = gunBirlestir(G.gunler[k], gb[k]); if(JSON.stringify(bsiz(m)) === JSON.stringify(bsiz(gb[k]))) m.b = 1; G.gunler[k] = m; });
+    Object.keys(G.gunler).forEach(function(k){ if(!G.gunler[k].b) gBulutaYaz(k); });
     gYaz();
     if(aktifSekme===S_RUYA) ruyaCiz(); if(aktifSekme===S_GUN) gunCiz();
   }).catch(ozelHata);
@@ -960,7 +1009,7 @@ function aiIste(gorev, v, sinyal){
   if(!kullanici) return Promise.reject(new Error("giris"));
   return kullanici.getIdToken().then(function(tok){
     return fetch("/api/ai", { method:"POST", headers:{ "content-type":"application/json", "authorization":"Bearer "+tok }, body:JSON.stringify(Object.assign({ gorev:gorev, ad:(kullanici.displayName || "").split(" ")[0] }, v)), signal:sinyal || undefined });
-  }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok || !j.metin) throw new Error(j.hata || ("http"+r.status)); return j; }); });
+  }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok || (!j.metin && !j.dengeli)) throw new Error(j.hata || ("http"+r.status)); return j; }); });
 }
 function aiHataYazi(e){
   var k = (e && e.message) || "";
@@ -1031,11 +1080,13 @@ function ruyaAnaCiz(){
   takvimBagla(); taslakKutuCiz(); guardGuncelle();
   if(bekleyenRuya){ var g = bekleyenRuya; bekleyenRuya = null; ruyaYeni({ gun:g }); }
 }
+var rCizZ = 0;
+function ruyaAnaCizSessiz(){ clearTimeout(rCizZ); rCizZ = setTimeout(function(){ if(aktifSekme===S_RUYA && !perde.classList.contains("ac") && R.soruldu && kilitAcikMi()) ruyaAnaCiz(); }, 400); }
 function rKartHtml(x){
   if(x.bozuk) return '<div class="rk"><div class="rkU"><span>⚠️</span><b>Açılamadı (eski şifreyle kilitli)</b><small>'+gunKisa(x.gun)+'</small></div></div>';
   if(!x.gordu) return '<button class="rk" data-id="'+x.id+'"><div class="rkU"><span>😶</span><b style="color:var(--soluk);font-weight:500">Rüya görmedim / hatırlamıyorum</b><small>'+gunKisa(x.gun)+'</small></div></button>';
   var p = R_PUAN[(x.puan || 3) - 1];
-  return '<button class="rk" data-id="'+x.id+'"><div class="rkU"><span>'+p[0]+'</span><b>'+esc(x.baslik || "İsimsiz rüya")+'</b><small>'+gunKisa(x.gun)+'</small></div>'+
+  return '<button class="rk" data-id="'+x.id+'"><div class="rkU"><span>'+p[0]+'</span><b>'+esc(x.baslik || "İsimsiz rüya")+'</b><small>'+gunKisa(x.gun)+(x.bulutta ? ' ☁️' : ' ⏳')+'</small></div>'+
     (x.metin ? '<p>'+esc(x.metin)+'</p>' : '')+
     ((x.etiket || []).length ? '<div class="etiketS">'+x.etiket.map(function(e){ return '<span>'+esc(R_ETAD[e] || e)+'</span>'; }).join("")+'</div>' : '')+'</button>';
 }
@@ -1178,14 +1229,37 @@ function hazirBildir(b){
 }
 var AI_AD = { hikaye:["✨","Yapay zekâ rüyanı hikâyeleştiriyor…","✨ AI hikâyeleştirdi","✨ Rüya hikâyen"], ozet:["📝","Yapay zekâ rüyanı özetliyor…","📝 AI özetledi","📝 Kısa özet"], imla:["✏️","Yazım hataları düzeltiliyor…","✏️ AI düzeltti","✏️ Düzeltilmiş hali"] };
 var aiKontrol = null;
+function aiAyristir(tum){
+  var m = tum.match(/^\s*BA[ŞS]LIK\s*:\s*(.+?)\s*\n/i);
+  if(m) return { baslik:m[1].trim().replace(/^["'*]+|["'*]+$/g, ""), metin:tum.slice(m[0].length).replace(/^\s+/, ""), tamBaslik:true };
+  if(/^\s*BA[ŞS]?L?I?K?/i.test(tum) && tum.indexOf("\n") < 0) return { baslik:"", metin:"", tamBaslik:false };   // başlık satırı henüz yazılıyor
+  return { baslik:"", metin:tum.replace(/^\s+/, ""), tamBaslik:false };
+}
+function aiAkis(gorev, v, sinyal, parca){
+  if(!kullanici) return Promise.reject(new Error("giris"));
+  return kullanici.getIdToken().then(function(tok){
+    return fetch("/api/ai", { method:"POST", headers:{ "content-type":"application/json", "authorization":"Bearer "+tok }, body:JSON.stringify(Object.assign({ gorev:gorev, akis:true, ad:(kullanici.displayName || "").split(" ")[0] }, v)), signal:sinyal || undefined });
+  }).then(function(r){
+    if(!r.ok) return r.json().catch(function(){ return {}; }).then(function(j){ throw new Error(j.hata || ("http"+r.status)); });
+    if(!r.body || !r.body.getReader) return r.text().then(function(t){ parca(t); return t; });
+    var rd = r.body.getReader(), dec = new TextDecoder(), tum = "";
+    function oku(){ return rd.read().then(function(x){ if(x.done) return tum; tum += dec.decode(x.value, { stream:true }); parca(tum); return oku(); }); }
+    return oku();
+  }).then(function(tum){
+    var h = tum.indexOf("\u0000HATA:"); if(h >= 0) throw new Error(tum.slice(h + 6).trim());
+    var o = aiAyristir(tum); if(!o.metin) throw new Error("ai");
+    return { baslik:o.baslik, metin:o.metin.trim() };
+  });
+}
 function aiBekle(t){
   perdeSabit = true;
   var a = AI_AD[t.ai.gorev] || AI_AD.hikaye;
-  sayfa.innerHTML = '<div class="dusun"><div class="top"></div>'+a[1]+'<small style="font-size:12.5px;max-width:260px;text-align:center;line-height:1.45">Uygulamadan çıkabilirsin, rüyan sunucuda yazılmaya devam eder. Geri geldiğinde hazır olur.</small></div>'+
+  sayfa.innerHTML = '<div class="dusun" id="aiDusun"><div class="top"></div><span id="aiDurum">'+a[1]+'</span><small style="font-size:12.5px;max-width:260px;text-align:center;line-height:1.45">Uygulamadan çıkabilirsin, rüyan sunucuda yazılmaya devam eder. Geri geldiğinde hazır olur.</small></div>'+
+    '<div class="canli" id="aiCanli" hidden><div class="canliUst"><span class="nokta"></span><span>'+a[0]+' Yazıyor…</span></div><h3 id="aiBas"></h3><div class="ruyaMetin" id="aiMetin"></div></div>'+
     '<button class="ikinci" id="aiIptal">✕ İptal et</button>';
   ac();
   var iptal = function(){
-    if(aiKontrol){ aiKontrol.abort(); aiKontrol = null; }
+    if(aiKontrol){ aiKontrol.yok = true; try{ aiKontrol.abort(); }catch(e){} aiKontrol = null; }
     clearTimeout(isPoll); isTakipAktif = null;
     var id = t.ai && t.ai.id; if(id) iptalEdilen[id] = 1; t.ai = null; taslakKaydetSimdi(t); isSil(id);
     ruyaForm(t); toast("İptal edildi, yazdıkların duruyor");
@@ -1194,18 +1268,39 @@ function aiBekle(t){
   document.getElementById("aiIptal").onclick = function(){ geriCikar(arkaGit); iptal(); };
   isTakip(t);
 }
-function aiBaslat(t, gorev){
+function canliYaz(tum){
+  var c = document.getElementById("aiCanli"); if(!c) return;
+  var o = aiAyristir(tum); if(!o.metin && !o.baslik) return;
+  var d = document.getElementById("aiDusun"); if(d) d.style.display = "none";
+  c.hidden = false;
+  document.getElementById("aiBas").textContent = o.baslik;
+  var m = document.getElementById("aiMetin"); m.textContent = o.metin; m.scrollIntoView({ block:"end" });
+}
+function aiBaslat(t, gorev, deneme){
+  deneme = deneme || 0;
   var ham = t.metin;
   t.ai = { id:rid().replace(/[^a-z0-9]/g, ""), gorev:gorev, ham:ham, t:Date.now() }; t.sonuc = null;
   taslakKaydetSimdi(t);
   aiBekle(t);
   var benim = t.ai.id;
-  aiKontrol = ("AbortController" in window) ? new AbortController() : null;
-  aiIste(gorev, { metin:ham, is:benim }, aiKontrol && aiKontrol.signal).then(function(j){
+  var ctrl = ("AbortController" in window) ? new AbortController() : null; aiKontrol = ctrl;
+  var bekci = 0, zamanAsimi = false;
+  function bekle(){ clearTimeout(bekci); bekci = setTimeout(function(){ if(document.visibilityState === "hidden") return bekle(); zamanAsimi = true; if(ctrl) ctrl.abort(); }, deneme ? 40000 : 30000); }
+  bekle();
+  aiAkis(gorev, { metin:ham, is:benim }, ctrl && ctrl.signal, function(tum){ if(t.ai && t.ai.id === benim){ bekle(); canliYaz(tum); } }).then(function(j){
+    clearTimeout(bekci);
     if(!t.ai || t.ai.id !== benim) return;   // iptal edildi
     aiKontrol = null; isBitti(t, j);
   }).catch(function(e){
-    if(!t.ai || t.ai.id !== benim) return;   // iptal edildi
+    clearTimeout(bekci);
+    if(!t.ai || t.ai.id !== benim || (ctrl && ctrl.yok)) return;   // iptal edildi
+    if(zamanAsimi){
+      iptalEdilen[benim] = 1; isSil(benim); t.ai = null;
+      if(deneme < 1 && perde.classList.contains("ac") && document.getElementById("aiIptal")){ geriYigin.pop(); toast("Biraz yavaş, bir kez daha deniyorum…"); t.metin = ham; aiBaslat(t, gorev, 1); return; }
+      taslakKaydetSimdi(t); toast("Yapay zekâ cevap vermedi, tekrar dene.");
+      if(perde.classList.contains("ac") && document.getElementById("aiIptal")){ geriYigin.pop(); ruyaForm(t); } else taslakKutuCiz();
+      return;
+    }
     var ag = /fetch|network|Load failed|aborted/i.test((e && e.message) || "") || document.visibilityState === "hidden";
     if(ag) return;   // bağlantı koptu: iş sunucuda sürüyor, isTakip sonucu alacak
     aiKontrol = null; clearTimeout(isPoll); t.ai = null; taslakKaydetSimdi(t); isSil(benim);
@@ -1364,7 +1459,10 @@ function gunCiz(){
   var son = d.anlar[d.anlar.length - 1];
   var h = '<div class="baslikS">Gün</div><p class="altS">Gün içinde nasıl hissettiğini kaydet, akşam günü kapat.</p>'+
     '<div class="gunNav"><button id="gGeri">‹</button><b>'+(bu ? 'Bugün · ' : '')+gunKisa(gGun)+' '+GUNTAM[new Date(kodTs(gGun)).getDay()]+'</b><button id="gIleri" '+(bu ? 'disabled' : '')+'>›</button></div>'+
-    '<button class="yeniRuya" id="anYeni" style="margin-top:10px"><span>'+(son && bu ? ruh(p10(son))[0] : '💭')+'</span><span>'+(bu ? 'Şu an nasılsın?' : 'Bu güne kayıt ekle')+'<small>'+(son && bu ? 'Son kayıt '+hm(son.t)+' · '+p10(son)+'/10' : '1–10 puan ver, duygunu seç, istersen not bırak')+'</small></span></button>';
+    (G.gunler[gGun] ? '<div style="text-align:center;margin-top:4px"><span id="gunBulut" class="bulutIs'+(G.gunler[gGun].b ? '' : ' yok')+'">'+(G.gunler[gGun].b ? '☁️ Buluta kaydedildi' : '⏳ Henüz sadece bu telefonda')+'</span></div>' : '')+
+    '<button class="yeniRuya" id="anYeni" style="margin-top:10px"><span>'+(son && bu ? ruh(p10(son))[0] : '💭')+'</span><span>'+(bu ? 'Şu an nasılsın?' : 'Bu güne kayıt ekle')+'<small>'+(son && bu ? 'Son kayıt '+hm(son.t)+' · '+p10(son)+'/10' : '1–10 puan ver, duygunu seç, istersen not bırak')+'</small></span></button>'+
+    '<button class="bdtBtn" id="bdtYeni"><span>🧠</span><span>Düşünce kaydı (BDT)<small>Seni zorlayan bir anı adım adım incele</small></span><span class="ok">›</span></button>'+
+    (d.kayitlar.length ? '<section class="kart"><h2>Düşünce kayıtları <small>'+d.kayitlar.length+'</small></h2>'+d.kayitlar.slice().reverse().map(bdtKartHtml).join("")+'</section>' : '');
   if(d.anlar.length){
     var ort = d.anlar.reduce(function(t,a){ return t + p10(a); },0)/d.anlar.length, say = {};
     d.anlar.forEach(function(a){ (a.duygu || []).forEach(function(x){ say[x] = (say[x] || 0) + 1; }); });
@@ -1387,6 +1485,8 @@ function gunCiz(){
   document.getElementById("gGeri").onclick = function(){ gGun = gunEkle(gGun, -1); gunCiz(); };
   document.getElementById("gIleri").onclick = function(){ gGun = gunEkle(gGun, 1); gunCiz(); };
   document.getElementById("anYeni").onclick = function(){ anSayfa(null); };
+  document.getElementById("bdtYeni").onclick = function(){ bdtSayfa(null); };
+  k.querySelectorAll("[data-b]").forEach(function(b){ b.onclick = function(){ bdtDetay(b.getAttribute("data-b")); }; });
   k.querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){ anSayfa(b.getAttribute("data-a")); }; });
   var kb = document.getElementById("gKapat"); if(kb) kb.onclick = function(){ kapanisSayfa(); };
   var kd = document.getElementById("gKapDuz"); if(kd) kd.onclick = function(){ kapanisSayfa(); };
@@ -1410,6 +1510,90 @@ function ruhGrafik(l){
     if(du.length) s += '<text x="'+pts[i][0].toFixed(1)+'" y="'+(pts[i][1]-9).toFixed(1)+'" font-size="13" text-anchor="middle">'+DUY[du[0]][1]+'</text>';
   });
   return s + '</svg>';
+}
+/* ---------- BDT düşünce kaydı ---------- */
+var BDT_ADIM = ["Durum","Düşünce","Duygular","Kanıtlar","Dengeli düşünce","Şimdi"];
+function bdtDuyguSatir(x, alan){ var D = DUY[x.k] || ["","💭",x.k]; return '<div class="bdtDuy"><span>'+D[1]+' '+D[2]+'</span><input type="range" min="0" max="100" step="5" value="'+(x[alan]==null ? 50 : x[alan])+'" data-k="'+x.k+'"><b>'+(x[alan]==null ? 50 : x[alan])+'</b></div>'; }
+function bdtSayfa(id, adim){
+  var d = gunGorunur(gunDoc(gGun)), eski = id ? (d.kayitlar || []).filter(function(x){ return x.id === id; })[0] : null;
+  var k = eski ? temiz(eski) : { id:rid(), t:Date.now(), durum:"", dusunce:"", duygular:[], lehine:"", aleyhine:"", dengeli:"", ai:null };
+  if(!eski && gGun !== isoGun(Date.now())){ var t0 = new Date(kodTs(gGun)); t0.setHours(12,0,0,0); k.t = t0.getTime(); }
+  perdeSabit = true;
+  bdtAdim(k, adim || 0, !!eski);
+}
+function bdtAdim(k, a, duzen){
+  var ust = '<div class="bdtUst"><h3>🧠 Düşünce kaydı</h3><div class="bdtNokta">'+BDT_ADIM.map(function(n, i){ return '<i class="'+(i < a ? 'oldu' : i === a ? 'su' : '')+'"></i>'; }).join("")+'</div></div><p class="etk2" style="margin-top:6px">'+(a+1)+'/6 · '+BDT_ADIM[a]+'</p>';
+  var g = "";
+  if(a === 0) g = '<p>Seni etkileyen olayı kısaca yaz: ne oldu, nerede, kiminle?</p><textarea class="yaziAlan" id="bA" style="min-height:120px" placeholder="Ör. Derste hoca sunumumu herkesin önünde eleştirdi.">'+esc(k.durum)+'</textarea>'+
+    '<div class="bilgiK">Bu bir terapi değil, kendini tanımana yardımcı bir egzersiz. Kendini çok kötü hissediyorsan güvendiğin biriyle ya da bir uzmanla konuş; acil durumda 112\'yi ara.</div>';
+  else if(a === 1) g = '<p>O an aklından geçen düşünceyi olduğu gibi yaz. Genelde kendinle, başkalarıyla ya da gelecekle ilgili bir cümledir.</p><textarea class="yaziAlan" id="bA" style="min-height:110px" placeholder="Ör. Herkes beni beceriksiz sanıyor. Bu dersi asla geçemeyeceğim.">'+esc(k.dusunce)+'</textarea>';
+  else if(a === 2) g = '<p>Bu düşünce sende hangi duyguları uyandırdı? En fazla 3 tane seç, sonra her birinin şiddetini ayarla.</p><div class="cipler" id="bDuyC">'+DUYGU.map(function(x){ var on = k.duygular.some(function(y){ return y.k === x[0]; }); return '<button data-e="'+x[0]+'" class="'+(on ? 'on' : '')+'">'+x[1]+' '+x[2]+'</button>'; }).join("")+'</div><div id="bDuyS">'+k.duygular.map(function(x){ return bdtDuyguSatir(x, "once"); }).join("")+'</div>';
+  else if(a === 3) g = '<p>Bir dedektif gibi bak: bu düşünce doğru mu?</p><p class="etk2">✅ Düşünceyi destekleyen kanıtlar</p><textarea class="yaziAlan" id="bL" style="min-height:80px" placeholder="Ör. Hoca iki eksik söyledi.">'+esc(k.lehine)+'</textarea><p class="etk2">❌ Düşünceyi desteklemeyen kanıtlar</p><textarea class="yaziAlan" id="bR" style="min-height:80px" placeholder="Ör. Sunumun geri kalanını beğendiğini söyledi, geçen sınavdan iyi not aldım.">'+esc(k.aleyhine)+'</textarea>';
+  else if(a === 4) g = '<p>Kanıtlara bakınca, aynı duruma daha dengeli nasıl bakabilirsin? Kendine bir arkadaşına konuşur gibi yaz.</p><textarea class="yaziAlan" id="bA" style="min-height:110px" placeholder="Ör. Birkaç eksiğim vardı ama sunumun çoğu iyiydi; eleştiri gelişmem için.">'+esc(k.dengeli)+'</textarea>'+
+    '<div id="bAi">'+(k.ai ? bdtAiHtml(k.ai) : '')+'</div><button class="ikinci aiBtn" id="bAiBtn" style="margin-top:0">✨ Yapay zekâdan yardım iste</button>';
+  else g = '<p>Dengeli düşünceyi okuduktan sonra duygularının şiddeti şimdi ne kadar?</p><div id="bDuyS">'+k.duygular.map(function(x){ return bdtDuyguSatir(x, "sonra"); }).join("")+'</div>'+(k.duygular.length ? '' : '<div class="bos">Duygu seçmemiştin.</div>');
+  sayfa.innerHTML = ust + g + '<div class="ikiBtn" style="margin-top:12px"><button class="ikinci" id="bGeri">'+(a ? '‹ Geri' : 'Vazgeç')+'</button><button class="ana" id="bIleri">'+(a === 5 ? 'Kaydet' : 'İleri ›')+'</button></div>';
+  ac();
+  function oku(){
+    var x = document.getElementById("bA");
+    if(a === 0 && x) k.durum = x.value.trim();
+    if(a === 1 && x) k.dusunce = x.value.trim();
+    if(a === 4 && x) k.dengeli = x.value.trim();
+    if(a === 3){ k.lehine = document.getElementById("bL").value.trim(); k.aleyhine = document.getElementById("bR").value.trim(); }
+    sayfa.querySelectorAll("#bDuyS input").forEach(function(r){ var y = k.duygular.filter(function(z){ return z.k === r.getAttribute("data-k"); })[0]; if(y) y[a === 5 ? "sonra" : "once"] = +r.value; });
+  }
+  function kaydiriciBagla(){ sayfa.querySelectorAll("#bDuyS input").forEach(function(r){ r.oninput = function(){ r.nextElementSibling.textContent = r.value; }; }); }
+  kaydiriciBagla();
+  if(a === 2) sayfa.querySelectorAll("#bDuyC button").forEach(function(b){ b.onclick = function(){
+    oku(); var e = b.getAttribute("data-e"), i = -1; k.duygular.forEach(function(y, j){ if(y.k === e) i = j; });
+    if(i >= 0) k.duygular.splice(i, 1); else { if(k.duygular.length >= 3){ toast("En fazla 3 duygu"); return; } k.duygular.push({ k:e, once:60, sonra:null }); }
+    b.classList.toggle("on", i < 0); document.getElementById("bDuyS").innerHTML = k.duygular.map(function(x){ return bdtDuyguSatir(x, "once"); }).join(""); kaydiriciBagla(); }; });
+  var ab = document.getElementById("bAiBtn");
+  if(ab) ab.onclick = function(){
+    oku(); if(!k.dusunce){ toast("Önce otomatik düşünceni yaz"); return; }
+    ab.disabled = true; ab.textContent = "Yapay zekâ düşünüyor…";
+    aiIste("bdt", { durum:k.durum, dusunce:k.dusunce, duygular:k.duygular.map(function(y){ return (DUY[y.k] ? DUY[y.k][2] : y.k)+" "+(y.once||0); }).join(", "), lehine:k.lehine, aleyhine:k.aleyhine }).then(function(j){
+      k.ai = { hatalar:(j.hatalar || []).slice(0, 3), dengeli:j.dengeli || "", not:j.not || "" };
+      if(document.getElementById("bAi")){ document.getElementById("bAi").innerHTML = bdtAiHtml(k.ai); bdtAiBagla(); }
+      ab.disabled = false; ab.textContent = "↻ Yeniden sor";
+    }).catch(function(e){ toast(aiHataYazi(e)); ab.disabled = false; ab.textContent = "✨ Yapay zekâdan yardım iste"; });
+  };
+  function bdtAiBagla(){ var u = document.getElementById("bKullan"); if(u) u.onclick = function(){ document.getElementById("bA").value = k.ai.dengeli; k.dengeli = k.ai.dengeli; toast("Eklendi, istersen düzenle"); }; }
+  bdtAiBagla();
+  document.getElementById("bGeri").onclick = function(){ oku(); if(a === 0){ kapat(); return; } geriCikar(geriYigin[geriYigin.length-1]); bdtAdim(k, a - 1, duzen); };
+  document.getElementById("bIleri").onclick = function(){
+    oku();
+    if(a === 0 && !k.durum){ toast("Kısaca ne olduğunu yaz"); return; }
+    if(a === 1 && !k.dusunce){ toast("Aklından geçen düşünceyi yaz"); return; }
+    if(a < 5){ geriEkle(function(){ bdtAdim(k, a, duzen); }); bdtAdim(k, a + 1, duzen); return; }
+    k.d = Date.now(); delete k.cop;
+    gunGuncelle(gGun, function(x){ x.kayitlar = (x.kayitlar || []).filter(function(y){ return y.id !== k.id; }); x.kayitlar.push(k); x.kayitlar.sort(function(m, n){ return m.t - n.t; }); });
+    kapat(); gunCiz(); toast("🧠 Düşünce kaydı kaydedildi");
+  };
+}
+function bdtAiHtml(ai){
+  return '<div class="bdtAi">'+((ai.hatalar || []).length ? '<p class="etk2">Olası düşünce hataları</p>'+ai.hatalar.map(function(h){ return '<div class="bdtHata"><b>'+esc(h.ad || "")+'</b><span>'+esc(h.aciklama || "")+'</span></div>'; }).join("") : '')+
+    (ai.dengeli ? '<p class="etk2" style="margin-top:10px">Önerilen dengeli düşünce</p><div class="ruyaMetin" style="margin:4px 0 8px">'+esc(ai.dengeli)+'</div><button class="kucuk" id="bKullan">⬆️ Bunu kullan</button>' : '')+
+    (ai.not ? '<p style="margin-top:10px;font-size:13px">💬 '+esc(ai.not)+'</p>' : '')+'</div>';
+}
+function bdtKartHtml(x){
+  var du = (x.duygular || []).map(function(y){ var D = DUY[y.k] || ["","💭",y.k]; return '<span>'+D[1]+' '+D[2]+' '+(y.once||0)+(y.sonra!=null ? ' → '+y.sonra : '')+'</span>'; }).join("");
+  return '<button class="bdtK" data-b="'+x.id+'"><div class="rkU"><span>🧠</span><b>'+esc(x.durum || "Düşünce kaydı")+'</b><small>'+hm(x.t)+'</small></div>'+
+    '<p>💭 “'+esc(x.dusunce)+'”</p>'+(x.dengeli ? '<p>⚖️ '+esc(x.dengeli)+'</p>' : '')+(du ? '<div class="etiketS">'+du+'</div>' : '')+'</button>';
+}
+function bdtDetay(id){
+  var x = (gunGorunur(gunDoc(gGun)).kayitlar || []).filter(function(y){ return y.id === id; })[0]; if(!x) return;
+  sayfa.innerHTML = '<h3>🧠 '+esc(x.durum || "Düşünce kaydı")+'</h3><p>'+gunUzun(gGun)+' · '+hm(x.t)+'</p>'+
+    '<p class="etk2">Otomatik düşünce</p><div class="ruyaMetin" style="margin:2px 0 10px">“'+esc(x.dusunce)+'”</div>'+
+    ((x.duygular || []).length ? '<p class="etk2">Duygular (önce → sonra)</p><div class="etiketS" style="margin-bottom:10px">'+x.duygular.map(function(y){ var D = DUY[y.k] || ["","💭",y.k]; return '<span>'+D[1]+' '+D[2]+' '+(y.once||0)+(y.sonra!=null ? ' → '+y.sonra : '')+'</span>'; }).join("")+'</div>' : '')+
+    (x.lehine ? '<p class="etk2">✅ Destekleyen</p><div class="ruyaMetin" style="margin:2px 0 10px;font-size:14px">'+esc(x.lehine)+'</div>' : '')+
+    (x.aleyhine ? '<p class="etk2">❌ Desteklemeyen</p><div class="ruyaMetin" style="margin:2px 0 10px;font-size:14px">'+esc(x.aleyhine)+'</div>' : '')+
+    (x.dengeli ? '<p class="etk2">⚖️ Dengeli düşünce</p><div class="ruyaMetin" style="margin:2px 0 10px">'+esc(x.dengeli)+'</div>' : '')+
+    (x.ai && (x.ai.hatalar || []).length ? '<details class="bilgiK"><summary>Yapay zekânın fark ettikleri</summary>'+bdtAiHtml({ hatalar:x.ai.hatalar, not:x.ai.not })+'</details>' : '')+
+    '<div class="ikiBtn"><button class="ikinci" id="bDuz">✏️ Düzenle</button><button class="ikinci" id="bSil" style="color:var(--kirmizi)">🗑 Sil</button></div><button class="ana" id="tm" style="margin-top:10px">Kapat</button>';
+  ac(); document.getElementById("tm").onclick = kapat;
+  document.getElementById("bDuz").onclick = function(){ geriEkle(function(){ bdtDetay(id); }); bdtSayfa(id, 0); };
+  document.getElementById("bSil").onclick = function(){ gunGuncelle(gGun, function(g){ (g.kayitlar || []).forEach(function(y){ if(y.id === id){ y.cop = Date.now(); y.d = y.cop; } }); }); kapat(); gunCiz(); toast("🗑 Çöp kutusuna taşındı (Ayarlar)"); };
 }
 function anSayfa(id){
   var d = gunGorunur(gunDoc(gGun)), a = id ? d.anlar.filter(function(x){ return x.id === id; })[0] : null, bu = gGun === isoGun(Date.now());
@@ -1461,6 +1645,7 @@ function kapanisSayfa(){
 function gunAnaliz(gun, metin, btn){
   var d = gunGorunur(gunDoc(gun));
   var anlar = d.anlar.map(function(a){ var du = (a.duygu || []).filter(function(x){ return DUY[x]; }).map(function(x){ return DUY[x][2]; }); return hm(a.t)+" — "+p10(a)+"/10 ("+ruh(p10(a))[1]+")"+(du.length ? " — duygular: "+du.join(", ") : "")+(a.not ? " — not: "+a.not : ""); }).join("\n");
+  (d.kayitlar || []).forEach(function(x){ anlar += "\n"+hm(x.t)+" — düşünce kaydı: durum: "+x.durum+" | düşünce: "+x.dusunce+(x.dengeli ? " | dengeli düşünce: "+x.dengeli : "")+((x.duygular||[]).length ? " | duygular: "+x.duygular.map(function(y){ return (DUY[y.k] ? DUY[y.k][2] : y.k)+" "+(y.once||0)+(y.sonra!=null ? "→"+y.sonra : ""); }).join(", ") : ""); });
   if(btn){ btn.disabled = true; btn.textContent = "Analiz ediliyor…"; } else dusunCiz("Yapay zekâ gününü analiz ediyor…");
   aiIste("gun", { metin:metin, anlar:anlar, gun:gunUzun(gun) }).then(function(j){
     gunGuncelle(gun, function(x){ x.kapanis = { metin:metin, baslik:j.baslik || "", analiz:j.metin, d:Date.now() }; });
@@ -1480,7 +1665,7 @@ rHazir(); gHazir();
 /* =================== v6: çöp kutusu + canlı gökyüzü =================== */
 var COP_GUN = 30;
 function gunGorunur(d){
-  return { anlar:(d.anlar || []).filter(function(a){ return !a.cop; }), sil:d.sil || {}, kapanis:(d.kapanis && !d.kapanis.cop && !d.kapanis.yok) ? d.kapanis : null, t:d.t || 0 };
+  return { anlar:(d.anlar || []).filter(function(a){ return !a.cop; }), kayitlar:(d.kayitlar || []).filter(function(a){ return !a.cop; }), sil:d.sil || {}, kapanis:(d.kapanis && !d.kapanis.cop && !d.kapanis.yok) ? d.kapanis : null, t:d.t || 0 };
 }
 function ruyaCope(id){ var k = R.kayit[id]; if(!k) return; k.cop = Date.now(); k.t = k.cop; rYaz(); rBulutaYaz(k); }
 
@@ -1493,6 +1678,7 @@ function copListe(){
     l.push({ tur:"ruya", id:id, cop:k.cop, ad:o && !o.bozuk ? (o.gordu ? "💭 "+(o.baslik || "İsimsiz rüya") : "😶 Rüya görmedim") : "💭 🔒 Kilitli rüya", gun:k.gun ? gunKisa(k.gun) : "" }); } });
   Object.keys(G.gunler).forEach(function(gk){ var d = G.gunler[gk];
     (d.anlar || []).forEach(function(a){ if(a.cop) l.push({ tur:"an", id:a.id, gk:gk, cop:a.cop, ad:"☀️ "+hm(a.t)+" "+ruh(p10(a))[0]+" "+p10(a)+"/10 "+(a.not || ""), gun:gunKisa(gk) }); });
+    (d.kayitlar || []).forEach(function(a){ if(a.cop) l.push({ tur:"bdt", id:a.id, gk:gk, cop:a.cop, ad:"🧠 "+(a.durum || "Düşünce kaydı"), gun:gunKisa(gk) }); });
     if(d.kapanis && d.kapanis.cop && !d.kapanis.yok) l.push({ tur:"kapanis", id:"k"+gk, gk:gk, cop:d.kapanis.cop, ad:"📝 "+(d.kapanis.baslik || "Gün özeti"), gun:gunKisa(gk) });
   });
   return l.sort(function(a,b){ return b.cop - a.cop; });
@@ -1504,6 +1690,7 @@ function copGeriAl(o){
   else if(o.tur==="ruya"){ var k = R.kayit[o.id]; if(k){ delete k.cop; k.t = t; rYaz(); rBulutaYaz(k); } }
   else if(o.tur==="an") gunGuncelle(o.gk, function(x){ x.anlar.forEach(function(a){ if(a.id===o.id){ delete a.cop; a.d = t; } }); });
   else if(o.tur==="kapanis") gunGuncelle(o.gk, function(x){ if(x.kapanis){ delete x.kapanis.cop; x.kapanis.d = t; } });
+  else if(o.tur==="bdt") gunGuncelle(o.gk, function(x){ (x.kayitlar || []).forEach(function(a){ if(a.id===o.id){ delete a.cop; a.d = t; } }); });
 }
 function copKaliciSil(o){
   var t = Date.now();
@@ -1511,6 +1698,7 @@ function copKaliciSil(o){
   else if(o.tur==="ruya") ruyaSil(o.id);
   else if(o.tur==="an") gunGuncelle(o.gk, function(x){ x.anlar = x.anlar.filter(function(a){ return a.id !== o.id; }); x.sil = x.sil || {}; x.sil[o.id] = t; });
   else if(o.tur==="kapanis") gunGuncelle(o.gk, function(x){ x.kapanis = { yok:true, d:t }; });
+  else if(o.tur==="bdt") gunGuncelle(o.gk, function(x){ x.kayitlar = (x.kayitlar || []).filter(function(a){ return a.id !== o.id; }); x.sil = x.sil || {}; x.sil[o.id] = t; });
 }
 function hepsiniCopeAt(){
   var t = Date.now();
@@ -1518,7 +1706,7 @@ function hepsiniCopeAt(){
   rHazir(); Object.keys(R.kayit).forEach(function(id){ var k = R.kayit[id]; if(!k.sil && !k.cop){ k.cop = t; k.t = t; rBulutaYaz(k); } }); rYaz();
   gHazir(); Object.keys(G.gunler).forEach(function(gk){
     var d = G.gunler[gk], deg = false;
-    (d.anlar || []).forEach(function(a){ if(!a.cop){ a.cop = t; a.d = t; deg = true; } });
+    (d.anlar || []).concat(d.kayitlar || []).forEach(function(a){ if(!a.cop){ a.cop = t; a.d = t; deg = true; } });
     if(d.kapanis && !d.kapanis.cop && !d.kapanis.yok){ d.kapanis.cop = t; d.kapanis.d = t; deg = true; }
     if(deg){ d.t = t; gBulutaYaz(gk); }
   }); gYaz();
@@ -1611,7 +1799,7 @@ function havaYaz(){
   var h = havaDurum(), a = HAVA_AD[h.kod] || ["🌡️",""];
   var gece = gunesYuk(simdiMs(), konum().lat, konum().lon) < -2;
   var em = gece && (h.kod===0 || h.kod===1) ? "🌙" : gece && h.kod===2 ? "☁️" : a[0];
-  e.textContent = HAVA || TEST.hava ? em+" "+(HAVA ? Math.round(HAVA.sicak)+"° · " : "")+a[1]+" · "+(konum().istanbul ? "İstanbul" : "Konumun") : "";
+  e.textContent = HAVA || TEST.hava ? em+" "+(HAVA ? Math.round(HAVA.sicak)+"° · " : "")+a[1]+" · "+(konum().istanbul ? "İstanbul" : (ayar.konum && ayar.konum.ad) || "Konumun") : "";
 }
 
 /* çizim */
@@ -1736,6 +1924,31 @@ gokBoyut(); requestAnimationFrame(gokCiz);
 setInterval(function(){ gokHazirla(); havaYaz(); temaGuncelle(); }, 60000);
 document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible"){ havaGetir(); gokHazirla(); havaYaz(); } });
 havaGetir(); havaYaz(); temaGuncelle();
+/* konum: ilk açılışta bir kez sorar; izin verildiyse açılışlarda sessizce günceller */
+function konumAdiBul(k){
+  return fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+k.lat+"&longitude="+k.lon+"&localityLanguage=tr")
+    .then(function(r){ return r.json(); }).then(function(j){ var ad = j.locality || j.city || j.principalSubdivision || ""; if(ad && ayar.konum){ ayar.konum.ad = ad; ayarYaz(); havaYaz(); } }).catch(function(){});
+}
+function konumAl(sessiz){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(function(p){
+    var eski = ayar.konum, k = { lat:+p.coords.latitude.toFixed(2), lon:+p.coords.longitude.toFixed(2) };
+    var degisti = !eski || eski.lat !== k.lat || eski.lon !== k.lon;
+    if(!degisti) return;
+    ayar.konum = k; ayarYaz(); gunOn = {}; havaGetir(true); gokHazirla(); konumAdiBul(k);
+    if(!sessiz) toast("📍 Arka plan artık bulunduğun yerin havasına göre");
+  }, function(){ if(!sessiz) toast("Konum izni verilmedi, İstanbul'a göre devam"); }, { timeout:15000, maximumAge:36e5 });
+}
+function konumSor(){
+  if(ayar.konumSoruldu || perde.classList.contains("ac") || !document.getElementById("kurKapi").hidden || !document.getElementById("giris").hidden) return;
+  ayar.konumSoruldu = 1; ayarYaz();
+  sayfa.innerHTML = '<div class="sonuc"><div class="b">📍</div><h3>Havayı senin yerine göre ayarlayalım mı?</h3><p>Arka plandaki gökyüzü bulunduğun yerin güneşine ve havasına göre değişir: yağmur yağıyorsa yağmur, güneş batıyorsa gün batımı. Konumun hiçbir yere kaydedilmez, sadece hava için kullanılır.</p></div><button class="ana" id="konEvet">📍 Konumumu kullan</button><button class="ikinci" id="konHayir">İstanbul\'a göre kalsın</button>';
+  ac();
+  document.getElementById("konEvet").onclick = function(){ kapat(); konumAl(false); };
+  document.getElementById("konHayir").onclick = kapat;
+}
+setTimeout(function(){ if(kullanici) konumSor(); else setTimeout(function(){ if(kullanici) konumSor(); }, 5000); }, 3500);
+try{ if(ayar.konum && navigator.permissions) navigator.permissions.query({ name:"geolocation" }).then(function(d){ if(d.state === "granted") konumAl(true); }); }catch(e){}
 copTemizle();
 </script>
 </body>

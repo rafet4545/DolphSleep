@@ -1,7 +1,7 @@
 // DolphSleep Worker: siteyi (assets) sunar + /api/ai ile Gemini'ye güvenli köprü.
 // Gemini anahtarı kodda DEĞİL: Cloudflare → dolphsleep → Settings → Variables and Secrets → GEMINI_KEY (Secret).
 const FIREBASE_API_KEY = "AIzaSyAJ5yvy_dVwnHUO8XbhxWUQvUqd4FUMuO8"; // herkese açık web anahtarı (zaten sayfada var)
-const MODELLER = ["gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-2.5-flash"];
+const MODELLER = ["gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-2.5-flash"]; // önce hızlı model
 const MAX = 8000;
 
 const ORTAK = " Olayları, kişileri, yerleri ve sırayı DEĞİŞTİRME; notta olmayan olay UYDURMA. Hiçbir şeyi sansürleme veya yumuşatma, bu kullanıcının kendi özel günlüğü. Türkçe yaz. Rüyaya 1-4 kelimelik kısa, akılda kalıcı bir başlık koy (ör. 'Delta Force', 'Oteldeki Asansör'). Sadece JSON döndür: {\"baslik\":\"...\",\"metin\":\"...\"}";
@@ -17,6 +17,10 @@ const GOREVLER = {
   imla: (v) => ({
     sistem: "Sen bir rüya günlüğü editörüsün. Sadece yazım, noktalama ve büyük-küçük harf hatalarını düzelt, gerekirse paragraflara böl. Birinci tekil şahıs (ben) kalsın, cümle yapısına ve kelimelere mümkün olduğunca dokunma." + ORTAK,
     kullanici: "Rüya notum:\n" + v.metin,
+  }),
+  bdt: (v) => ({
+    sistem: "Sen Bilişsel Davranışçı Terapi (BDT) ilkelerini bilen, sıcak ve yargılamayan bir yardımcısın; terapist değilsin, teşhis koymazsın. Kullanıcı bir BDT düşünce kaydı dolduruyor. Ona 'sen' diye hitap et. Görevin: 1) Otomatik düşüncesinde olabilecek düşünce hatalarını (felaketleştirme, zihin okuma, falcılık, ya hep ya hiç düşüncesi, aşırı genelleme, etiketleme, -meli/-malı ifadeleri, kişiselleştirme, duygusal çıkarım, olumluyu yok sayma, büyütme/küçültme) nazikçe belirt; en fazla 3 tane, her biri için kullanıcının durumuna özel tek cümle açıklama. Emin değilsen 'olabilir' de. 2) Kanıtları dikkate alarak, kullanıcının ağzından, gerçekçi (aşırı pozitif olmayan) 1-2 cümlelik dengeli bir alternatif düşünce öner. 3) 1-2 cümlelik kısa, destekleyici bir not yaz. Kendine zarar verme, intihar veya ciddi kriz işareti varsa nota mutlaka güvendiği biriyle ya da bir uzmanla konuşmasını ve acil durumda 112'yi aramasını ekle. Türkçe yaz. Sadece JSON döndür: {\"hatalar\":[{\"ad\":\"...\",\"aciklama\":\"...\"}],\"dengeli\":\"...\",\"not\":\"...\"}",
+    kullanici: "Durum: " + (v.durum || "") + "\nOtomatik düşünce: " + (v.dusunce || "") + "\nDuygular (şiddet 0-100): " + (v.duygular || "") + "\nDüşünceyi destekleyen kanıtlar: " + (v.lehine || "(yazmadı)") + "\nDüşünceyi desteklemeyen kanıtlar: " + (v.aleyhine || "(yazmadı)"),
   }),
   gun: (v) => ({
     sistem: "Sen sıcak, samimi ve kısa konuşan bir gün koçusun (psikolog değilsin, teşhis koyma). Kullanıcının adı: " + (v.ad || "Kullanıcı") + ". Sana gün içinde saat saat verdiği duygu puanları (1=berbat, 10=muhteşem), seçtiği duygular (öfke, kaygı, mutluluk vb.), notları ve gün sonunda 'bugün neler yaptın' cevabı gelecek. Ona 'sen' diye hitap ederek 4-7 cümlelik bir gün analizi yaz: günün genel havası, iniş çıkışlar ve notlardan anlaşılan olası sebepleri, iyi giden bir şeyi takdir et, yarın için tek bir küçük ve uygulanabilir öneri ver. Uydurma yapma. Eğer notlarda kendine zarar verme veya ciddi bir kriz işareti varsa, nazikçe güvendiği biriyle konuşmasını ve acil durumda 112'yi aramasını öner. Türkçe yaz. 2-5 kelimelik bir gün başlığı koy (ör. 'Yorucu ama verimli'). Sadece JSON döndür: {\"baslik\":\"...\",\"metin\":\"...\"}",
@@ -55,7 +59,70 @@ async function gemini(env, model, g) {
   const yazi = c && c.content && c.content.parts ? c.content.parts.map((p) => p.text || "").join("") : "";
   if (!yazi) { const e = new Error("engellendi"); e.durum = 422; throw e; }
   let o; try { o = JSON.parse(yazi.replace(/^```(json)?|```$/g, "").trim()); } catch (_) { o = { baslik: "", metin: yazi }; }
-  return { baslik: String(o.baslik || "").slice(0, 80), metin: String(o.metin || "").trim() };
+  return Object.assign({}, o, { baslik: String(o.baslik || "").slice(0, 80), metin: String(o.metin || "").trim() });
+}
+
+/* ---------- canlı yazım (akış) ---------- */
+const AKIS_GOREV = { hikaye: 1, ozet: 1, imla: 1 };
+const AKIS_BICIM = " Çıktı biçimi: İlk satıra 'BAŞLIK: ' ve ardından başlığı yaz, sonra bir boş satır bırak ve metni yaz. Markdown, yıldız işareti veya JSON kullanma; başka açıklama ekleme.";
+function akisGorev(g) { return { sistem: g.sistem.replace(/ Sadece JSON döndür:.*$/, "") + AKIS_BICIM, kullanici: g.kullanici }; }
+function ayristir(tum) {
+  const m = tum.match(/^\s*BA[ŞS]LIK\s*:\s*(.+?)\s*\n/i);
+  return m ? { baslik: m[1].trim().replace(/^["'*]+|["'*]+$/g, "").slice(0, 80), metin: tum.slice(m[0].length).trim() } : { baslik: "", metin: tum.trim() };
+}
+async function geminiAkis(env, model, g, parca, sinyal) {
+  const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + model + ":streamGenerateContent?alt=sse", {
+    method: "POST", signal: sinyal,
+    headers: { "content-type": "application/json", "x-goog-api-key": env.GEMINI_KEY },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: g.sistem }] },
+      contents: [{ role: "user", parts: [{ text: g.kullanici }] }],
+      generationConfig: { temperature: 0.6 },
+      safetySettings: ["HARM_CATEGORY_HARASSMENT", "HARM_CATEGORY_HATE_SPEECH", "HARM_CATEGORY_SEXUALLY_EXPLICIT", "HARM_CATEGORY_DANGEROUS_CONTENT"].map((c) => ({ category: c, threshold: "BLOCK_ONLY_HIGH" })),
+    }),
+  });
+  if (!r.ok) { const j = await r.json().catch(() => ({})); const e = new Error((j.error && j.error.message) || ("HTTP " + r.status)); e.durum = r.status; throw e; }
+  const rd = r.body.getReader(), dec = new TextDecoder();
+  let buf = "", tum = "";
+  for (;;) {
+    const { done, value } = await rd.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf("\n")) >= 0) {
+      const satir = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+      if (!satir.startsWith("data:")) continue;
+      let j; try { j = JSON.parse(satir.slice(5).trim()); } catch (_) { continue; }
+      const c = j.candidates && j.candidates[0];
+      const p = c && c.content && c.content.parts ? c.content.parts.filter((x) => !x.thought).map((x) => x.text || "").join("") : "";
+      if (p) { tum += p; await parca(p); }
+    }
+  }
+  if (!tum.trim()) { const e = new Error("engellendi"); e.durum = 422; throw e; }
+  return tum;
+}
+function akisCevap(env, ctx, g, v, uid, isId, token) {
+  const { readable, writable } = new TransformStream();
+  const w = writable.getWriter(), enc = new TextEncoder();
+  let istemci = true;
+  const yaz = async (s) => { if (!istemci) return; try { await w.write(enc.encode(s)); } catch (_) { istemci = false; } };
+  const g2 = akisGorev(g);
+  const is = (async () => {
+    let son, tum = null;
+    for (const m of MODELLER) {
+      let yazildi = false;
+      const ctrl = new AbortController(), zaman = setTimeout(() => ctrl.abort(), 40000);
+      try { tum = await geminiAkis(env, m, g2, async (s) => { yazildi = true; await yaz(s); }, ctrl.signal); clearTimeout(zaman); break; }
+      catch (e) { clearTimeout(zaman); son = e; if (yazildi || e.durum === 422 || e.durum === 400) break; }
+    }
+    const cevap = tum ? { ok: true, j: ayristir(tum) } : { ok: false, j: { hata: son && son.durum === 422 ? "engellendi" : son && son.durum === 429 ? "kota" : "ai" } };
+    if (!tum) await yaz("\n\u0000HATA:" + cevap.j.hata);
+    try { await w.close(); } catch (_) {}
+    // uygulama kapansa bile sonuç kullanıcının kendi alanına yazılır
+    if (isId) await isYaz(uid, isId, token, v.gorev, cevap).catch(() => {});
+  })();
+  if (ctx && ctx.waitUntil) ctx.waitUntil(is);
+  return new Response(readable, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" } });
 }
 
 async function ai(req, env, ctx) {
@@ -66,11 +133,13 @@ async function ai(req, env, ctx) {
   if (v && v.gorev === "duzenle") v.gorev = "hikaye";
   const f = GOREVLER[v && v.gorev];
   if (!f) return json({ hata: "gorev" }, 400);
-  ["metin", "anlar", "ad", "gun"].forEach((k) => { if (v[k] != null) v[k] = String(v[k]).slice(0, MAX); });
-  if (v.gorev !== "gun" && !(v.metin || "").trim()) return json({ hata: "bos" }, 400);
+  ["metin", "anlar", "ad", "gun", "durum", "dusunce", "duygular", "lehine", "aleyhine"].forEach((k) => { if (v[k] != null) v[k] = String(v[k]).slice(0, MAX); });
+  if (AKIS_GOREV[v.gorev] && !(v.metin || "").trim()) return json({ hata: "bos" }, 400);
+  if (v.gorev === "bdt" && !(v.dusunce || "").trim()) return json({ hata: "bos" }, 400);
   const g = f(v);
   const isId = /^[a-z0-9]{6,40}$/.test(String(v.is || "")) ? String(v.is) : null;
   const token = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  if (v.akis && AKIS_GOREV[v.gorev]) return akisCevap(env, ctx, g, v, uid, isId, token);
   const is = (async () => {
     let son, sonuc = null;
     for (const m of MODELLER) {
