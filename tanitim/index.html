@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DolphSleep · Uykunu, rüyalarını ve gününü takip et</title>
+<meta name="description" content="Tek dokunuşla uyku takibi, yapay zekâ ile rüya günlüğü, günlük ruh hali takibi. Ücretsiz ve reklamsız.">
+<meta property="og:title" content="DolphSleep 🐬🌙">
+<meta property="og:description" content="Tek dokunuşla uyku takibi, yapay zekâ ile rüya günlüğü ve şifreli, sana özel rüyalar. Ücretsiz ve reklamsız.">
+<meta property="og:image" content="https://dolphsleep.turkoglurafetemre.workers.dev/icon-512.png">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0b1026">
+<link rel="icon" href="../icon-192.png">
+<style>
+:root{--yazi:#eef0ff;--soluk:#aab2d8;--ay:#ffd98a;--mor:#8d7bff;--p:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{color:var(--yazi);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#050819;overflow-x:hidden}
+#gok{position:fixed;inset:0;z-index:0;transition:none;
+  background:
+    radial-gradient(90% 50% at 50% calc(130% - var(--p)*70%),rgba(255,160,100,calc(var(--p)*.75)),transparent 70%),
+    radial-gradient(70% 40% at 85% 0%,rgba(141,123,255,.28),transparent 70%),
+    linear-gradient(180deg,#040716 0%,#0b1236 50%,#1d2660 100%)}
+canvas#sahne{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+main{position:relative;z-index:2}
+section{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 18px calc(48px + env(safe-area-inset-bottom));max-width:560px;margin:0 auto}
+.kahraman{justify-content:center;text-align:center;padding-top:8vh}
+.kahraman img{width:112px;height:112px;border-radius:30px;margin:0 auto 18px;box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.14);animation:suz 5s ease-in-out infinite}
+@keyframes suz{50%{transform:translateY(-8px) rotate(-2deg)}}
+h1{font-size:clamp(48px,14vw,84px);font-weight:900;letter-spacing:-1.5px;line-height:1;background:linear-gradient(180deg,#fff,#c4bdff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kahraman p{font-size:18px;color:var(--soluk);margin:14px auto 0;max-width:340px;line-height:1.5}
+.asagi{margin-top:44vh;font-size:13px;color:var(--soluk);letter-spacing:2px;text-transform:uppercase;animation:zipla 2s ease-in-out infinite}
+@keyframes zipla{50%{transform:translateY(6px);opacity:.6}}
+.kart{border-radius:28px;padding:22px 22px 24px;
+  background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.2);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
+  box-shadow:0 20px 50px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35);
+  opacity:0;transform:translateY(40px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.9,.3,1.2)}
+.kart.gor{opacity:1;transform:none}
+.etiket{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--ay);margin-bottom:10px}
+.kart h2{font-size:27px;line-height:1.15;margin-bottom:10px;letter-spacing:-.3px}
+.kart p{color:#d2d7f2;font-size:16px;line-height:1.55}
+.kart ul{list-style:none;margin-top:12px;display:grid;gap:8px}
+.kart li{font-size:15px;color:#e3e7ff;display:flex;gap:10px;align-items:flex-start;line-height:1.45}
+.kart li span:first-child{flex:none}
+.ornek{margin-top:14px;padding:14px 16px;border-radius:18px;background:rgba(10,16,44,.45);border:1px solid rgba(255,255,255,.12);font-size:14.5px;line-height:1.55}
+.ornek small{display:block;color:var(--soluk);font-size:12px;margin-bottom:6px;letter-spacing:.5px}
+.ornek .ok{display:block;text-align:center;margin:8px 0;color:var(--ay)}
+.son{justify-content:center;text-align:center}
+.son h2{font-size:clamp(34px,9vw,52px);font-weight:900;letter-spacing:-.8px;line-height:1.08}
+.son p{color:var(--soluk);margin:14px auto 26px;max-width:340px;line-height:1.5}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:18px 34px;border-radius:999px;font-size:18px;font-weight:800;text-decoration:none;color:#1a1300;
+  background:radial-gradient(circle at 35% 30%,#fff3cf,var(--ay) 60%,#e0aa48);box-shadow:0 0 0 8px rgba(255,217,138,.1),0 16px 50px rgba(255,217,138,.4);animation:nefes 3s ease-in-out infinite}
+@keyframes nefes{50%{box-shadow:0 0 0 14px rgba(255,217,138,.06),0 16px 70px rgba(255,217,138,.55)}}
+.rozetler{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:26px}
+.rozetler span{font-size:13px;padding:8px 14px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.imza{font-size:12px;color:var(--soluk);margin-top:34px}
+.ses{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:5;width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.28);color:#fff;font-size:22px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.4)}
+.ses.calar::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(255,217,138,.5);animation:dalga 2s ease-out infinite}
+@keyframes dalga{from{transform:scale(.85);opacity:1}to{transform:scale(1.35);opacity:0}}
+.sesIpucu{position:fixed;right:76px;bottom:calc(26px + env(safe-area-inset-bottom));z-index:5;font-size:13px;color:#e3e7ff;background:rgba(10,16,44,.55);padding:7px 12px;border-radius:99px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:opacity .6s}
+@media (prefers-reduced-motion:reduce){.kart{transition:none;opacity:1;transform:none}.kahraman img,.btn,.asagi{animation:none}}
+</style>
+</head>
+<body>
+<div id="gok"></div>
+<canvas id="sahne"></canvas>
+<main>
+  <section class="kahraman">
+    <img src="../icon-512.png" alt="DolphSleep">
+    <h1>DolphSleep</h1>
+    <p>Uykunu, rüyalarını ve gününü tek yerde takip et.</p>
+    <div class="asagi">Kaydır ↓</div>
+  </section>
+
+  <section data-ekran="0">
+    <div class="kart">
+      <div class="etiket">🌙 Uyku</div>
+      <h2>Tek dokunuşla uyku takibi</h2>
+      <p>Yatarken 🌙, kalkarken ☀️ butonuna bas. Gerisini DolphSleep hesaplıyor.</p>
+      <ul>
+        <li><span>⏱️</span><span>Ortalama uykun, uyku borcun ve düzen puanın</span></li>
+        <li><span>🔥</span><span>Hedef saatlere uydukça büyüyen seri</span></li>
+        <li><span>🔔</span><span>Yatma saatinden önce hatırlatma</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section data-ekran="1">
+    <div class="kart">
+      <div class="etiket">💭 Rüyalar · Yapay zekâ</div>
+      <h2>İki kelime yaz, rüyan hikâyeye dönüşsün</h2>
+      <p>Sabah aklında kalanı aceleyle yaz, yapay zekâ onu senin adınla akıcı bir hikâyeye çevirsin. Her rüya takvimde saklanır.</p>
+      <div class="ornek"><small>SENİN YAZDIĞIN</small>denizde yüzüyodum biri vardı uzakta korktum sonra yanına gittim<span class="ok">✨ ↓</span><small>DOLPHSLEEP</small>Rafet denizde yüzerken uzakta birini gördü. Önce tedirgin oldu, sonra merakı ağır bastı ve ona doğru yüzmeye başladı…</div>
+    </div>
+  </section>
+
+  <section data-ekran="2">
+    <div class="kart">
+      <div class="etiket">☀️ Gün</div>
+      <h2>Gün içinde nasıl hissettiğini kaydet</h2>
+      <p>Herhangi bir anı 1–10 arası puanla, duygunu seç (öfke, kaygı, mutluluk, huzur…), istersen not bırak.</p>
+      <ul>
+        <li><span>📈</span><span>Günün duygu çizgisi</span></li>
+        <li><span>🌙</span><span>Akşam “Günü kapat” de, yapay zekâ gününü özetlesin</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section data-ekran="kilit">
+    <div class="kart">
+      <div class="etiket">🔒 Gizlilik</div>
+      <h2>Rüyaların sadece senin</h2>
+      <p>İstersen rüyalarına şifre koy. Rüyaların telefonunda şifrelenip öyle kaydedilir; uygulamayı yapan dahil kimse okuyamaz.</p>
+      <ul>
+        <li><span>👤</span><span>Rüyaların ve gün notların sadece senin hesabına açık</span></li>
+        <li><span>🚫</span><span>Reklam yok, verilerin hiçbir yere satılmaz</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="son" data-ekran="son">
+    <h2>Bu gece<br>başla 🐬</h2>
+    <p>Ücretsiz. Telefonuna uygulama gibi yüklenir, Google hesabınla girersin.</p>
+    <a class="btn" href="/">🌙 DolphSleep'i aç</a>
+    <div class="rozetler"><span>Ücretsiz</span><span>Reklamsız</span><span>Android &amp; iPhone</span><span>Yapay zekâ destekli</span></div>
+    <p class="imza">Rafet Emre Türkoğlu tarafından tasarlandı</p>
+  </section>
+</main>
+
+<audio id="muzik" src="muzik.mp3" loop preload="auto"></audio>
+<button class="ses" id="sesBtn" aria-label="Müzik">🔇</button><div class="sesIpucu" id="sesIpucu">🎵 Müzik için dokun</div>
+<script>
+(function(){
+  var a = document.getElementById("muzik"), b = document.getElementById("sesBtn"), ip = document.getElementById("sesIpucu"), acik = false, kapattim = false, hedef = 0;
+  a.volume = 0;
+  function guncelle(){ b.textContent = acik ? "🔊" : "🔇"; b.classList.toggle("calar", acik); ip.style.opacity = acik || kapattim ? 0 : 1; }
+  function baslat(){ if(acik || kapattim) return; a.play().then(function(){ acik = true; guncelle(); }).catch(function(){}); }
+  function durdur(){ acik = false; a.pause(); guncelle(); }
+  b.onclick = function(e){ e.stopPropagation(); if(acik){ kapattim = true; durdur(); } else { kapattim = false; baslat(); } };
+  ["pointerdown","touchstart","keydown"].forEach(function(ev){ addEventListener(ev, baslat, { passive:true }); });
+  // ses kaydırmaya göre: başta kısık, gün doğumunda yükselir
+  setInterval(function(){
+    var top = document.documentElement.scrollHeight - innerHeight, p = top > 0 ? scrollY/top : 0;
+    hedef = acik ? .35 + .45*p : 0; a.volume = Math.max(0, Math.min(1, a.volume + (hedef - a.volume)*.08));
+  }, 60);
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) a.pause(); else if(acik) a.play().catch(function(){}); });
+  guncelle();
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  var kartlar = [].slice.call(document.querySelectorAll(".kart"));
+  var io = new IntersectionObserver(function(l){ l.forEach(function(e){ if(e.isIntersecting) e.target.classList.add("gor"); }); }, { threshold:.25 });
+  kartlar.forEach(function(k){ io.observe(k); });
+  if(!window.THREE) return;
+
+  var cv = document.getElementById("sahne");
+  var R = new THREE.WebGLRenderer({ canvas:cv, antialias:true, alpha:true });
+  R.setPixelRatio(Math.min(2, devicePixelRatio || 1)); R.outputEncoding = THREE.sRGBEncoding;
+  var S = new THREE.Scene(), K = new THREE.PerspectiveCamera(40, 1, .1, 200);
+  K.position.set(0, 0, 9);
+  S.add(new THREE.AmbientLight(0x8890c8, .55));
+  var isik = new THREE.DirectionalLight(0xffe7c2, 1.1); isik.position.set(-4, 6, 6); S.add(isik);
+  var mor = new THREE.PointLight(0x8d7bff, 1.2, 30); mor.position.set(4, -2, 5); S.add(mor);
+
+  /* yıldızlar */
+  var yg = new THREE.BufferGeometry(), yp = [];
+  for(var i=0;i<900;i++) yp.push((Math.random()-.5)*60, (Math.random()-.5)*60, -10 - Math.random()*40);
+  yg.setAttribute("position", new THREE.Float32BufferAttribute(yp, 3));
+  var yildiz = new THREE.Points(yg, new THREE.PointsMaterial({ color:0xffffff, size:.09, transparent:true, opacity:.85 }));
+  S.add(yildiz);
+
+  /* ay (kraterli doku) */
+  function ayDoku(){
+    var c = document.createElement("canvas"); c.width = 512; c.height = 256; var x = c.getContext("2d");
+    x.fillStyle = "#f3e6bf"; x.fillRect(0, 0, 512, 256);
+    for(var i=0;i<140;i++){ var r = Math.random()*18+3, px = Math.random()*512, py = Math.random()*256;
+      var g = x.createRadialGradient(px, py, 0, px, py, r); g.addColorStop(0, "rgba(160,140,100,.55)"); g.addColorStop(.7, "rgba(180,160,120,.25)"); g.addColorStop(1, "rgba(255,255,255,0)");
+      x.fillStyle = g; x.beginPath(); x.arc(px, py, r, 0, 7); x.fill(); }
+    var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
+  }
+  var ay = new THREE.Mesh(new THREE.SphereGeometry(1.25, 64, 48), new THREE.MeshStandardMaterial({ map:ayDoku(), emissive:0xffd98a, emissiveIntensity:.32, roughness:1 }));
+  S.add(ay);
+  function parilti(renk, boy){
+    var c = document.createElement("canvas"); c.width = c.height = 256; var x = c.getContext("2d"), g = x.createRadialGradient(128,128,0,128,128,128);
+    g.addColorStop(0, renk); g.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = g; x.fillRect(0,0,256,256);
+    var s = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), transparent:true, depthWrite:false, blending:THREE.AdditiveBlending }));
+    s.scale.set(boy, boy, 1); return s;
+  }
+  var ayHale = parilti("rgba(255,217,138,.55)", 6.5); S.add(ayHale);
+
+  /* güneş */
+  var gunes = new THREE.Group();
+  gunes.add(new THREE.Mesh(new THREE.SphereGeometry(.9, 48, 32), new THREE.MeshBasicMaterial({ color:0xfff1c9 })));
+  gunes.add(parilti("rgba(255,170,90,.85)", 9)); S.add(gunes);
+
+  /* yüzen balonlar (rüya kabarcıkları) */
+  var balonlar = [];
+  for(var b=0;b<14;b++){
+    var m = new THREE.Mesh(new THREE.SphereGeometry(.12 + Math.random()*.22, 24, 16), new THREE.MeshPhysicalMaterial({ color:0xb9b0ff, transparent:true, opacity:.2, roughness:.05, metalness:.1, clearcoat:1 }));
+    m.position.set((Math.random()-.5)*9, (Math.random()-.5)*12, -2 - Math.random()*4); m.userData.h = .2 + Math.random()*.5; m.userData.f = Math.random()*6;
+    balonlar.push(m); S.add(m);
+  }
+
+  /* telefon */
+  function yuvarlakDikdortgen(w, h, r){
+    var s = new THREE.Shape(), x = -w/2, y = -h/2;
+    s.moveTo(x+r, y); s.lineTo(x+w-r, y); s.quadraticCurveTo(x+w, y, x+w, y+r); s.lineTo(x+w, y+h-r); s.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    s.lineTo(x+r, y+h); s.quadraticCurveTo(x, y+h, x, y+h-r); s.lineTo(x, y+r); s.quadraticCurveTo(x, y, x+r, y); return s;
+  }
+  var tel = new THREE.Group(), TW = 1.55, TH = 3.3;
+  var govde = new THREE.Mesh(new THREE.ExtrudeGeometry(yuvarlakDikdortgen(TW, TH, .24), { depth:.12, bevelEnabled:true, bevelThickness:.04, bevelSize:.04, bevelSegments:4, curveSegments:12 }),
+    new THREE.MeshStandardMaterial({ color:0x1b1f36, metalness:.75, roughness:.3 }));
+  govde.position.z = -.08; tel.add(govde);
+  function koseMaske(){ var c = document.createElement("canvas"); c.width = 256; c.height = 548; var x = c.getContext("2d"); x.fillStyle = "#000"; x.fillRect(0,0,256,548); x.fillStyle = "#fff";
+    var r = 30; x.beginPath(); x.moveTo(r,0); x.arcTo(256,0,256,548,r); x.arcTo(256,548,0,548,r); x.arcTo(0,548,0,0,r); x.arcTo(0,0,256,0,r); x.fill(); return new THREE.CanvasTexture(c); }
+  var ekranlar = [], yukleyici = new THREE.TextureLoader();
+  ["ekran1.jpg","ekran2.jpg","ekran3.jpg"].forEach(function(f, i){ var t = yukleyici.load(f); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; ekranlar[i] = t; });
+  var ekranMat = new THREE.MeshBasicMaterial({ map:ekranlar[0], alphaMap:koseMaske(), transparent:true });
+  var ekran = new THREE.Mesh(new THREE.PlaneGeometry(TW - .1, TH - .1), ekranMat); ekran.position.z = .1; tel.add(ekran);
+  var cam = new THREE.Mesh(new THREE.PlaneGeometry(TW - .1, TH - .1), new THREE.MeshPhysicalMaterial({ color:0xffffff, transparent:true, opacity:.06, roughness:0, clearcoat:1, alphaMap:ekranMat.alphaMap }));
+  cam.position.z = .11; tel.add(cam);
+  S.add(tel);
+  var gecis = new THREE.Mesh(new THREE.PlaneGeometry(TW - .1, TH - .1), new THREE.MeshBasicMaterial({ transparent:true, opacity:0, alphaMap:ekranMat.alphaMap }));
+  gecis.position.z = .105; tel.add(gecis);
+
+  /* kilit */
+  var kilit = new THREE.Group(), altin = new THREE.MeshStandardMaterial({ color:0xffcf6b, metalness:.85, roughness:.25, emissive:0x553300, emissiveIntensity:.25 });
+  var kg = new THREE.Mesh(new THREE.ExtrudeGeometry(yuvarlakDikdortgen(1.5, 1.2, .2), { depth:.45, bevelEnabled:true, bevelThickness:.06, bevelSize:.06, bevelSegments:4 }), altin);
+  kg.position.z = -.22; kilit.add(kg);
+  var kanca = new THREE.Mesh(new THREE.TorusGeometry(.48, .11, 20, 48, Math.PI), new THREE.MeshStandardMaterial({ color:0xd7dbe8, metalness:.95, roughness:.18 }));
+  var kancaG = new THREE.Group(); kancaG.add(kanca);
+  var bacak1 = new THREE.Mesh(new THREE.CylinderGeometry(.11, .11, .45, 20), kanca.material), bacak2 = bacak1.clone();
+  bacak1.position.set(-.48, -.22, 0); bacak2.position.set(.48, -.22, 0); kancaG.add(bacak1, bacak2);
+  kancaG.position.y = .82; kilit.add(kancaG);
+  var delik = new THREE.Mesh(new THREE.CylinderGeometry(.11, .11, .1, 20), new THREE.MeshBasicMaterial({ color:0x2a1c00 })); delik.rotation.x = Math.PI/2; delik.position.set(0, .05, .3); kilit.add(delik);
+  kilit.scale.setScalar(0); S.add(kilit);
+
+  /* kaydırmaya bağlı sahne */
+  var bolumler = [].slice.call(document.querySelectorAll("section")), hedefEkran = 0, simdiEkran = 0, gecisT = 1;
+  function boyut(){ var w = innerWidth, h = innerHeight; R.setSize(w, h, false); K.aspect = w/h; K.position.z = w < 700 ? 10.5 : 8.5; K.updateProjectionMatrix(); }
+  addEventListener("resize", boyut); boyut();
+  function aralik(a, b, x){ return Math.max(0, Math.min(1, (x - a)/(b - a))); }
+  function yumusak(t){ return t*t*(3 - 2*t); }
+  var fare = { x:0, y:0 };
+  addEventListener("pointermove", function(e){ fare.x = e.clientX/innerWidth - .5; fare.y = e.clientY/innerHeight - .5; });
+  var saat = new THREE.Clock(), kilitKapandi = 0;
+  function kare(){
+    requestAnimationFrame(kare);
+    var t = saat.getElapsedTime(), vh = innerHeight, sy = scrollY, top = document.documentElement.scrollHeight - vh, p = top > 0 ? sy/top : 0;
+    document.documentElement.style.setProperty("--p", p.toFixed(3));
+    var mob = innerWidth < 700, n = bolumler.length, k = sy/vh;   // k: kaçıncı bölüm (0 = giriş)
+    // ay: girişte büyük, sonra yukarı kayar
+    var a = yumusak(aralik(0, 1.2, k));
+    ay.position.set(mob ? 1.7 - a*.5 : 3, 3.4 + a*1.6, -2.5 - a*2); ay.rotation.y = t*.05; ayHale.position.copy(ay.position);
+    ay.material.opacity = 1;
+    // güneş: sonlara doğru doğar
+    var g = yumusak(aralik(n - 2.6, n - 1, k));
+    gunes.position.set(mob ? -2.2 : -4, -12 + g*6.5, -8); gunes.scale.setScalar(.6 + g*.5);
+    yildiz.material.opacity = .85 - g*.55; yildiz.rotation.z = t*.004;
+    // telefon: 1-3. bölümlerde görünür
+    var tg = yumusak(aralik(.35, 1, k)) * (1 - yumusak(aralik(3.35, 3.9, k)));
+    var ux = mob ? 0 : -1.9, uy = mob ? 1.55 : .3;
+    tel.position.set(ux + fare.x*.3, uy - (1 - tg)*7 + Math.sin(t*1.1)*.06, .5);
+    var donus = (k - 1) * Math.PI * .5;
+    tel.rotation.set(-.08 + fare.y*.15, Math.sin(donus*2)*.22 + fare.x*.35 - .12, Math.sin(t*.7)*.02);
+    tel.scale.setScalar(mob ? .95 : 1.15);
+    var bi = Math.max(0, Math.min(2, Math.round(k - 1)));
+    if(bi !== hedefEkran){ hedefEkran = bi; gecisT = 0; }
+    if(gecisT < 1){ gecisT = Math.min(1, gecisT + .06); gecis.material.color.set(0x0b1026);
+      gecis.material.opacity = gecisT < .5 ? gecisT*2 : (1 - gecisT)*2;
+      if(gecisT >= .5 && simdiEkran !== hedefEkran){ simdiEkran = hedefEkran; ekranMat.map = ekranlar[simdiEkran]; ekranMat.needsUpdate = true; } }
+    // kilit: 4. bölüm
+    var kg2 = yumusak(aralik(3.4, 4, k)) * (1 - yumusak(aralik(4.5, 4.95, k)));
+    kilit.scale.setScalar(kg2*(mob ? .95 : 1.25)); kilit.position.set(mob ? 0 : -1.9, mob ? 1.9 : .5, 1); kilit.rotation.y = Math.sin(t*.8)*.5;
+    var kap = aralik(3.75, 4.05, k); kancaG.position.y = .82 + (1 - kap)*.45; kancaG.rotation.y = (1 - kap)*1.2;
+    if(kap >= 1 && !kilitKapandi){ kilitKapandi = 1; try{ navigator.vibrate && navigator.vibrate(18); }catch(e){} } if(kap < .5) kilitKapandi = 0;
+    // balonlar
+    balonlar.forEach(function(m){ m.position.y += .004 + m.userData.h*.006; m.position.x += Math.sin(t + m.userData.f)*.002; if(m.position.y > 7) m.position.y = -7; });
+    K.position.x += (fare.x*.4 - K.position.x)*.05; K.lookAt(0, 0, 0);
+    R.render(S, K);
+  }
+  kare();
+})();
+</script>
+</body>
+</html>

@@ -1,11 +1,12 @@
-const CACHE = "dolphsleep-v9";
+const CACHE = "dolphsleep-v10";
 const DOSYALAR = ["./", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(DOSYALAR)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", e => {
   const r = e.request; if (r.method !== "GET") return;
   const u = new URL(r.url); if (u.origin !== location.origin) return;
-  if (r.mode === "navigate") {   // sayfa: önce ağ (güncel kalsın), yoksa önbellek
+  if (u.pathname.indexOf("/tanitim") === 0) return;   // tanıtım sayfası: hep ağdan
+  if (r.mode === "navigate" && (u.pathname === "/" || u.pathname === "/index.html")) {   // sayfa: önce ağ (güncel kalsın), yoksa önbellek
     e.respondWith(fetch(r).then(c => { const k = c.clone(); caches.open(CACHE).then(x => x.put("./", k)); return c; }).catch(() => caches.match("./")));
     return;
   }
