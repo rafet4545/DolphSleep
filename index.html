@@ -342,7 +342,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 16;
+var SURUM = 17;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
@@ -1198,12 +1198,14 @@ function ruyaDetay(id){
     '<div class="ruyaMetin">'+(esc(x.metin) || '<span style="color:var(--soluk)">Yazı yok.</span>')+'</div>'+
     (x.ham && x.ham !== x.metin ? '<details class="bilgiK"><summary>Orijinal notum</summary><div class="ruyaMetin" style="font-size:14px">'+esc(x.ham)+'</div></details>' : '')+
     '<div id="yorumKutu">'+yorumHtml(x, gun)+'</div>'+
+    '<button class="ikinci" id="rPay" style="margin-top:12px">📤 Paylaş</button>'+
     '<div class="ikiBtn"><button class="ikinci" id="rDuz">✏️ Düzenle</button><button class="ikinci" id="rSil" style="color:var(--kirmizi)">🗑 Sil</button></div><button class="ana" id="tm" style="margin-top:10px">Kapat</button>';
   ac(); document.getElementById("tm").onclick = kapat;
   document.getElementById("rDuz").onclick = function(){ geriEkle(function(){ ruyaDetay(id); }); ruyaForm(Object.assign({}, x, { id:id, gun:gun })); };
   var sb = document.getElementById("rSil"), onay = false;
   sb.onclick = function(){ ruyaCope(id); kapat(); ruyaCiz(); toast("🗑 Çöp kutusuna taşındı (Ayarlar)"); };
   yorumBagla(id, gun);
+  document.getElementById("rPay").onclick = function(){ geriEkle(function(){ ruyaDetay(id); }); ruyaPaylas(id); };
 }
 /* ---------- rüya yorumu (psikolojik, fal değil) ---------- */
 function oncekiGunVar(gun){ gHazir(); var d = gunGorunur(gunDoc(gunEkle(gun, -1))); return !!(d.anlar.length || d.kayitlar.length || d.kapanis); }
@@ -1582,6 +1584,7 @@ function gunCiz(){
     '<div class="gunNav"><button id="gGeri">‹</button><b>'+(bu ? 'Bugün · ' : '')+gunKisa(gGun)+' '+GUNTAM[new Date(kodTs(gGun)).getDay()]+'</b><button id="gIleri" '+(bu ? 'disabled' : '')+'>›</button></div>'+
     (G.gunler[gGun] ? '<div style="text-align:center;margin-top:4px"><span id="gunBulut" class="bulutIs'+(G.gunler[gGun].b ? '' : ' yok')+'">'+(G.gunler[gGun].b ? (kilitli() ? '☁️🔒 Buluta şifreli kaydedildi' : '☁️ Buluta kaydedildi') : (kilitli() && !KRIPTO.key ? '🔒 Şifreni girince buluta şifreli gider' : '⏳ Henüz sadece bu telefonda'))+'</span></div>' : '')+
     '<button class="yeniRuya" id="anYeni" style="margin-top:10px"><span>'+(son && bu ? ruh(p10(son))[0] : '💭')+'</span><span>'+(bu ? 'Şu an nasılsın?' : 'Bu güne kayıt ekle')+'<small>'+(son && bu ? 'Son kayıt '+hm(son.t)+' · '+p10(son)+'/10' : '1–10 puan ver, duygunu seç, istersen not bırak')+'</small></span></button>'+
+    ((d.anlar.length || d.kapanis) ? '<button class="ikinci" id="gPay" style="margin-top:10px">📤 Bu günü paylaş</button>' : '')+
     '<button class="bdtBtn" id="bdtYeni"><span>🧠</span><span>Düşünce kaydı (BDT)<small>Seni zorlayan bir anı adım adım incele</small></span><span class="ok">›</span></button>'+
     (d.kayitlar.length ? '<section class="kart"><h2>Düşünce kayıtları <small>'+d.kayitlar.length+'</small></h2>'+d.kayitlar.slice().reverse().map(bdtKartHtml).join("")+'</section>' : '');
   if(d.anlar.length){
@@ -1604,6 +1607,7 @@ function gunCiz(){
   k.innerHTML = h;
   guardGuncelle();
   document.getElementById("gGeri").onclick = function(){ gGun = gunEkle(gGun, -1); gunCiz(); };
+  var gp = document.getElementById("gPay"); if(gp) gp.onclick = function(){ gunPaylas(gGun); };
   document.getElementById("gIleri").onclick = function(){ gGun = gunEkle(gGun, 1); gunCiz(); };
   document.getElementById("anYeni").onclick = function(){ anSayfa(null); };
   document.getElementById("bdtYeni").onclick = function(){ bdtSayfa(null); };
@@ -1928,6 +1932,125 @@ function hesapSil(){
     toast("Hesabın silindi. Hoşça kal 🐬"); setTimeout(function(){ location.reload(); }, 1500);
   })
   .catch(function(e){ hesapSiliniyor = false; toast("Silinemedi, internetini kontrol edip tekrar dene"); kapat(); });
+}
+
+/* ---------- paylaşım kartı (görsel) ---------- */
+var KF = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+function kartLogo(){ if(!kartLogo.s) kartLogo.s = new Promise(function(ok){ var i = new Image(); i.onload = function(){ ok(i); }; i.onerror = function(){ ok(null); }; i.src = "icon-192.png"; }); return kartLogo.s; }
+function kartSar(x, t, w, max){
+  var out = [], par = String(t || "").replace(/\s+\n/g, "\n").split("\n");
+  for(var p = 0; p < par.length; p++){
+    var kel = par[p].split(" "), sat = "";
+    for(var i = 0; i < kel.length; i++){
+      var dene = sat ? sat+" "+kel[i] : kel[i];
+      if(x.measureText(dene).width > w && sat){ out.push(sat); sat = kel[i]; } else sat = dene;
+      if(out.length >= max) break;
+    }
+    if(out.length >= max) break;
+    out.push(sat);
+  }
+  var tamMi = out.join(" ").replace(/\s/g, "").length >= String(t || "").replace(/\s/g, "").length;
+  out = out.slice(0, max);
+  if(!tamMi && out.length){ var son = out[out.length-1]; while(son && x.measureText(son+"…").width > w) son = son.slice(0, -1); out[out.length-1] = son.replace(/[\s,.;:]+$/, "")+"…"; }
+  return out;
+}
+function kartYuvarlak(x, a, b, w, h, r){ x.beginPath(); x.moveTo(a+r, b); x.arcTo(a+w, b, a+w, b+h, r); x.arcTo(a+w, b+h, a, b+h, r); x.arcTo(a, b+h, a, b, r); x.arcTo(a, b, a+w, b, r); x.closePath(); }
+function kartCiz(o){
+  var W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H; var x = c.getContext("2d");
+  var g = x.createRadialGradient(W/2, 0, 60, W/2, H*0.25, H*1.05); g.addColorStop(0, "#2a3480"); g.addColorStop(.45, "#121a4a"); g.addColorStop(1, "#070b22");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  var tohum = 7; function rnd(){ tohum = (tohum*9301 + 49297) % 233280; return tohum/233280; }
+  for(var i = 0; i < 120; i++){ x.globalAlpha = .2 + rnd()*.7; x.fillStyle = "#fff"; x.beginPath(); x.arc(rnd()*W, rnd()*H*.62, .8 + rnd()*2.4, 0, 7); x.fill(); }
+  x.globalAlpha = 1;
+  var m = document.createElement("canvas"); m.width = m.height = 200; var mx = m.getContext("2d");
+  mx.fillStyle = "#ffe7a8"; mx.beginPath(); mx.arc(100, 100, 64, 0, 7); mx.fill(); mx.globalCompositeOperation = "destination-out"; mx.beginPath(); mx.arc(128, 80, 58, 0, 7); mx.fill();
+  x.shadowColor = "rgba(255,231,168,.45)"; x.shadowBlur = 40; x.drawImage(m, W-250, 40); x.shadowBlur = 0;
+  var L = 96, R = W-96, y = 250;
+  x.textBaseline = "alphabetic"; x.fillStyle = "#a9b4ff"; x.font = "600 30px "+KF; x.fillText(Array.from(o.ust.toLocaleUpperCase("tr")).join(" "), L, y);
+  y += 30; x.fillStyle = "#eef0ff"; x.font = "800 86px "+KF;
+  kartSar(x, o.baslik, R-L, 2).forEach(function(s){ y += 96; x.fillText(s, L, y); });
+  if(o.alt){ y += 58; x.fillStyle = "#c9cff7"; x.font = "500 34px "+KF; x.fillText(o.alt, L, y); }
+  if(o.cipler && o.cipler.length){
+    y += 34; var cx = L, ch = 66; x.font = "600 30px "+KF;
+    o.cipler.slice(0, 8).forEach(function(t){
+      var w = x.measureText(t).width + 44;
+      if(cx + w > R){ cx = L; y += ch + 14; }
+      if(y > H-520) return;
+      x.fillStyle = "rgba(255,255,255,.1)"; kartYuvarlak(x, cx, y, w, ch, 33); x.fill();
+      x.strokeStyle = "rgba(255,255,255,.22)"; x.lineWidth = 2; x.stroke();
+      x.fillStyle = "#eef0ff"; x.fillText(t, cx+22, y+44); cx += w + 14;
+    });
+    y += ch;
+  }
+  if(o.grafik && o.grafik.length > 1){
+    y += 40; var gh = 150, gw = R-L; x.fillStyle = "rgba(255,255,255,.06)"; kartYuvarlak(x, L, y, gw, gh, 26); x.fill();
+    var t0 = o.grafik[0].t, t1 = o.grafik[o.grafik.length-1].t, sp = Math.max(1, t1-t0);
+    x.strokeStyle = "#9fb4ff"; x.lineWidth = 6; x.lineJoin = "round"; x.beginPath();
+    o.grafik.forEach(function(a, i){ var px = L+40 + (a.t-t0)/sp*(gw-80), py = y+gh-26 - (a.p-1)/9*(gh-52); if(i) x.lineTo(px, py); else x.moveTo(px, py); });
+    x.stroke();
+    o.grafik.forEach(function(a){ var px = L+40 + (a.t-t0)/sp*(gw-80), py = y+gh-26 - (a.p-1)/9*(gh-52); x.fillStyle = "#ffe7a8"; x.beginPath(); x.arc(px, py, 9, 0, 7); x.fill(); });
+    y += gh;
+  }
+  var altY = H-150, alan = altY - 60 - y;
+  if(o.yorum && alan > 160){
+    x.font = "500 32px "+KF; var yl = kartSar(x, "🔮 "+o.yorum, R-L, 2);
+    var yy = altY - 50 - (yl.length-1)*44; x.fillStyle = "#cdb8ff"; yl.forEach(function(s, i){ x.fillText(s, L, yy + i*44); });
+    alan -= yl.length*44 + 40;
+  }
+  if(o.metin && alan > 140){
+    y += 44; x.font = "400 38px "+KF; var sat = Math.max(1, Math.floor((alan-40-56)/58)), ml = kartSar(x, o.metin, R-L-80, sat), bh = ml.length*58 + 56;
+    x.fillStyle = "rgba(255,255,255,.07)"; kartYuvarlak(x, L, y, R-L, bh, 40); x.fill(); x.strokeStyle = "rgba(255,255,255,.16)"; x.lineWidth = 2; x.stroke();
+    x.fillStyle = "#e4e7ff"; ml.forEach(function(s, i){ x.fillText(s, L+40, y+72 + i*58); });
+  }
+  return kartLogo().then(function(lg){
+    if(lg){ x.save(); kartYuvarlak(x, L, altY, 84, 84, 22); x.clip(); x.drawImage(lg, L, altY, 84, 84); x.restore(); }
+    x.fillStyle = "#eef0ff"; x.font = "700 38px "+KF; x.fillText("DolphSleep", L+108, altY+38);
+    x.fillStyle = "#a9b4ff"; x.font = "400 28px "+KF; x.fillText("sleep.dolphapps.com", L+108, altY+76);
+    return c;
+  });
+}
+function kartPaylasSayfa(baslik, secenekler, yap){
+  sayfa.innerHTML = '<h3>📤 '+baslik+'</h3><img id="kOn" alt="" style="width:100%;border-radius:16px;display:block;background:#0b1030;aspect-ratio:4/5">'+
+    '<div id="kSec" style="margin-top:12px"></div><div class="ikiBtn" style="margin-top:12px"><button class="ana" id="kPay">📤 Paylaş</button><button class="ikinci" id="kInd">⬇️ Kaydet</button></div><button class="ikinci" id="tm">Vazgeç</button>';
+  ac(); document.getElementById("tm").onclick = kapat;
+  var sec = {}; secenekler.forEach(function(s){ sec[s[0]] = s[2]; });
+  document.getElementById("kSec").innerHTML = secenekler.map(function(s){ return '<label class="onayK" style="margin:8px 4px"><input type="checkbox" data-k="'+s[0]+'"'+(s[2] ? ' checked' : '')+'> '+esc(s[1])+'</label>'; }).join("");
+  var tuval = null, sira = 0;
+  function guncelle(){ var b = ++sira; kartCiz(yap(sec)).then(function(c){ if(b !== sira) return; tuval = c; var im = document.getElementById("kOn"); if(im) im.src = c.toDataURL("image/jpeg", .85); }); }
+  document.querySelectorAll("#kSec input").forEach(function(i){ i.onchange = function(){ sec[i.getAttribute("data-k")] = i.checked; guncelle(); }; });
+  guncelle();
+  function blob(){ return new Promise(function(ok){ tuval.toBlob(ok, "image/png"); }); }
+  document.getElementById("kPay").onclick = function(){ if(!tuval) return;
+    blob().then(function(bl){ var f = new File([bl], "dolphsleep.png", { type:"image/png" });
+      if(navigator.canShare && navigator.canShare({ files:[f] })) return navigator.share({ files:[f] }).catch(function(){});
+      indir(bl); toast("Bu cihaz direkt paylaşmıyor, görsel indirildi"); }); };
+  document.getElementById("kInd").onclick = function(){ if(tuval) blob().then(function(bl){ indir(bl); toast("Görsel kaydedildi"); }); };
+  function indir(bl){ var u = URL.createObjectURL(bl), a = document.createElement("a"); a.href = u; a.download = "dolphsleep.png"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(u); }, 4000); }
+}
+function ruyaPaylas(id){
+  var x = rAcik[id], gun = (R.kayit[id] || {}).gun; if(!x) return;
+  var p = R_PUAN[(x.puan || 3) - 1], et = (x.etiket || []);
+  var sec = [["metin","Rüya metni", true], ["yorum","Yorum", !!(x.yorum && x.yorum.metin)], ["etiket","Etiketler", true]];
+  if(et.indexOf("cinsel") >= 0) sec.push(["cinsel","🔥 Cinsel etiketi de görünsün", false]);
+  kartPaylasSayfa("Rüyanı paylaş", sec, function(s){
+    return { ust:"💭 Rüyam · "+gunKisa(gun), baslik:x.baslik || "İsimsiz rüya", alt:p[0]+" "+p[1]+" rüya",
+      cipler: s.etiket ? et.filter(function(e){ return e !== "cinsel" || s.cinsel; }).map(function(e){ return R_ETAD[e] || e; }) : [],
+      metin: s.metin ? (x.metin || "") : "", yorum: s.yorum && x.yorum ? (x.yorum.baslik ? x.yorum.baslik+": " : "")+(x.yorum.metin || "").split(/\n/)[0] : "" };
+  });
+}
+function gunPaylas(k){
+  var d = gunGorunur(gunDoc(k)); if(!d.anlar.length && !d.kapanis){ toast("Bu güne henüz kayıt yok"); return; }
+  var say = {}; d.anlar.forEach(function(a){ (a.duygu || []).forEach(function(z){ say[z] = (say[z] || 0) + 1; }); });
+  var duy = Object.keys(say).filter(function(z){ return DUY[z]; }).sort(function(a,b){ return say[b] - say[a]; }).map(function(z){ return DUY[z][1]+" "+DUY[z][2]; });
+  var ort = d.anlar.length ? d.anlar.reduce(function(t,a){ return t + p10(a); }, 0)/d.anlar.length : 0;
+  var kap = d.kapanis || {};
+  var sec = [["duygu","Duygular", true], ["grafik","Gün içi ruh hali grafiği", d.anlar.length > 1], ["ozet","Gün özeti", !!kap.analiz], ["metin","Bugün neler yaptım (kendi yazdığım)", false]];
+  kartPaylasSayfa("Gününü paylaş", sec, function(s){
+    return { ust:"☀️ Günüm · "+gunKisa(k), baslik:kap.baslik || GUNTAM[new Date(kodTs(k)).getDay()],
+      alt: d.anlar.length ? ruh(ort)[0]+" Ortalama "+(Math.round(ort*10)/10).toString().replace(".", ",")+"/10 · "+d.anlar.length+" kayıt" : "",
+      cipler: s.duygu ? duy : [], grafik: s.grafik ? d.anlar.map(function(a){ return { t:a.t, p:p10(a) }; }) : null,
+      metin: s.metin ? (kap.metin || "") : (s.ozet ? (kap.analiz || "") : "") };
+  });
 }
 
 /* ---------- arka planda 5 dk kalınca rüyaları kilitle ---------- */
