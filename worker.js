@@ -22,6 +22,10 @@ const GOREVLER = {
     sistem: "Sen Bilişsel Davranışçı Terapi (BDT) ilkelerini bilen, sıcak ve yargılamayan bir yardımcısın; terapist değilsin, teşhis koymazsın. Kullanıcı bir BDT düşünce kaydı dolduruyor. Ona 'sen' diye hitap et. Görevin: 1) Otomatik düşüncesinde olabilecek düşünce hatalarını (felaketleştirme, zihin okuma, falcılık, ya hep ya hiç düşüncesi, aşırı genelleme, etiketleme, -meli/-malı ifadeleri, kişiselleştirme, duygusal çıkarım, olumluyu yok sayma, büyütme/küçültme) nazikçe belirt; en fazla 3 tane, her biri için kullanıcının durumuna özel tek cümle açıklama. Emin değilsen 'olabilir' de. 2) Kanıtları dikkate alarak, kullanıcının ağzından, gerçekçi (aşırı pozitif olmayan) 1-2 cümlelik dengeli bir alternatif düşünce öner. 3) 1-2 cümlelik kısa, destekleyici bir not yaz. Kendine zarar verme, intihar veya ciddi kriz işareti varsa nota mutlaka güvendiği biriyle ya da bir uzmanla konuşmasını ve acil durumda 112'yi aramasını ekle. Türkçe yaz. Sadece JSON döndür: {\"hatalar\":[{\"ad\":\"...\",\"aciklama\":\"...\"}],\"dengeli\":\"...\",\"not\":\"...\"}",
     kullanici: "Durum: " + (v.durum || "") + "\nOtomatik düşünce: " + (v.dusunce || "") + "\nDuygular (şiddet 0-100): " + (v.duygular || "") + "\nDüşünceyi destekleyen kanıtlar: " + (v.lehine || "(yazmadı)") + "\nDüşünceyi desteklemeyen kanıtlar: " + (v.aleyhine || "(yazmadı)"),
   }),
+  yorum: (v) => ({
+    sistem: "Sen rüyaları psikolojik açıdan yorumlayan, sıcak ve meraklı bir rüya yorumcususun. Falcı değilsin: geleceği söylemezsin, kesin anlam vermezsin, teşhis koymazsın. Kullanıcının adı: " + (v.ad || "Kullanıcı") + ", ona 'sen' diye hitap et. Rüyayı yorumla: 1) Öne çıkan 2-4 sembolü ve sahneyi seç; her biri için bu rüyaya özel, olası anlamını anlat (genel sembol sözlüğü gibi değil). 2) Rüyadaki duyguların ve atmosferin neye işaret edebileceğini söyle. 3) Önceki gününe ait kayıtlar verildiyse, rüyayla o gün yaşadıkları/hissettikleri arasında olası bağlantıları kur; bağlantı yoksa zorlama. 4) Sonunda kendine sorabileceği 1 düşündürücü soru yaz. 'Olabilir', 'işaret ediyor olabilir' gibi ihtiyatlı dil kullan. Rüyada olmayan şey uydurma. Hiçbir şeyi sansürleme, bu kullanıcının kendi özel günlüğü; cinsel veya karanlık rüyaları da yargılamadan, olgun bir dille yorumla. Kendine zarar verme veya ciddi kriz işareti varsa, nazikçe güvendiği biriyle ya da bir uzmanla konuşmasını ve acil durumda 112'yi aramasını öner. 3-5 kısa paragraf yaz. Türkçe yaz. Yoruma 2-5 kelimelik bir başlık koy (ör. 'Kontrolü kaybetme korkusu'). Sadece JSON döndür: {\"baslik\":\"...\",\"metin\":\"...\"}",
+    kullanici: "Rüyam:\n" + (v.metin || "") + "\n\n" + (v.durum || "") + (v.anlar ? "\n\nRüyadan önceki günüm (duygu kayıtları, notlar):\n" + v.anlar : ""),
+  }),
   gun: (v) => ({
     sistem: "Sen sıcak, samimi ve kısa konuşan bir gün koçusun (psikolog değilsin, teşhis koyma). Kullanıcının adı: " + (v.ad || "Kullanıcı") + ". Sana gün içinde saat saat verdiği duygu puanları (1=berbat, 10=muhteşem), seçtiği duygular (öfke, kaygı, mutluluk vb.), notları ve gün sonunda 'bugün neler yaptın' cevabı gelecek. Ona 'sen' diye hitap ederek 4-7 cümlelik bir gün analizi yaz: günün genel havası, iniş çıkışlar ve notlardan anlaşılan olası sebepleri, iyi giden bir şeyi takdir et, yarın için tek bir küçük ve uygulanabilir öneri ver. Uydurma yapma. Eğer notlarda kendine zarar verme veya ciddi bir kriz işareti varsa, nazikçe güvendiği biriyle konuşmasını ve acil durumda 112'yi aramasını öner. Türkçe yaz. 2-5 kelimelik bir gün başlığı koy (ör. 'Yorucu ama verimli'). Sadece JSON döndür: {\"baslik\":\"...\",\"metin\":\"...\"}",
     kullanici: "Gün: " + (v.gun || "") + "\nDuygu kayıtları:\n" + (v.anlar || "(yok)") + "\n\nBugün neler yaptım:\n" + (v.metin || "(yazmadı)"),
@@ -63,7 +67,7 @@ async function gemini(env, model, g) {
 }
 
 /* ---------- canlı yazım (akış) ---------- */
-const AKIS_GOREV = { hikaye: 1, ozet: 1, imla: 1 };
+const AKIS_GOREV = { hikaye: 1, ozet: 1, imla: 1, yorum: 1 };
 const AKIS_BICIM = " Çıktı biçimi: İlk satıra 'BAŞLIK: ' ve ardından başlığı yaz, sonra bir boş satır bırak ve metni yaz. Markdown, yıldız işareti veya JSON kullanma; başka açıklama ekleme.";
 function akisGorev(g) { return { sistem: g.sistem.replace(/ Sadece JSON döndür:.*$/, "") + AKIS_BICIM, kullanici: g.kullanici }; }
 function ayristir(tum) {
@@ -119,7 +123,7 @@ function akisCevap(env, ctx, g, v, uid, isId, token) {
     if (!tum) await yaz("\n\u0000HATA:" + cevap.j.hata);
     try { await w.close(); } catch (_) {}
     // uygulama kapansa bile sonuç kullanıcının kendi alanına yazılır
-    if (isId) await isYaz(uid, isId, token, v.gorev, cevap).catch(() => {});
+    if (isId) await isYaz(uid, isId, token, v.gorev, cevap, isAnahtar(v)).catch(() => {});
   })();
   if (ctx && ctx.waitUntil) ctx.waitUntil(is);
   return new Response(readable, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" } });
@@ -148,7 +152,7 @@ async function ai(req, env, ctx) {
     }
     const cevap = sonuc ? { ok: true, j: sonuc } : { ok: false, j: { hata: son && son.durum === 422 ? "engellendi" : son && son.durum === 429 ? "kota" : "ai", detay: String(son && son.message || "") }, s: son && son.durum === 422 ? 422 : 502 };
     // uygulama kapansa bile sonuç kullanıcının kendi alanına yazılır, uygulama açılınca alıp siler
-    if (isId) await isYaz(uid, isId, token, v.gorev, cevap).catch(() => {});
+    if (isId) await isYaz(uid, isId, token, v.gorev, cevap, isAnahtar(v)).catch(() => {});
     return cevap;
   })();
   if (ctx && ctx.waitUntil) ctx.waitUntil(is);
@@ -156,9 +160,18 @@ async function ai(req, env, ctx) {
   return c.ok ? json(c.j) : json(c.j, c.s);
 }
 
-async function isYaz(uid, id, token, gorev, c) {
+function b64(buf) { let s = ""; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); return btoa(s); }
+function isAnahtar(v) {   // 32 baytlık tek seferlik anahtar (base64), yoksa null
+  try { const s = atob(String(v.isAnahtar || "")); if (s.length !== 32) return null; const u = new Uint8Array(32); for (let i = 0; i < 32; i++) u[i] = s.charCodeAt(i); return u; } catch (_) { return null; }
+}
+async function isYaz(uid, id, token, gorev, c, anahtar) {
   const alan = { durum: { stringValue: c.ok ? "hazir" : "hata" }, gorev: { stringValue: String(gorev) }, t: { integerValue: String(Date.now()) } };
-  if (c.ok) { alan.baslik = { stringValue: c.j.baslik || "" }; alan.metin = { stringValue: c.j.metin || "" }; }
+  if (c.ok && anahtar) {   // şifreli kullanıcı: sonuç bulutta tek seferlik anahtarla kilitli durur
+    const k = await crypto.subtle.importKey("raw", anahtar, "AES-GCM", false, ["encrypt"]);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, k, new TextEncoder().encode(JSON.stringify({ baslik: c.j.baslik || "", metin: c.j.metin || "" })));
+    alan.iv = { stringValue: b64(iv) }; alan.ct = { stringValue: b64(ct) };
+  } else if (c.ok) { alan.baslik = { stringValue: c.j.baslik || "" }; alan.metin = { stringValue: c.j.metin || "" }; }
   else alan.hata = { stringValue: c.j.hata || "ai" };
   await fetch("https://firestore.googleapis.com/v1/projects/dolphsleep-c5b8b/databases/(default)/documents/dolphsleep/" + uid + "/isler/" + id, {
     method: "PATCH", headers: { "content-type": "application/json", authorization: "Bearer " + token }, body: JSON.stringify({ fields: alan }),
