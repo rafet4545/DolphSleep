@@ -278,7 +278,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 .an .anE{font-size:24px;line-height:1;flex:none}
 .an .anN{flex:1;font-size:14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
 .an .anN.bosN{color:var(--soluk)}
-.an button{background:none;border:0;color:var(--soluk);font-size:15px;cursor:pointer;padding:4px}
+.an button{background:none;border:0;color:var(--soluk);font-size:15px;cursor:pointer;padding:4px}.an button[data-ap]{font-size:14px;opacity:.75}
 .kapanisK{background:linear-gradient(160deg,rgba(255,217,138,.14),rgba(141,123,255,.1));border:1px solid rgba(255,217,138,.3);border-radius:20px;padding:16px;margin:14px 0}
 .kapanisK h4{margin:0 0 6px;font-size:16px}
 .kapanisK .ruyaMetin{font-size:14.5px;margin:6px 0 0}
@@ -342,7 +342,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 17;
+var SURUM = 18;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
@@ -1594,7 +1594,7 @@ function gunCiz(){
     h += '<section class="kart"><h2>Duygu çizgin <small>'+d.anlar.length+' kayıt · ort. '+(Math.round(ort*10)/10)+'/10</small></h2>'+ruhGrafik(d.anlar)+
       (sk.length ? '<div class="duyOzet">'+sk.map(function(x){ return '<span>'+DUY[x][1]+' '+DUY[x][2]+(say[x] > 1 ? ' ×'+say[x] : '')+'</span>'; }).join("")+'</div>' : '')+'</section>'+
       '<section class="kart"><h2>Kayıtlar</h2>'+d.anlar.slice().reverse().map(function(a){ var p = p10(a), du = (a.duygu || []).map(function(x){ return DUY[x] ? DUY[x][1] : ''; }).join("");
-        return '<div class="an"><span class="anS">'+hm(a.t)+'</span><span class="anE">'+ruh(p)[0]+'<small style="color:'+ruhRenk(p)+'">'+p+'</small></span><span class="anN'+(a.not || du ? '' : ' bosN')+'">'+(du ? '<span class="anD">'+du+'</span>' : '')+(a.not ? esc(a.not) : du ? '' : ruh(p)[1])+'</span><button data-a="'+a.id+'" aria-label="Düzenle">✎</button></div>'; }).join("")+'</section>';
+        return '<div class="an"><span class="anS">'+hm(a.t)+'</span><span class="anE">'+ruh(p)[0]+'<small style="color:'+ruhRenk(p)+'">'+p+'</small></span><span class="anN'+(a.not || du ? '' : ' bosN')+'">'+(du ? '<span class="anD">'+du+'</span>' : '')+(a.not ? esc(a.not) : du ? '' : ruh(p)[1])+'</span><button data-ap="'+a.id+'" aria-label="Paylaş">📤</button><button data-a="'+a.id+'" aria-label="Düzenle">✎</button></div>'; }).join("")+'</section>';
   }
   if(d.kapanis){
     var kp = d.kapanis;
@@ -1613,6 +1613,7 @@ function gunCiz(){
   document.getElementById("bdtYeni").onclick = function(){ bdtSayfa(null); };
   k.querySelectorAll("[data-b]").forEach(function(b){ b.onclick = function(){ bdtDetay(b.getAttribute("data-b")); }; });
   k.querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){ anSayfa(b.getAttribute("data-a")); }; });
+  k.querySelectorAll("[data-ap]").forEach(function(b){ b.onclick = function(){ anPaylas(gGun, b.getAttribute("data-ap")); }; });
   var kb = document.getElementById("gKapat"); if(kb) kb.onclick = function(){ kapanisSayfa(); };
   var kd = document.getElementById("gKapDuz"); if(kd) kd.onclick = function(){ kapanisSayfa(); };
   var ka = document.getElementById("gKapAi"); if(ka) ka.onclick = function(){ gunAnaliz(gGun, (d.kapanis || {}).metin || "", ka); };
@@ -2009,8 +2010,9 @@ function kartCiz(o){
     return c;
   });
 }
-function kartPaylasSayfa(baslik, secenekler, yap){
+function kartPaylasSayfa(baslik, secenekler, yap, duzMetin){
   sayfa.innerHTML = '<h3>📤 '+baslik+'</h3><img id="kOn" alt="" style="width:100%;border-radius:16px;display:block;background:#0b1030;aspect-ratio:4/5">'+
+    (duzMetin != null ? '<p style="margin:12px 0 4px;font-size:13px">Kartta görünecek not (asıl kaydın değişmez)</p><textarea class="yaziAlan" id="kMet" style="min-height:90px">'+esc(duzMetin)+'</textarea>' : '')+
     '<div id="kSec" style="margin-top:12px"></div><div class="ikiBtn" style="margin-top:12px"><button class="ana" id="kPay">📤 Paylaş</button><button class="ikinci" id="kInd">⬇️ Kaydet</button></div><button class="ikinci" id="tm">Vazgeç</button>';
   ac(); document.getElementById("tm").onclick = kapat;
   var sec = {}; secenekler.forEach(function(s){ sec[s[0]] = s[2]; });
@@ -2018,6 +2020,8 @@ function kartPaylasSayfa(baslik, secenekler, yap){
   var tuval = null, sira = 0;
   function guncelle(){ var b = ++sira; kartCiz(yap(sec)).then(function(c){ if(b !== sira) return; tuval = c; var im = document.getElementById("kOn"); if(im) im.src = c.toDataURL("image/jpeg", .85); }); }
   document.querySelectorAll("#kSec input").forEach(function(i){ i.onchange = function(){ sec[i.getAttribute("data-k")] = i.checked; guncelle(); }; });
+  var km = document.getElementById("kMet"), kmZ = 0; sec._metin = duzMetin;
+  if(km) km.oninput = function(){ clearTimeout(kmZ); kmZ = setTimeout(function(){ sec._metin = km.value; guncelle(); }, 300); };
   guncelle();
   function blob(){ return new Promise(function(ok){ tuval.toBlob(ok, "image/png"); }); }
   document.getElementById("kPay").onclick = function(){ if(!tuval) return;
@@ -2037,6 +2041,14 @@ function ruyaPaylas(id){
       cipler: s.etiket ? et.filter(function(e){ return e !== "cinsel" || s.cinsel; }).map(function(e){ return R_ETAD[e] || e; }) : [],
       metin: s.metin ? (x.metin || "") : "", yorum: s.yorum && x.yorum ? (x.yorum.baslik ? x.yorum.baslik+": " : "")+(x.yorum.metin || "").split(/\n/)[0] : "" };
   });
+}
+function anPaylas(k, aid){
+  var d = gunGorunur(gunDoc(k)), a = d.anlar.filter(function(x){ return x.id === aid; })[0]; if(!a) return;
+  var p = p10(a), du = (a.duygu || []).filter(function(z){ return DUY[z]; }).map(function(z){ return DUY[z][1]+" "+DUY[z][2]; });
+  kartPaylasSayfa("Bu anı paylaş", [["duygu","Duygular", true], ["not","Not", !!a.not]], function(s){
+    return { ust:"🕐 "+gunKisa(k)+" · "+hm(a.t), baslik:ruh(p)[0]+" "+ruh(p)[1], alt:"Ruh hali "+p+"/10",
+      cipler: s.duygu ? du : [], metin: s.not ? (s._metin || "") : "" };
+  }, a.not || "");
 }
 function gunPaylas(k){
   var d = gunGorunur(gunDoc(k)); if(!d.anlar.length && !d.kapanis){ toast("Bu güne henüz kayıt yok"); return; }
