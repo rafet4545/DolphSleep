@@ -29,6 +29,16 @@ header h1{font-size:20px;margin:0;letter-spacing:.2px}
 header small{color:var(--soluk);font-size:13px}
 .hesapBtn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid var(--cizgi);color:var(--yazi);border-radius:99px;padding:6px 12px 6px 6px;font-size:13px;cursor:pointer;max-width:48%}
 #liderBtn[hidden]{display:none!important}
+#kapi{position:fixed;inset:0;z-index:19;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:28px 20px;text-align:center;background:radial-gradient(120% 70% at 50% 0%,#1d2660 0%,var(--bg) 65%),var(--bg)}
+#kapi[hidden]{display:none}#kapi>*{width:100%;max-width:360px}
+#kapi img.logo{width:84px;height:84px;border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#kapi h2{margin:4px 0 0;font-size:23px}#kapi p{margin:0;color:var(--soluk);line-height:1.5;font-size:14px}
+.gizMetin{text-align:left;max-height:46vh;overflow-y:auto;background:rgba(255,255,255,.05);border:1px solid var(--cizgi);border-radius:16px;padding:14px 16px;font-size:14px;line-height:1.55;color:var(--yazi)}
+.gizMetin p{margin:0 0 10px!important;color:var(--yazi)!important}.gizMetin small{color:var(--soluk)}
+.onayK{display:flex;gap:10px;align-items:flex-start;text-align:left;font-size:13.5px;color:var(--yazi);line-height:1.45}.onayK input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:#9fb4ff}
+.ana:disabled{opacity:.45}
+.profFoto{width:92px;height:92px;border-radius:50%;object-fit:cover;display:block;margin:6px auto 12px;border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08)}
+.satir img.mini{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;margin-right:10px}
 .yorumK h2{font-size:17px}.yorumGun{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--soluk);margin:8px 4px 0}.yorumGun input{width:18px;height:18px;accent-color:#9fb4ff}
 .hesapBtn img,.hesapBtn .bos{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;background:rgba(255,255,255,.1);font-size:14px}
 .hesapBtn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -281,7 +291,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <main>
   <header>
     <div class="logo"><img src="icon-192.png" alt=""><div><small id="tarih" style="font-size:15px;font-weight:600;color:var(--yazi)"></small></div></div>
-    <div class="ustBtn"><button class="hesapBtn" id="liderBtn" style="padding:6px 12px" hidden><span>🏆</span></button><button class="hesapBtn" id="hesapBtn"><span class="bos">👤</span><span>Giriş yap</span></button></div>
+    <div class="ustBtn"><button class="hesapBtn" id="hesapBtn"><span class="bos">👤</span><span>Giriş yap</span></button></div>
   </header>
   <div id="bulutUyari" hidden></div>
 <div id="kaydir">
@@ -324,14 +334,15 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 </nav>
 
 <div id="kurKapi" hidden></div>
-<div id="giris"><img src="icon-512.png" alt=""><h2>DolphSleep</h2><p>Uykunu takip et, düzenini gör, arkadaşlarınla yarış 🌙</p>
+<div id="kapi" hidden></div>
+<div id="giris"><img src="icon-512.png" alt=""><h2>DolphSleep</h2><p>Uykunu takip et, düzenini gör, rüyalarını kaydet 🌙</p>
   <button class="ana mavi" id="girisGoogle"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Google ile giriş yap</button>
   <p id="girisDurum" style="font-size:13px"></p></div>
 <div class="perde" id="perde"><div class="sayfa" id="sayfa"></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 14;
+var SURUM = 16;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
@@ -544,15 +555,25 @@ function bildirimDurum(){ if(!("Notification" in window)) return "yok"; return N
 function ayarAc(){
   var bd = bildirimDurum();
   sayfa.innerHTML = '<h3>⚙️ Ayarlar</h3>'+
+    (kullanici ? '<div class="satir"><div class="yz" style="display:flex;align-items:center">'+(gorunenFoto() ? '<img class="mini" src="'+esc(gorunenFoto())+'" alt="" referrerpolicy="no-referrer">' : '')+'<span>👤 '+esc(gorunenAd() || "Profil")+'<small>Fotoğraf ve isim</small></span></div><button class="kucuk" id="profAc">Düzenle</button></div>' : '')+
     '<div class="satir"><div class="yz">🔔 22:30 hatırlatması<small>'+(bd==="yok" ? "Bu tarayıcı bildirim desteklemiyor" : bd==="denied" ? "Bildirim izni kapalı, telefon ayarlarından aç" : "Uygulama arka plandayken çalışır. Garanti olsun diye takvime de ekle 👇")+'</small></div><button class="dugme '+(ayar.hatirlat && bd==="granted" ? "on" : "")+'" id="hatDug" aria-label="Hatırlatma"></button></div>'+
     '<div class="satir"><div class="yz">📅 Takvime her gün 22:30 alarmı ekle<small>Telefonun takvimi her akşam kesin hatırlatır</small></div><button class="kucuk" id="takvim">Ekle</button></div>'+
     '<div class="satir"><div class="yz">📲 Ana ekrana ekle<small>Uygulama gibi açılır, internetsiz de çalışır</small></div><button class="kucuk" id="anaEkran">Nasıl?</button></div>'+
     '<div class="satir"><div class="yz">📍 Hava için konumumu kullan<small>'+(ayar.konum ? "Bulunduğun yerin havası ve güneşi" : "Kapalıyken İstanbul'a göre")+'</small></div><button class="dugme '+(ayar.konum ? "on" : "")+'" id="konDug" aria-label="Konum"></button></div>'+
     '<div class="satir"><div class="yz">🗑 Çöp kutusu<small>'+(copSayisi() ? copSayisi()+" kayıt · 30 gün sonra kendiliğinden silinir" : "Boş")+'</small></div><button class="kucuk" id="copAc">Aç</button></div>'+
     '<div class="satir"><div class="yz">🧹 Tüm kayıtları sil<small>Geceler, rüyalar ve gün kayıtları çöp kutusuna gider</small></div><button class="kucuk" id="sifirla" style="color:var(--kirmizi)">Sil</button></div>'+
+    (kullanici ? '<div class="satir"><div class="yz">🔒 Şifre ayarları<small>Kayıtların şifreli</small></div><button class="kucuk" id="sifAyar">Aç</button></div>' : '')+
+    '<div class="satir"><div class="yz">📤 Arkadaşlarınla paylaş<small>Uygulamanın linkini gönder</small></div><button class="kucuk" id="paylasB">Paylaş</button></div>'+
+    '<div class="satir"><div class="yz">📄 Gizlilik ve KVKK<small>Verilerin nasıl korunuyor</small></div><button class="kucuk" id="gizB">Oku</button></div>'+
+    (kullanici ? '<div class="satir"><div class="yz">❌ Hesabı sil<small>Hesabın ve tüm kayıtların kalıcı olarak silinir</small></div><button class="kucuk" id="hsAc" style="color:var(--kirmizi)">Sil</button></div>' : '')+
     '<button class="ana" id="tm" style="margin-top:14px">Kapat</button>';
   ac();
   document.getElementById("tm").onclick = kapat;
+  var pa = document.getElementById("profAc"); if(pa) pa.onclick = function(){ geriEkle(ayarAc); profilSayfa(); };
+  var sa = document.getElementById("sifAyar"); if(sa) sa.onclick = function(){ geriEkle(ayarAc); sifreAyarSayfa(); };
+  document.getElementById("paylasB").onclick = paylas;
+  document.getElementById("gizB").onclick = function(){ geriEkle(ayarAc); gizlilikSayfa(); };
+  var ha = document.getElementById("hsAc"); if(ha) ha.onclick = function(){ geriEkle(ayarAc); hesapSilSayfa(); };
   document.getElementById("hatDug").onclick = function(){
     if(ayar.hatirlat){ ayar.hatirlat = false; ayarYaz(); ayarAc(); return; }
     if(!("Notification" in window)){ toast("Bu tarayıcı bildirim desteklemiyor"); return; }
@@ -680,7 +701,7 @@ function girisYap(){
     });
   }).catch(girisHata);
 }
-function cikisYap(){ if(!FBS) return; KRIPTO.key = null; rAcik = {}; rAcikT = {}; Promise.resolve(bulutYukle()).then(function(){ return FBS.A.signOut(FBS.auth); }).then(function(){ veri = bosVeri(); yaz(false); kapat(); ciz(); toast("Çıkış yapıldı. Kayıtların hesabında duruyor."); }); }
+function cikisYap(){ if(!FBS) return; var cu = kullanici && kullanici.uid; if(cu) idbSil(cu); KRIPTO.key = null; KRIPTO.ac = false; KRIPTO.yukUid = null; rAcik = {}; rAcikT = {}; bulutBirlesti = false; profilYuklendi = false; ozelYuklendi = false; Promise.resolve(bulutYukle()).then(function(){ return FBS.A.signOut(FBS.auth); }).then(function(){ veri = bosVeri(); yaz(false); kapat(); ciz(); toast("Çıkış yapıldı. Kayıtların hesabında duruyor."); }); }
 var ADMIN_EPOSTA = "turkoglurafetemre@gmail.com";
 function adminMi(){ return !!(kullanici && kullanici.email && kullanici.email.toLowerCase()===ADMIN_EPOSTA && kullanici.emailVerified!==false); }
 var authHazir = false, baglantiYok = false;
@@ -697,10 +718,12 @@ function girisKapisi(){
     d.textContent = baglantiYok ? "Bağlanamadı. İnternetini kontrol edip sayfayı yenile." : bekle ? "Yükleniyor…" : "";
   }
   document.getElementById("adminBtn").hidden = !adminMi();
-  document.getElementById("liderBtn").hidden = !adminMi();
+  if(window.kapiKontrol) kapiKontrol();
 }
 document.getElementById("girisGoogle").onclick = girisYap;
 function profil(){ return veri.profil || {}; }
+function gorunenAd(){ var p = profil(); return p.ozelAd || (kullanici && kullanici.displayName) || p.ad || ""; }
+function gorunenFoto(){ var p = profil(); return p.ozelFoto || (kullanici && kullanici.photoURL) || p.foto || ""; }
 function takmaSor(zorunlu){
   var p = profil();
   sayfa.innerHTML = '<h3>🏆 Takma adın</h3><p>Liderlik tablosunda bu isim görünür. Diğerleri sadece takma adını, puanını, serini ve ortalama yatış saatini görür.</p>'+
@@ -739,52 +762,36 @@ function liderAc(){
     }).join("");
   }).catch(function(e){ var k = document.getElementById("liderListe"); if(k) k.innerHTML = '<div class="bos">'+(/permission/.test((e&&e.code)||"") ? "Liderlik tablosu henüz açık değil (Firestore kuralı eksik)." : "Yüklenemedi, internetini kontrol et.")+'</div>'; });
 }
-document.getElementById("liderBtn").onclick = liderAc;
+
 /* ---------- admin paneli (sadece Rafet) ---------- */
 function adminAc(){
   if(!adminMi()) return;
-  sayfa.innerHTML = '<h3>🛠 Admin · Kullanıcılar</h3><div id="admOzet"></div><div id="admListe"><div class="bos">Yükleniyor…</div></div><button class="ana" id="tm" style="margin-top:12px">Kapat</button>';
+  sayfa.innerHTML = '<h3>🛠 Admin · Hesaplar</h3><p>Sadece hesap bilgileri görünür. Uyku, rüya ve gün kayıtları şifreli, kimse okuyamaz.</p><div id="admOzet"></div><div id="admListe"><div class="bos">Yükleniyor…</div></div><button class="ana" id="tm" style="margin-top:12px">Kapat</button>';
   ac(); document.getElementById("tm").onclick = kapat;
   FBS.F.getDocs(FBS.F.collection(FBS.db, "dolphsleep")).then(function(q){
-    var l = []; q.forEach(function(d){ l.push(Object.assign({ uid:d.id }, d.data() || {})); });
-    l.sort(function(a,b){ return (b.sonGorulme||0)-(a.sonGorulme||0); });
-    window.__admL = l;
-    var bugun = new Date(); bugun.setHours(0,0,0,0);
-    document.getElementById("admOzet").innerHTML = '<div class="ozet"><div><b>'+l.length+'</b><span>kullanıcı</span></div><div><b>'+l.filter(function(x){ return (x.sonGorulme||0) >= bugun.getTime(); }).length+'</b><span>bugün açan</span></div><div><b>'+l.filter(function(x){ return x.aktif; }).length+'</b><span>şu an uyuyor 🌙</span></div></div>';
-    document.getElementById("admListe").innerHTML = l.map(function(x, i){
-      var p = x.profil || {}, g = aktifGeceler(x.geceler || []).slice().sort(function(a,b){ return b.y-a.y; }), h = istatHesap(aktifGeceler(x.geceler || []));
-      var son = g[0] ? hm(g[0].y)+' → '+hm(g[0].k) : 'kayıt yok';
-      return '<div class="adm" data-i="'+i+'">'+(p.foto ? '<img src="'+esc(p.foto)+'" alt="" referrerpolicy="no-referrer">' : '<span class="bos">🐬</span>')+
-        '<div class="yz"><b>'+esc(p.ad || p.email || x.uid)+(p.takma ? ' · '+esc(p.takma) : '')+(x.aktif ? ' 🌙' : '')+'</b><small>'+esc(p.email || "")+'</small>'+
-        '<small>Son gece: '+son+(h ? ' · ort. '+sureYaz(h.ort)+' · düzen '+(h.duzen!=null ? h.duzen : '—')+' · 🔥'+h.seri : '')+'</small>'+
-        '<small>Son görülme: '+(x.sonGorulme ? gunEt(x.sonGorulme)+' '+hm(x.sonGorulme) : '—')+'</small></div><span style="color:var(--soluk)">›</span></div>';
+    var l = []; q.forEach(function(d){ var x = d.data() || {}; l.push({ uid:d.id, p:x.profil || {}, son:x.sonGorulme || 0 }); });
+    l.sort(function(a,b){ return b.son - a.son; });
+    var bugun = new Date(); bugun.setHours(0,0,0,0), hafta = Date.now() - 7*864e5;
+    document.getElementById("admOzet").innerHTML = '<div class="ozet"><div><b>'+l.length+'</b><span>hesap</span></div><div><b>'+l.filter(function(x){ return x.son >= bugun.getTime(); }).length+'</b><span>bugün giren</span></div><div><b>'+l.filter(function(x){ return (x.p.kayit || 0) >= hafta; }).length+'</b><span>bu hafta yeni</span></div></div>';
+    document.getElementById("admListe").innerHTML = l.map(function(x){
+      var p = x.p, ft = p.ozelFoto || p.foto, kt = p.kayit ? new Date(p.kayit) : null;
+      return '<div class="adm">'+(ft ? '<img src="'+esc(ft)+'" alt="" referrerpolicy="no-referrer">' : '<span class="bos">🐬</span>')+
+        '<div class="yz"><b>'+esc(p.ozelAd || p.ad || p.email || "İsimsiz")+'</b><small>'+esc(p.email || "")+'</small>'+
+        '<small>Kayıt: '+(kt ? kt.getDate()+" "+AY[kt.getMonth()]+" "+kt.getFullYear() : '—')+' · Son giriş: '+(x.son ? gunEt(x.son)+' '+hm(x.son) : '—')+'</small></div></div>';
     }).join("") || '<div class="bos">Henüz kullanıcı yok.</div>';
-    document.querySelectorAll("#admListe .adm").forEach(function(r){ r.onclick = function(){ adminKisi(window.__admL[+r.getAttribute("data-i")]); }; });
-  }).catch(function(e){ document.getElementById("admListe").innerHTML = '<div class="bos">'+(/permission/.test((e&&e.code)||"") ? "Okuma izni yok: Firestore kuralına admin satırını ekle." : "Yüklenemedi: "+esc((e&&e.code)||e))+'</div>'; });
-}
-function adminKisi(x){
-  var p = x.profil || {}, g = aktifGeceler(x.geceler || []).slice().sort(function(a,b){ return b.y-a.y; }), h = istatHesap(aktifGeceler(x.geceler || []));
-  var yuz = ["","😫","😕","😐","🙂","😄"];
-  sayfa.innerHTML = '<h3>'+esc(p.ad || p.email || "Kullanıcı")+'</h3><p>'+esc(p.email || "")+(p.takma ? ' · '+esc(p.takma) : '')+(x.aktif ? '<br>🌙 '+hm(x.aktif)+'\'den beri uyuyor' : '')+'</p>'+
-    (h ? '<div class="ozet"><div><b>'+sureYaz(h.ort)+'</b><span>ort. uyku</span></div><div><b>'+(h.duzen!=null ? h.duzen : '—')+'</b><span>düzen</span></div><div><b>🔥'+h.seri+'</b><span>seri</span></div></div>' : '')+
-    grafSvg(g.filter(function(n){ return !sekMi(n); }).slice(0, 7).reverse())+
-    '<div style="margin-top:10px">'+(g.slice(0, 30).map(function(n){ var d = degerlendir(n);
-      return '<div class="gece"><div class="g"><b>'+gunEt(n.k).split(" ").slice(1).join(" ")+'</b>'+GUN[new Date(n.k).getDay()]+'</div><div class="s">'+hm(n.y)+' → '+hm(n.k)+' · '+sureYaz(d.sure)+'<small>'+(n.p ? yuz[n.p] : '')+'</small></div>'+
-        (d.yat==="ok" ? '<span class="etk ok">✅</span>' : d.yat==="er" ? '<span class="etk er">⏰</span>' : '<span class="etk no">❌</span>')+'</div>'; }).join("") || '<div class="bos">Kayıt yok.</div>')+'</div>'+
-    '<button class="ikinci" id="geri">‹ Listeye dön</button>';
-  document.getElementById("geri").onclick = adminAc;
+  }).catch(function(e){ document.getElementById("admListe").innerHTML = '<div class="bos">Yüklenemedi: '+esc((e&&e.code)||e)+'</div>'; });
 }
 document.getElementById("adminBtn").onclick = adminAc;
 function hesapCiz(){
   var b = document.getElementById("hesapBtn");
   if(kullanici){
-    var ad = (kullanici.displayName || kullanici.email || "Hesap").split(" ")[0];
-    b.innerHTML = (kullanici.photoURL ? '<img src="'+esc(kullanici.photoURL)+'" alt="" referrerpolicy="no-referrer">' : '<span class="bos">🐬</span>')+'<span>'+esc(ad)+'</span>';
+    var ad = gorunenAd().split(" ")[0] || "Hesap", ft = gorunenFoto();
+    b.innerHTML = (ft ? '<img src="'+esc(ft)+'" alt="" referrerpolicy="no-referrer">' : '<span class="bos">🐬</span>')+'<span>'+esc(ad)+'</span>';
   } else b.innerHTML = '<span class="bos">👤</span><span>Giriş yap</span>';
   var y = document.getElementById("bulutYazi");
   y.textContent = !kullanici ? "Kayıtlar sadece bu cihazda. Telefon ve tablet aynı olsun diye giriş yap." :
-    bulutDurum==="tamam" ? "☁️ Kayıtların hesabında, tüm cihazlarda aynı" : bulutDurum==="yukleniyor" ? "☁️ Eşitleniyor…" :
-    bulutDurum==="izin" ? "☁️ Bulut kaydı henüz açık değil, kayıtlar bu cihazda tutuluyor" : bulutDurum==="hata" ? "☁️ Bulutla eşitlenemedi, tekrar denenecek" : "";
+    bulutDurum==="tamam" ? "☁️🔒 Kayıtların hesabında şifreli, tüm cihazlarda aynı" : bulutDurum==="yukleniyor" ? "☁️ Eşitleniyor…" :
+    bulutDurum==="izin" ? "☁️ Bulut kaydı henüz açık değil, kayıtlar bu cihazda tutuluyor" : bulutDurum==="kilitli" ? "🔒 Şifreni girince kayıtların şifreli olarak eşitlenir" : bulutDurum==="hata" ? "☁️ Bulutla eşitlenemedi, tekrar denenecek" : "";
 }
 document.getElementById("hesapBtn").onclick = function(){
   if(!kullanici){
@@ -808,24 +815,40 @@ function birlestir(a, b){
   return { geceler:geceler, aktif:akt.aktif || null, aktifT:akt.aktifT || 0, silinen:sil };
 }
 function bulutRef(){ return FBS.F.doc(FBS.db, "dolphsleep", kullanici.uid); }
+var bulutBirlesti = false, bulutBekliyor = false, profilYuklendi = false, hesapSiliniyor = false;
 function bulutBasla(){
+  if(hesapSiliniyor || !kullanici || !FBS) return;
   bulutDurum = "yukleniyor"; hesapCiz();
-  FBS.F.getDoc(bulutRef()).then(function(s){
+  var uid = kullanici.uid;
+  anahtarHazir().then(function(){ return FBS.F.getDoc(bulutRef()); }).then(function(s){
+    if(!kullanici || kullanici.uid !== uid) return;
     var b = s.exists() ? (s.data() || {}) : {};
     var pr = (b.profilT || 0) > (veri.profilT || 0) ? b.profil : veri.profil, prT = Math.max(b.profilT || 0, veri.profilT || 0);
-    veri = birlestir(veri, b); veri.uid = kullanici.uid; veri.profil = pr || {}; veri.profilT = prT; yaz(false); ciz(); ozelSenk();
-    return bulutYukle();
+    // uyku kayıtları bulutta şifreli: anahtar yoksa bekler, açılamazsa (eski şifre) yok sayılır
+    var acil = b.enc ? (KRIPTO.key ? coz(KRIPTO.key, b.enc).catch(function(){ return {}; }) : Promise.resolve(null)) : Promise.resolve(b);
+    return acil.then(function(u){
+      if(u) veri = birlestir(veri, u);
+      veri.uid = kullanici.uid; veri.profil = pr || {}; veri.profilT = prT; yaz(false); ciz();
+      profilYuklendi = true; bulutBekliyor = !u; bulutBirlesti = !!u; kapiKontrol(); ozelSenk();
+      return bulutYukle();
+    });
   }).catch(bulutHataYaz);
 }
 var bulutZ = 0;
 function bulutYukleSonra(){ if(!kullanici || !FBS || bulutDurum==="izin") return; clearTimeout(bulutZ); bulutZ = setTimeout(bulutYukle, 800); }
 function bulutYukle(){
-  if(!kullanici || !FBS) return Promise.resolve();
-  var pr = Object.assign({}, profil(), { ad:kullanici.displayName || "", email:kullanici.email || "", foto:kullanici.photoURL || "" });
+  if(!kullanici || !FBS || hesapSiliniyor) return Promise.resolve();
+  var kt = Date.parse((kullanici.metadata && kullanici.metadata.creationTime) || "") || 0;
+  var pr = Object.assign({}, profil(), { ad:kullanici.displayName || "", email:kullanici.email || "", foto:kullanici.photoURL || "", kayit:kt });
   veri.profil = pr;
-  return FBS.F.setDoc(bulutRef(), { geceler:veri.geceler, aktif:veri.aktif, aktifT:veri.aktifT, silinen:veri.silinen, profil:pr, profilT:veri.profilT || 0, guncel:Date.now(), sonGorulme:Date.now(), surum:SURUM })
-    .then(function(){ bulutDurum = "tamam"; hesapCiz(); liderYukle(); }).catch(bulutHataYaz);
+  var ortak = { profil:pr, profilT:veri.profilT || 0, guncel:Date.now(), sonGorulme:Date.now(), surum:SURUM };
+  var tam = kilitli() && KRIPTO.key && bulutBirlesti;   // uyku kayıtları sadece şifreli gider
+  var p = tam ? sifrele(KRIPTO.key, { geceler:veri.geceler, aktif:veri.aktif, aktifT:veri.aktifT, silinen:veri.silinen }).then(function(e){ return FBS.F.setDoc(bulutRef(), Object.assign({ enc:e }, ortak)); })
+              : FBS.F.setDoc(bulutRef(), ortak, { merge:true });
+  return p.then(function(){ bulutDurum = tam ? "tamam" : (kilitli() && !KRIPTO.key) ? "kilitli" : "yukleniyor"; hesapCiz(); liderSil(); }).catch(bulutHataYaz);
 }
+var liderSilindi = false;
+function liderSil(){ if(liderSilindi || !kullanici || !FBS) return; liderSilindi = true; FBS.F.deleteDoc(FBS.F.doc(FBS.db, "dolphsleepLider", kullanici.uid)).catch(function(){}); }
 function bulutHataYaz(e){ bulutHata = (e && e.code) || String(e); bulutDurum = /permission/.test(bulutHata) ? "izin" : "hata"; hesapCiz(); if(window.bulutUyariCiz) bulutUyariCiz(); }
 document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible"){ ciz(); if(kullanici && FBS && bulutDurum!=="izin") bulutBasla(); } });
 kurKapiCiz();
@@ -905,7 +928,24 @@ var S_RUYA = 0, S_UYKU = 1, S_GUN = 2;
 function sekmeAcildi(i){ if(i===S_RUYA) ruyaCiz(); if(i===S_GUN) gunCiz(); guardGuncelle(); }
 
 /* ---------- şifreleme (AES-GCM, şifreden PBKDF2 ile anahtar) ---------- */
-var KRIPTO = { key:null };
+var KRIPTO = { key:null, ac:false, yukUid:null, yukSoz:null };
+/* anahtar cihazda IndexedDB'de durur (dışarı aktarılamaz); buluta hiç gitmez */
+function idbIs(mod, f){ return new Promise(function(ok, no){ var r = indexedDB.open("dolphsleep", 1); r.onupgradeneeded = function(){ r.result.createObjectStore("a"); }; r.onerror = function(){ no(r.error); };
+  r.onsuccess = function(){ try{ var t = r.result.transaction("a", mod), q = f(t.objectStore("a")); t.oncomplete = function(){ ok(q && q.result); }; t.onerror = function(){ no(t.error); }; }catch(e){ no(e); } }; }); }
+function idbAl(uid){ return idbIs("readonly", function(st){ return st.get("k."+uid); }); }
+function idbKoy(uid, k){ return idbIs("readwrite", function(st){ return st.put(k, "k."+uid); }).catch(function(){}); }
+function idbSil(uid){ return idbIs("readwrite", function(st){ return st.delete("k."+uid); }).catch(function(){}); }
+var anahtarYuklendi = false;
+function anahtarHazir(){
+  var uid = uidAnahtar();
+  if(KRIPTO.yukUid === uid && KRIPTO.yukSoz) return KRIPTO.yukSoz;
+  rHazir(); KRIPTO.yukUid = uid; anahtarYuklendi = false;
+  KRIPTO.yukSoz = idbAl(uid).then(function(k){
+    if(!k || KRIPTO.key || !(R.kilit && R.kilit.aktif && R.kilit.dog)) return;
+    return coz(k, R.kilit.dog).then(function(o){ if(o === "dolphsleep-ok" && KRIPTO.yukUid === uid) KRIPTO.key = k; }).catch(function(){});
+  }).catch(function(){}).then(function(){ anahtarYuklendi = true; kapiKontrol(); });
+  return KRIPTO.yukSoz;
+}
 function b64(buf){ var s = "", b = new Uint8Array(buf); for(var i=0;i<b.length;i++) s += String.fromCharCode(b[i]); return btoa(s); }
 function unb64(s){ var b = atob(s), u = new Uint8Array(b.length); for(var i=0;i<b.length;i++) u[i] = b.charCodeAt(i); return u; }
 function anahtarTuret(sifre, salt, iter){
@@ -921,9 +961,9 @@ var R = null, rAcik = {}, rAcikT = {}, ozelDurum = "", bekleyenRuya = null;
 function rKey(){ return "dolphsleep.ruya."+uidAnahtar(); }
 function rOku(){ var x = null; try{ x = JSON.parse(localStorage.getItem(rKey())); }catch(e){} R = (x && x.kayit) ? x : { kayit:{}, kilit:null, soruldu:false }; R._uid = uidAnahtar(); return R; }
 function rYaz(){ try{ localStorage.setItem(rKey(), JSON.stringify(R)); }catch(e){} }
-function rHazir(){ if(!R || R._uid !== uidAnahtar()){ rOku(); rAcik = {}; rAcikT = {}; KRIPTO.key = null; } }
+function rHazir(){ if(!R || R._uid !== uidAnahtar()){ rOku(); rAcik = {}; rAcikT = {}; KRIPTO.key = null; KRIPTO.ac = false; KRIPTO.yukUid = null; } }
 function kilitli(){ return !!(R && R.kilit && R.kilit.aktif); }
-function kilitAcikMi(){ return !kilitli() || !!KRIPTO.key; }
+function kilitAcikMi(){ return !kilitli() || !!(KRIPTO.key && KRIPTO.ac); }
 function rHazirla(){
   var ps = [];
   Object.keys(R.kayit).forEach(function(id){
@@ -980,9 +1020,9 @@ function bulutUyariCiz(){
       sayfa.innerHTML = '<h3>☁️ Bulut kuralı eksik</h3><p>Firebase → Firestore → <b>Rules</b> sayfasında var olan <code>dolphsleep</code> kuralının altına şunu ekleyip <b>Publish</b>\'e bas. Sonra uygulamayı kapatıp aç; telefondaki kayıtların otomatik buluta yüklenir.</p><pre style="white-space:pre-wrap;background:rgba(0,0,0,.35);padding:12px;border-radius:12px;font-size:12px;color:#d7dcff">match /dolphsleep/{uid}/{alt=**} {\n  allow read, write: if request.auth != null && request.auth.uid == uid;\n}</pre><button class="ana" id="tm">Tamam</button>';
       ac(); document.getElementById("tm").onclick = kapat; }; }
 }
-function rBulutaYaz(k){ if(!kullanici || !FBS || ozelDurum==="izin") return Promise.resolve(); return FBS.F.setDoc(altRef("ruyalar", k.id), bsiz(k)).then(function(){ var y = R.kayit[k.id]; if(y && y.t === k.t && !y.b){ y.b = 1; rYaz(); if(aktifSekme===S_RUYA && !perde.classList.contains("ac")) ruyaAnaCizSessiz(); } }).catch(ozelHata); }
-function kilitBulutaYaz(){ if(!kullanici || !FBS || ozelDurum==="izin") return Promise.resolve(); return FBS.F.setDoc(altRef("ozel", "kilit"), temiz(R.kilit || { aktif:false, t:Date.now() })).catch(ozelHata); }
-function gBulutaYaz(k){ if(!kullanici || !FBS || ozelDurum==="izin") return; var d = G.gunler[k]; if(!d) return; var t = d.t;
+function rBulutaYaz(k){ if(!kullanici || !FBS || ozelDurum==="izin" || hesapSiliniyor) return Promise.resolve(); return FBS.F.setDoc(altRef("ruyalar", k.id), bsiz(k)).then(function(){ var y = R.kayit[k.id]; if(y && y.t === k.t && !y.b){ y.b = 1; rYaz(); if(aktifSekme===S_RUYA && !perde.classList.contains("ac")) ruyaAnaCizSessiz(); } }).catch(ozelHata); }
+function kilitBulutaYaz(){ if(!kullanici || !FBS || ozelDurum==="izin" || hesapSiliniyor) return Promise.resolve(); return FBS.F.setDoc(altRef("ozel", "kilit"), temiz(R.kilit || { aktif:false, t:Date.now() })).catch(ozelHata); }
+function gBulutaYaz(k){ if(!kullanici || !FBS || ozelDurum==="izin" || hesapSiliniyor) return; var d = G.gunler[k]; if(!d) return; var t = d.t;
   if(kilitli() && !KRIPTO.key) return;   // şifre açık ama kilit kapalı: şifresini girince kilitli gider
   var key = kilitli() ? KRIPTO.key : null;
   (key ? sifrele(key, bsiz(d)).then(function(e){ return { t:t, enc:e }; }) : Promise.resolve(bsiz(d))).then(function(doc){ return FBS.F.setDoc(altRef("gunler", k), doc); }).then(function(){ var y = G.gunler[k]; if(y && y.t === t && !y.b){ y.b = 1; gYaz(); var e = document.getElementById("gunBulut"); if(e && gGun === k){ e.textContent = "☁️ Buluta kaydedildi"; e.className = "bulutIs"; } } }).catch(ozelHata); }
@@ -1008,7 +1048,7 @@ function ozelSenk(){
     Object.keys(R.kayit).forEach(function(id){ var b = bulut[id], y = R.kayit[id]; if(!b || (y.t||0) > (b.t||0)) rBulutaYaz(y); });
     var bk = s[1].exists() ? s[1].data() : null;
     if(bk && (!R.kilit || (bk.t||0) > (R.kilit.t||0))){
-      if(!R.kilit || R.kilit.salt !== bk.salt){ KRIPTO.key = null; rAcik = {}; rAcikT = {}; }
+      if(!R.kilit || R.kilit.salt !== bk.salt){ KRIPTO.key = null; KRIPTO.ac = false; idbSil(uidAnahtar()); rAcik = {}; rAcikT = {}; }
       R.kilit = bk;
     } else if(R.kilit && (!bk || (R.kilit.t||0) > (bk.t||0))) kilitBulutaYaz();
     if(bk || Object.keys(bulut).length) R.soruldu = true;
@@ -1022,15 +1062,17 @@ function ozelSenk(){
     });
     gYaz();
     if(KRIPTO.key) gunCoz(); else Object.keys(G.gunler).forEach(function(k){ if(!G.gunler[k].b) gBulutaYaz(k); });
+    ozelYuklendi = true; kapiKontrol();
     if(aktifSekme===S_RUYA) ruyaCiz(); if(aktifSekme===S_GUN) gunCiz();
   }).catch(ozelHata);
 }
+var ozelYuklendi = false;
 
 /* ---------- yapay zekâ (Gemini, Worker üzerinden) ---------- */
 function aiIste(gorev, v, sinyal){
   if(!kullanici) return Promise.reject(new Error("giris"));
   return kullanici.getIdToken().then(function(tok){
-    return fetch("/api/ai", { method:"POST", headers:{ "content-type":"application/json", "authorization":"Bearer "+tok }, body:JSON.stringify(Object.assign({ gorev:gorev, ad:(kullanici.displayName || "").split(" ")[0] }, v)), signal:sinyal || undefined });
+    return fetch("/api/ai", { method:"POST", headers:{ "content-type":"application/json", "authorization":"Bearer "+tok }, body:JSON.stringify(Object.assign({ gorev:gorev, ad:gorunenAd().split(" ")[0] }, v)), signal:sinyal || undefined });
   }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok || (!j.metin && !j.dengeli)) throw new Error(j.hata || ("http"+r.status)); return j; }); });
 }
 function aiHataYazi(e){
@@ -1076,7 +1118,7 @@ function ruyaCiz(){
 }
 function kilitAc(sifre){
   return anahtarTuret(sifre, R.kilit.salt, R.kilit.iter).then(function(key){
-    return coz(key, R.kilit.dog).then(function(o){ if(o !== "dolphsleep-ok") throw new Error("yanlis"); KRIPTO.key = key; gunCoz(); });
+    return coz(key, R.kilit.dog).then(function(o){ if(o !== "dolphsleep-ok") throw new Error("yanlis"); KRIPTO.key = key; KRIPTO.ac = true; idbKoy(uidAnahtar(), key); gunCoz(); if(bulutBekliyor) bulutBasla(); kapiKontrol(); });
   });
 }
 function ruyaAnaCiz(){
@@ -1097,7 +1139,7 @@ function ruyaAnaCiz(){
   var ge = document.getElementById("rGuneEkle"); if(ge) ge.onclick = function(){ ruyaYeni({ gun:rGor.sec }); };
   document.getElementById("rYeni").onclick = function(){ ruyaYeni({ gun:bugun }); };
   document.getElementById("rAyar").onclick = sifreAyarSayfa;
-  var kl = document.getElementById("rKilitle"); if(kl) kl.onclick = function(){ KRIPTO.key = null; rAcik = {}; rAcikT = {}; ruyaCiz(); toast("🔒 Kilitlendi"); };
+  var kl = document.getElementById("rKilitle"); if(kl) kl.onclick = function(){ KRIPTO.ac = false; rAcik = {}; rAcikT = {}; ruyaCiz(); toast("🔒 Kilitlendi"); };
   var st = document.getElementById("rSecTemiz"); if(st) st.onclick = function(){ rGor.sec = null; ruyaAnaCiz(); };
   takvimBagla(); taslakKutuCiz(); guardGuncelle();
   if(bekleyenRuya){ var g = bekleyenRuya; bekleyenRuya = null; ruyaYeni({ gun:g }); }
@@ -1301,7 +1343,7 @@ function aiAyristir(tum){
 function aiAkis(gorev, v, sinyal, parca){
   if(!kullanici) return Promise.reject(new Error("giris"));
   return kullanici.getIdToken().then(function(tok){
-    return fetch("/api/ai", { method:"POST", headers:{ "content-type":"application/json", "authorization":"Bearer "+tok }, body:JSON.stringify(Object.assign({ gorev:gorev, akis:true, ad:(kullanici.displayName || "").split(" ")[0] }, v)), signal:sinyal || undefined });
+    return fetch("/api/ai", { method:"POST", headers:{ "content-type":"application/json", "authorization":"Bearer "+tok }, body:JSON.stringify(Object.assign({ gorev:gorev, akis:true, ad:gorunenAd().split(" ")[0] }, v)), signal:sinyal || undefined });
   }).then(function(r){
     if(!r.ok) return r.json().catch(function(){ return {}; }).then(function(j){ throw new Error(j.hata || ("http"+r.status)); });
     if(!r.body || !r.body.getReader) return r.text().then(function(t){ parca(t); return t; });
@@ -1454,11 +1496,14 @@ document.addEventListener("visibilitychange", function(){
 /* ---------- şifre ayarları ---------- */
 function kilitKur(sifre){
   var salt = b64(crypto.getRandomValues(new Uint8Array(16))), iter = 250000, key, simdi = Date.now();
-  return rHazirla().then(gunCoz).then(function(){ return anahtarTuret(sifre, salt, iter); }).then(function(k){ key = k; return sifrele(key, "dolphsleep-ok"); }).then(function(dog){
+  var tsk = null;
+  return rHazirla().then(gunCoz).then(function(){ return taslakOku().then(function(t){ tsk = t; }); }).then(function(){ return anahtarTuret(sifre, salt, iter); }).then(function(k){ key = k; return sifrele(key, "dolphsleep-ok"); }).then(function(dog){
     var ids = Object.keys(R.kayit).filter(function(id){ return !R.kayit[id].sil && rAcik[id] && !rAcik[id].bozuk; });
     return Promise.all(ids.map(function(id){ return sifrele(key, rAcik[id]).then(function(e){ R.kayit[id] = { id:id, gun:R.kayit[id].gun, t:simdi, enc:e, cop:R.kayit[id].cop }; rAcikT[id] = simdi; }); })).then(function(){
-      R.kilit = { aktif:true, salt:salt, iter:iter, dog:dog, t:simdi }; R.soruldu = true; KRIPTO.key = key; rYaz();
+      R.kilit = { aktif:true, salt:salt, iter:iter, dog:dog, t:simdi }; R.soruldu = true; KRIPTO.key = key; KRIPTO.ac = true; rYaz(); idbKoy(uidAnahtar(), key);
       ids.forEach(function(id){ rBulutaYaz(R.kayit[id]); }); kilitBulutaYaz(); gunHepsiniYukle();
+      if(tsk) taslakKaydetSimdi(tsk);
+      bulutBekliyor = false; bulutBirlesti = true; bulutYukle(); kapiKontrol();
     });
   });
 }
@@ -1471,8 +1516,8 @@ function kilitKaldir(){
 }
 function sifreKoySayfa(){
   var degis = kilitli();
-  sayfa.innerHTML = '<h3>🔒 '+(degis ? 'Yeni şifre' : 'Rüyalarına şifre koy')+'</h3><p>Rüyaların ve gün kayıtların (duygu, not, düşünce kaydı, gün özeti) bu şifreyle telefonunda kilitlenir, buluta kilitli gider. Sitenin sahibi dahil kimse okuyamaz.</p>'+
-    '<div class="bilgiK">⚠️ <b style="color:var(--yazi)">Şifreni unutursan rüyaların geri getirilemez.</b> Sıfırlama yolu yok, bir yere not et. Yapay zekâya gönderdiğin metin sadece o işlem sırasında yapay zekâya gider.</div>'+
+  sayfa.innerHTML = '<h3>🔒 '+(degis ? 'Yeni şifre' : 'Rüyalarına şifre koy')+'</h3><p>Uyku, rüya ve gün kayıtların bu şifreyle telefonunda kilitlenir, buluta kilitli gider. Uygulama sahibi dahil kimse okuyamaz.</p>'+
+    '<div class="bilgiK">⚠️ <b style="color:var(--yazi)">Şifreni unutursan buluttaki kayıtların geri getirilemez.</b> Sıfırlama yolu yok, bir yere not et. Yapay zekâya gönderdiğin metin sadece o işlem sırasında yapay zekâya gider.</div>'+
     '<input type="password" class="sifreIn" id="s1" placeholder="Şifre (en az 4 karakter)" autocomplete="new-password"><input type="password" class="sifreIn" id="s2" placeholder="Şifre tekrar" autocomplete="new-password">'+
     '<button class="ana" id="sKoy">'+(degis ? 'Şifreyi değiştir' : 'Şifreyi koy')+'</button><button class="ikinci" id="tm">Vazgeç</button>';
   ac(); document.getElementById("tm").onclick = kapat;
@@ -1487,24 +1532,25 @@ function sifreKoySayfa(){
 }
 function sifreAyarSayfa(){
   if(!kilitli()){ sifreKoySayfa(); return; }
-  sayfa.innerHTML = '<h3>🔒 Şifre ayarları</h3><p>Rüyaların ve gün kayıtların şu an şifreli.</p><button class="ana" id="sDeg">Şifreyi değiştir</button><button class="ikinci" id="sKal">Şifreyi kaldır</button><button class="ikinci" id="tm">Kapat</button>';
+  sayfa.innerHTML = '<h3>🔒 Şifre ayarları</h3><p>Uyku, rüya ve gün kayıtların şifreli. Şifre zorunlu, kaldırılamaz.</p><button class="ana" id="sDeg">Şifreyi değiştir</button><button class="ikinci" id="tm">Kapat</button>';
   ac(); document.getElementById("tm").onclick = kapat; document.getElementById("sDeg").onclick = function(){ geriEkle(sifreAyarSayfa); sifreKoySayfa(); };
-  var k = document.getElementById("sKal"), o = false;
-  k.onclick = function(){ if(!o){ o = true; k.textContent = "Rüyalar ve günler şifresiz kalacak. Emin misin?"; return; } kilitKaldir().then(function(){ kapat(); ruyaCiz(); toast("Şifre kaldırıldı"); }); };
 }
 function unuttumSayfa(){
   sayfa.innerHTML = '<h3>Şifreni mi unuttun?</h3><p>Rüyaların ve gün kayıtların senin şifrenle kilitli, bu yüzden kimse (biz dahil) açamaz. Hatırlamaya çalış: büyük/küçük harf, Türkçe karakter…</p>'+
-    '<div class="bilgiK">Hatırlamıyorsan tek yol: kilitli rüyaları silip yeniden başlamak. Gün kayıtlarının bu telefondaki kopyası kalır, sadece bu telefonda olmayanlar silinir. Bunun için aşağıya <b style="color:var(--yazi)">SİL</b> yaz.</div>'+
+    '<div class="bilgiK">Hatırlamıyorsan tek yol: kilitli kayıtları silip yeni şifreyle baştan başlamak. Bu telefonda duran uyku ve gün kayıtların kalır, rüyaların ve sadece bulutta olanlar silinir. Bunun için aşağıya <b style="color:var(--yazi)">SİL</b> yaz.</div>'+
     '<input class="sifreIn" id="uSil" placeholder="SİL"><button class="ikinci" id="uBtn" style="color:var(--kirmizi)">Tüm rüyaları sil, baştan başla</button><button class="ana" id="tm" style="margin-top:10px">Vazgeç</button>';
   ac(); document.getElementById("tm").onclick = kapat;
   document.getElementById("uBtn").onclick = function(){
     if(document.getElementById("uSil").value.trim().toLocaleUpperCase("tr") !== "SİL"){ toast("Onay için SİL yaz"); return; }
-    var simdi = Date.now();
+    sifreSifirla(); kapat(); ruyaCiz();
+  };
+}
+function sifreSifirla(){
+    var simdi = Date.now(); idbSil(uidAnahtar()); KRIPTO.ac = false; bulutBekliyor = false; bulutBirlesti = true;
     Object.keys(R.kayit).forEach(function(id){ if(!R.kayit[id].sil){ R.kayit[id] = { id:id, gun:R.kayit[id].gun || "", t:simdi, sil:true }; rBulutaYaz(R.kayit[id]); } });
     R.kilit = { aktif:false, t:simdi }; R.soruldu = false; KRIPTO.key = null; rAcik = {}; rAcikT = {}; rYaz(); kilitBulutaYaz();
-    gHazir(); Object.keys(G.bekleyen || {}).forEach(function(k){ if(!G.gunler[k] && kullanici && FBS) FBS.F.deleteDoc(altRef("gunler", k)).catch(function(){}); }); G.bekleyen = {}; gunHepsiniYukle();
-    kapat(); ruyaCiz(); toast("Sıfırlandı");
-  };
+    gHazir(); Object.keys(G.bekleyen || {}).forEach(function(k){ if(!G.gunler[k] && kullanici && FBS) FBS.F.deleteDoc(altRef("gunler", k)).catch(function(){}); }); G.bekleyen = {}; gYaz();
+    toast("Sıfırlandı, yeni şifreni belirle"); kapiKontrol();
 }
 
 /* ---------- GÜN sekmesi ---------- */
@@ -1519,14 +1565,22 @@ function ruhRenk(p){ var t = (p - 1)/9, a = t < .5 ? [255,107,127] : [255,200,87
 var gGun = null;
 function gunCiz(){
   gHazir();
+  if(!kilitAcikMi()){   // gün kayıtları da şifreyle açılır
+    var kk = document.getElementById("gunIc");
+    kk.innerHTML = '<div class="kilitEkran"><div class="kilitI">🔒</div><h3>Günlüğün kilitli</h3><p>Duygu kayıtların, notların ve düşünce kayıtların şifreli. Açmak için şifreni gir.</p>'+
+      '<input type="password" class="sifreIn" id="gSif" placeholder="Şifre" autocomplete="current-password"><button class="ana" id="gSifAc">Aç</button></div>';
+    var gsa = document.getElementById("gSifAc"), gsi = document.getElementById("gSif");
+    var gDene = function(){ if(!gsi.value) return; gsa.disabled = true; gsa.textContent = "Açılıyor…";
+      kilitAc(gsi.value).then(function(){ gunCiz(); }).catch(function(){ gsa.disabled = false; gsa.textContent = "Aç"; gsi.value = ""; toast("Şifre yanlış"); try{ navigator.vibrate && navigator.vibrate([60,40,60]); }catch(e){} }); };
+    gsa.onclick = gDene; gsi.onkeydown = function(e){ if(e.key==="Enter") gDene(); };
+    return;
+  }
   var bugun = isoGun(Date.now()); if(!gGun || gGun > bugun) gGun = bugun;
   var d = gunGorunur(gunDoc(gGun)), bu = gGun === bugun, k = document.getElementById("gunIc");
   var son = d.anlar[d.anlar.length - 1];
   var h = '<div class="baslikS">Gün</div><p class="altS">Gün içinde nasıl hissettiğini kaydet, akşam günü kapat.</p>'+
     '<div class="gunNav"><button id="gGeri">‹</button><b>'+(bu ? 'Bugün · ' : '')+gunKisa(gGun)+' '+GUNTAM[new Date(kodTs(gGun)).getDay()]+'</b><button id="gIleri" '+(bu ? 'disabled' : '')+'>›</button></div>'+
     (G.gunler[gGun] ? '<div style="text-align:center;margin-top:4px"><span id="gunBulut" class="bulutIs'+(G.gunler[gGun].b ? '' : ' yok')+'">'+(G.gunler[gGun].b ? (kilitli() ? '☁️🔒 Buluta şifreli kaydedildi' : '☁️ Buluta kaydedildi') : (kilitli() && !KRIPTO.key ? '🔒 Şifreni girince buluta şifreli gider' : '⏳ Henüz sadece bu telefonda'))+'</span></div>' : '')+
-    (kilitli() && !KRIPTO.key && (Object.keys(G.bekleyen || {}).length || Object.keys(G.gunler).some(function(x){ return !G.gunler[x].b; })) ?
-      '<div class="bilgiK" style="margin-top:10px">🔒 Gün kayıtların şifreli. '+(Object.keys(G.bekleyen || {}).length ? 'Diğer cihazdaki kayıtları görmek' : 'Buluta göndermek')+' için şifreni gir.<input type="password" class="sifreIn" id="gSif" placeholder="Şifre" autocomplete="current-password" style="margin-top:8px"><button class="ana" id="gSifAc">Aç</button></div>' : '')+
     '<button class="yeniRuya" id="anYeni" style="margin-top:10px"><span>'+(son && bu ? ruh(p10(son))[0] : '💭')+'</span><span>'+(bu ? 'Şu an nasılsın?' : 'Bu güne kayıt ekle')+'<small>'+(son && bu ? 'Son kayıt '+hm(son.t)+' · '+p10(son)+'/10' : '1–10 puan ver, duygunu seç, istersen not bırak')+'</small></span></button>'+
     '<button class="bdtBtn" id="bdtYeni"><span>🧠</span><span>Düşünce kaydı (BDT)<small>Seni zorlayan bir anı adım adım incele</small></span><span class="ok">›</span></button>'+
     (d.kayitlar.length ? '<section class="kart"><h2>Düşünce kayıtları <small>'+d.kayitlar.length+'</small></h2>'+d.kayitlar.slice().reverse().map(bdtKartHtml).join("")+'</section>' : '');
@@ -1550,10 +1604,6 @@ function gunCiz(){
   k.innerHTML = h;
   guardGuncelle();
   document.getElementById("gGeri").onclick = function(){ gGun = gunEkle(gGun, -1); gunCiz(); };
-  var gsa = document.getElementById("gSifAc"); if(gsa){ var gsi = document.getElementById("gSif");
-    var gDene = function(){ if(!gsi.value) return; gsa.disabled = true; gsa.textContent = "Açılıyor…";
-      kilitAc(gsi.value).then(function(){ toast("🔓 Açıldı"); gunCiz(); }).catch(function(){ gsa.disabled = false; gsa.textContent = "Aç"; gsi.value = ""; toast("Şifre yanlış"); }); };
-    gsa.onclick = gDene; gsi.onkeydown = function(e){ if(e.key==="Enter") gDene(); }; }
   document.getElementById("gIleri").onclick = function(){ gGun = gunEkle(gGun, 1); gunCiz(); };
   document.getElementById("anYeni").onclick = function(){ anSayfa(null); };
   document.getElementById("bdtYeni").onclick = function(){ bdtSayfa(null); };
@@ -1624,7 +1674,7 @@ function bdtAdim(k, a, duzen){
     oku(); if(!k.dusunce){ toast("Önce otomatik düşünceni yaz"); return; }
     ab.disabled = true; ab.textContent = "Yapay zekâ düşünüyor…";
     aiIste("bdt", { durum:k.durum, dusunce:k.dusunce, duygular:k.duygular.map(function(y){ return (DUY[y.k] ? DUY[y.k][2] : y.k)+" "+(y.once||0); }).join(", "), lehine:k.lehine, aleyhine:k.aleyhine }).then(function(j){
-      k.ai = { hatalar:(j.hatalar || []).slice(0, 3), dengeli:j.dengeli || "", not:j.not || "" };
+      k.ai = { hatalar:(j.hatalar || []).slice(0, 3), dengeli:j.dengeli || "", deney:j.deney || "", not:j.not || "" };
       if(document.getElementById("bAi")){ document.getElementById("bAi").innerHTML = bdtAiHtml(k.ai); bdtAiBagla(); }
       ab.disabled = false; ab.textContent = "↻ Yeniden sor";
     }).catch(function(e){ toast(aiHataYazi(e)); ab.disabled = false; ab.textContent = "✨ Yapay zekâdan yardım iste"; });
@@ -1645,6 +1695,7 @@ function bdtAdim(k, a, duzen){
 function bdtAiHtml(ai){
   return '<div class="bdtAi">'+((ai.hatalar || []).length ? '<p class="etk2">Olası düşünce hataları</p>'+ai.hatalar.map(function(h){ return '<div class="bdtHata"><b>'+esc(h.ad || "")+'</b><span>'+esc(h.aciklama || "")+'</span></div>'; }).join("") : '')+
     (ai.dengeli ? '<p class="etk2" style="margin-top:10px">Önerilen dengeli düşünce</p><div class="ruyaMetin" style="margin:4px 0 8px">'+esc(ai.dengeli)+'</div><button class="kucuk" id="bKullan">⬆️ Bunu kullan</button>' : '')+
+    (ai.deney ? '<p class="etk2" style="margin-top:10px">🧪 Davranışsal deney</p><div class="ruyaMetin" style="margin:4px 0 8px;font-size:14px">'+esc(ai.deney)+'</div>' : '')+
     (ai.not ? '<p style="margin-top:10px;font-size:13px">💬 '+esc(ai.not)+'</p>' : '')+'</div>';
 }
 function bdtKartHtml(x){
@@ -1660,7 +1711,7 @@ function bdtDetay(id){
     (x.lehine ? '<p class="etk2">✅ Destekleyen</p><div class="ruyaMetin" style="margin:2px 0 10px;font-size:14px">'+esc(x.lehine)+'</div>' : '')+
     (x.aleyhine ? '<p class="etk2">❌ Desteklemeyen</p><div class="ruyaMetin" style="margin:2px 0 10px;font-size:14px">'+esc(x.aleyhine)+'</div>' : '')+
     (x.dengeli ? '<p class="etk2">⚖️ Dengeli düşünce</p><div class="ruyaMetin" style="margin:2px 0 10px">'+esc(x.dengeli)+'</div>' : '')+
-    (x.ai && (x.ai.hatalar || []).length ? '<details class="bilgiK"><summary>Yapay zekânın fark ettikleri</summary>'+bdtAiHtml({ hatalar:x.ai.hatalar, not:x.ai.not })+'</details>' : '')+
+    (x.ai && ((x.ai.hatalar || []).length || x.ai.deney) ? '<details class="bilgiK"><summary>Yapay zekânın fark ettikleri</summary>'+bdtAiHtml({ hatalar:x.ai.hatalar, deney:x.ai.deney, not:x.ai.not })+'</details>' : '')+
     '<div class="ikiBtn"><button class="ikinci" id="bDuz">✏️ Düzenle</button><button class="ikinci" id="bSil" style="color:var(--kirmizi)">🗑 Sil</button></div><button class="ana" id="tm" style="margin-top:10px">Kapat</button>';
   ac(); document.getElementById("tm").onclick = kapat;
   document.getElementById("bDuz").onclick = function(){ geriEkle(function(){ bdtDetay(id); }); bdtSayfa(id, 0); };
@@ -1728,11 +1779,162 @@ function gunAnaliz(gun, metin, btn){
   }).catch(function(e){ toast(aiHataYazi(e)); if(btn){ btn.disabled = false; btn.textContent = "✨ Tekrar dene"; } else kapanisSayfa(); });
 }
 
+/* ---------- gizlilik metni ---------- */
+var GIZLILIK_SURUM = 1;
+var GIZLILIK_HTML = '<p><b>Bilgilerin sana ait.</b> Uyku, rüya ve gün kayıtların telefonunda senin şifrenle kilitlenir ve buluta şifreli gider. <b>Uygulama sahibi dahil kimse bu kayıtlara erişemez.</b> Şifreni unutursan biz de açamayız, bir yere not etmeni öneririz.</p>'+
+  '<p><b>Yönetici yalnızca hesap bilgilerini görebilir:</b> ad, e-posta, profil fotoğrafı, kayıt tarihi ve son giriş zamanı.</p>'+
+  '<p><b>Konumun</b> sadece hava durumu için kullanılır, kaydedilmez.</p>'+
+  '<p><b>Yapay zekâ</b> özelliklerini kullandığında ilgili metin, işlenmek üzere Google Gemini\'ye gider. Kullanmazsan hiçbir metin gönderilmez.</p>'+
+  '<p><b>Verilerin</b> Google Firebase\'de, yurt dışındaki sunucularda saklanır. Satılmaz, reklamda kullanılmaz, kimseyle paylaşılmaz.</p>'+
+  '<p><b>KVKK kapsamındaki hakların:</b> Verilerini görebilir, düzeltebilir ya da Ayarlar\'daki <b>Hesabı sil</b> ile tamamen silebilirsin.</p>'+
+  '<p><b>İletişim:</b> turkoglurafetemre@gmail.com</p><small>Son güncelleme: Kasım 2026</small>';
+function gizlilikOk(){ return (profil().gizlilik || 0) >= GIZLILIK_SURUM; }
+function gizlilikSayfa(){ sayfa.innerHTML = '<h3>📄 Gizlilik ve KVKK</h3><div class="gizMetin" style="max-height:none">'+GIZLILIK_HTML+'</div><button class="ana" id="tm" style="margin-top:12px">Kapat</button>'; ac(); document.getElementById("tm").onclick = kapat; }
+
+/* ---------- giriş kapısı: gizlilik onayı + zorunlu şifre ---------- */
+var kapiDurum = "";
+function kapiKontrol(){
+  var k = document.getElementById("kapi"); if(!k) return;
+  var d;
+  if(!kullanici) d = "";
+  else if(!gizlilikOk()) d = profilYuklendi ? "onay" : "bekle";
+  else if(!kilitli()) d = (ozelYuklendi || (R && R.kilit)) ? "kur" : "bekle";
+  else if(!KRIPTO.key) d = anahtarYuklendi ? "gir" : "bekle";
+  else d = "";
+  if(d === kapiDurum && (d !== "bekle")) return;
+  kapiDurum = d;
+  k.hidden = !d; if(!d){ k.innerHTML = ""; return; }
+  var logo = '<img class="logo" src="icon-512.png" alt="">';
+  if(d === "bekle"){ k.innerHTML = logo+'<p>Yükleniyor…</p>'; return; }
+  if(d === "onay"){
+    k.innerHTML = logo+'<h2>Gizlilik</h2><p>Devam etmeden önce lütfen oku.</p><div class="gizMetin">'+GIZLILIK_HTML+'</div>'+
+      '<label class="onayK"><input type="checkbox" id="kOnay"> Gizlilik metnini okudum; verilerimin yurt dışında saklanmasını ve yapay zekâ özelliklerini kullandığımda işlenmesini kabul ediyorum.</label>'+
+      '<button class="ana" id="kDevam" disabled>Kabul et ve devam et</button><button class="ikinci" id="kCik">Kabul etmiyorum, çıkış yap</button>';
+    var o = document.getElementById("kOnay"), dv = document.getElementById("kDevam");
+    o.onchange = function(){ dv.disabled = !o.checked; };
+    dv.onclick = function(){ if(!o.checked) return; veri.profil = Object.assign({}, profil(), { gizlilik:GIZLILIK_SURUM, gizlilikT:Date.now() }); veri.profilT = Date.now(); yaz(); bulutYukle(); kapiKontrol(); };
+    document.getElementById("kCik").onclick = function(){ kapiDurum = ""; cikisYap(); };
+    return;
+  }
+  if(d === "kur"){
+    k.innerHTML = logo+'<h2>🔒 Şifreni belirle</h2><p>Uyku, rüya ve gün kayıtların bu şifreyle telefonunda kilitlenir, buluta şifreli gider. Uygulama sahibi dahil kimse okuyamaz.</p>'+
+      '<div class="bilgiK" style="text-align:left">⚠️ <b style="color:var(--yazi)">Şifreni unutursan buluttaki kayıtların geri getirilemez.</b> Sıfırlama yolu yok, bir yere not et.</div>'+
+      '<input type="password" class="sifreIn" id="k1" placeholder="Şifre (en az 4 karakter)" autocomplete="new-password"><input type="password" class="sifreIn" id="k2" placeholder="Şifre tekrar" autocomplete="new-password">'+
+      '<button class="ana" id="kKur">Şifreyi koy ve başla</button>';
+    var b = document.getElementById("kKur");
+    b.onclick = function(){
+      var a = document.getElementById("k1").value, c = document.getElementById("k2").value;
+      if(a.length < 4){ toast("En az 4 karakter"); return; }
+      if(a !== c){ toast("Şifreler aynı değil"); return; }
+      b.disabled = true; b.textContent = "Kilitleniyor…";
+      kilitKur(a).then(function(){ toast("Kayıtların artık şifreli 🔒"); kapiKontrol(); if(aktifSekme===S_RUYA) ruyaCiz(); if(aktifSekme===S_GUN) gunCiz(); })
+        .catch(function(){ b.disabled = false; b.textContent = "Tekrar dene"; toast("Olmadı, tekrar dene"); });
+    };
+    return;
+  }
+  if(d === "gir"){
+    k.innerHTML = logo+'<h2>🔒 Şifreni gir</h2><p>Bu cihazda kayıtlarını açmak için şifren gerekiyor. Bir kere girmen yeterli.</p>'+
+      '<input type="password" class="sifreIn" id="kSif" placeholder="Şifre" autocomplete="current-password"><button class="ana" id="kAc">Aç</button><button class="ikinci" id="kUnut">Şifremi unuttum</button><button class="ikinci" id="kCik">Çıkış yap</button>';
+    var inp = document.getElementById("kSif"), btn = document.getElementById("kAc");
+    var dene = function(){ if(!inp.value) return; btn.disabled = true; btn.textContent = "Açılıyor…";
+      kilitAc(inp.value).then(function(){ kapiKontrol(); ciz(); if(aktifSekme===S_RUYA) ruyaCiz(); if(aktifSekme===S_GUN) gunCiz(); })
+        .catch(function(){ btn.disabled = false; btn.textContent = "Aç"; inp.value = ""; toast("Şifre yanlış"); try{ navigator.vibrate && navigator.vibrate([60,40,60]); }catch(e){} }); };
+    btn.onclick = dene; inp.onkeydown = function(e){ if(e.key==="Enter") dene(); };
+    document.getElementById("kCik").onclick = function(){ kapiDurum = ""; cikisYap(); };
+    document.getElementById("kUnut").onclick = function(){
+      kapiDurum = "unut";
+      k.innerHTML = logo+'<h2>Şifreni mi unuttun?</h2><p>Kayıtların senin şifrenle kilitli, bu yüzden kimse (biz dahil) açamaz. Hatırlamaya çalış: büyük/küçük harf, Türkçe karakter…</p>'+
+        '<div class="bilgiK" style="text-align:left">Hatırlamıyorsan tek yol: buluttaki kilitli kayıtları silip yeni şifreyle baştan başlamak. Onay için aşağıya <b style="color:var(--yazi)">SİL</b> yaz.</div>'+
+        '<input class="sifreIn" id="uSil2" placeholder="SİL"><button class="ikinci" id="uBtn2" style="color:var(--kirmizi)">Sil ve yeni şifre belirle</button><button class="ana" id="uGeri" style="margin-top:10px">Geri</button>';
+      document.getElementById("uGeri").onclick = function(){ kapiDurum = ""; kapiKontrol(); };
+      document.getElementById("uBtn2").onclick = function(){
+        if(document.getElementById("uSil2").value.trim().toLocaleUpperCase("tr") !== "SİL"){ toast("Onay için SİL yaz"); return; }
+        kapiDurum = ""; sifreSifirla();
+      };
+    };
+  }
+}
+
+/* ---------- profil: fotoğraf + isim ---------- */
+function fotoKucult(dosya){
+  return new Promise(function(ok, no){
+    var u = URL.createObjectURL(dosya), im = new Image();
+    im.onload = function(){ var z = 160, c = document.createElement("canvas"); c.width = c.height = z; var x = c.getContext("2d"), m = Math.min(im.width, im.height);
+      x.drawImage(im, (im.width - m)/2, (im.height - m)/2, m, m, 0, 0, z, z); URL.revokeObjectURL(u); ok(c.toDataURL("image/jpeg", .82)); };
+    im.onerror = function(){ URL.revokeObjectURL(u); no(new Error("foto")); };
+    im.src = u;
+  });
+}
+function profilSayfa(){
+  var p = profil(), yeniFoto = p.ozelFoto || null;
+  function goster(){ return yeniFoto || (kullanici && kullanici.photoURL) || ""; }
+  sayfa.innerHTML = '<h3>👤 Profil</h3>'+
+    '<img class="profFoto" id="pFoto" alt="" referrerpolicy="no-referrer">'+
+    '<input type="file" id="pDosya" accept="image/*" hidden>'+
+    '<div class="ikiBtn"><button class="ikinci" id="pDeg">📷 Fotoğrafı değiştir</button><button class="ikinci" id="pGoogle">Google fotoğrafı</button></div>'+
+    '<p style="margin:14px 0 6px">Görünen adın</p><input class="takmaGir" id="pAd" maxlength="30" placeholder="Adın" value="'+esc(gorunenAd())+'">'+
+    '<button class="ana" id="pKay">Kaydet</button><button class="ikinci" id="tm">Vazgeç</button>';
+  ac(); document.getElementById("tm").onclick = kapat;
+  var img = document.getElementById("pFoto"); function fCiz(){ var f = goster(); if(f) img.src = f; else img.removeAttribute("src"); } fCiz();
+  var dos = document.getElementById("pDosya");
+  document.getElementById("pDeg").onclick = function(){ dos.click(); };
+  dos.onchange = function(){ var f = dos.files && dos.files[0]; if(!f) return; fotoKucult(f).then(function(d){ yeniFoto = d; fCiz(); }).catch(function(){ toast("Bu fotoğraf açılamadı"); }); };
+  document.getElementById("pGoogle").onclick = function(){ yeniFoto = null; fCiz(); };
+  document.getElementById("pKay").onclick = function(){
+    var ad = document.getElementById("pAd").value.replace(/\s+/g, " ").trim();
+    if(ad.length < 2){ toast("En az 2 harf yaz"); return; }
+    var pr = Object.assign({}, profil()); pr.ozelAd = (kullanici && ad === kullanici.displayName) ? "" : ad;
+    if(yeniFoto) pr.ozelFoto = yeniFoto; else delete pr.ozelFoto;
+    veri.profil = pr; veri.profilT = Date.now(); yaz(); bulutYukle(); hesapCiz(); kapat(); toast("Profil güncellendi");
+  };
+}
+
+/* ---------- paylaş ---------- */
+var PAYLAS_URL = "https://sleep.dolphapps.com/tanitim/";
+function paylas(){
+  var m = "DolphSleep: uykunu takip et, rüyalarını kaydet 🌙🐬";
+  if(navigator.share){ navigator.share({ title:"DolphSleep", text:m, url:PAYLAS_URL }).catch(function(){}); return; }
+  var t = m+" "+PAYLAS_URL;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ toast("Link kopyalandı 📋"); }).catch(function(){ prompt("Linki kopyala:", PAYLAS_URL); });
+}
+
+/* ---------- hesabı sil (5 onay) ---------- */
+var SIL_ONAY = ["Emin misin?", "Tüm uykuların, rüyaların ve günlerin silinecek", "Bu işlem geri alınamaz", "Gerçekten emin misin?", "Son kez: hesabımı kalıcı olarak sil"];
+function hesapSilSayfa(){
+  if(!kullanici){ toast("Önce giriş yapmalısın"); return; }
+  sayfa.innerHTML = '<h3>❌ Hesabı sil</h3><p>Hesabın ve tüm kayıtların (uykular, rüyalar, gün kayıtları, profil) kalıcı olarak silinir. Bu işlem geri alınamaz.</p>'+
+    '<button class="ikinci" id="hsBtn" style="color:var(--kirmizi)">Hesabımı sil</button><button class="ana" id="tm" style="margin-top:10px">Vazgeç</button>';
+  ac(); document.getElementById("tm").onclick = kapat;
+  var b = document.getElementById("hsBtn"), adim = 0;
+  b.onclick = function(){
+    if(adim < SIL_ONAY.length){ b.textContent = SIL_ONAY[adim]; adim++; try{ navigator.vibrate && navigator.vibrate(20+adim*12); }catch(e){} return; }
+    b.disabled = true; b.textContent = "Siliniyor…"; hesapSil();
+  };
+}
+function hesapSil(){
+  var F = FBS.F, uid = kullanici.uid; hesapSiliniyor = true; clearTimeout(bulutZ);
+  Promise.all(["ruyalar","gunler","ozel","isler"].map(function(kol){ return F.getDocs(altKol(kol)).then(function(q){ return Promise.all(q.docs.map(function(d){ return F.deleteDoc(d.ref); })); }); }))
+  .then(function(){ return F.deleteDoc(F.doc(FBS.db, "dolphsleepLider", uid)).catch(function(){}); })
+  .then(function(){ return F.deleteDoc(bulutRef()); })
+  .then(function(){
+    return FBS.A.deleteUser(kullanici).catch(function(e){
+      if(!/requires-recent-login/.test((e && e.code) || "")) throw e;
+      return FBS.A.reauthenticateWithPopup(kullanici, new FBS.A.GoogleAuthProvider()).then(function(){ return FBS.A.deleteUser(FBS.auth.currentUser); });
+    }).catch(function(){ return FBS.A.signOut(FBS.auth); });   // kayıtlar silindi; giriş kaydı kalırsa en azından çıkış yapılır
+  })
+  .then(function(){
+    idbSil(uid);
+    try{ Object.keys(localStorage).forEach(function(k){ if(k.indexOf("dolphsleep") === 0 && k !== AYAR_KEY) localStorage.removeItem(k); }); }catch(e){}
+    toast("Hesabın silindi. Hoşça kal 🐬"); setTimeout(function(){ location.reload(); }, 1500);
+  })
+  .catch(function(e){ hesapSiliniyor = false; toast("Silinemedi, internetini kontrol edip tekrar dene"); kapat(); });
+}
+
 /* ---------- arka planda 5 dk kalınca rüyaları kilitle ---------- */
 var gizlendi = 0;
 document.addEventListener("visibilitychange", function(){
   if(document.visibilityState === "hidden") gizlendi = Date.now();
-  else if(gizlendi && Date.now() - gizlendi > 5*60000 && KRIPTO.key){ KRIPTO.key = null; rAcik = {}; rAcikT = {}; if(aktifSekme===S_RUYA) ruyaCiz(); }
+  else if(gizlendi && Date.now() - gizlendi > 5*60000 && KRIPTO.ac){ KRIPTO.ac = false; rAcik = {}; rAcikT = {}; if(aktifSekme===S_RUYA) ruyaCiz(); if(aktifSekme===S_GUN) gunCiz(); }
 });
 rHazir(); gHazir();
 </script>
