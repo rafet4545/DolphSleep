@@ -301,7 +301,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
   <div class="durum" id="durum"></div>
   <div class="havaY" id="havaYazi"></div>
   <button class="buyuk" id="buyuk"><span class="e" id="buyukE">🌙</span><span id="buyukY">Uyuyorum</span></button>
-  <div class="hedef">Hedef: <b>23:00–23:30</b> arası yat · <b>07:30</b>'da kalk</div>
+  <div class="hedef" id="hedefSatir">Hedef: <b>23:00–23:30</b> arası yat · <b>07:30</b>'da kalk</div>
   <div id="uyariKutu"></div>
 
   <section class="kart">
@@ -342,9 +342,16 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 20;
+var SURUM = 21;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
+/* kişinin kendi hedefi: veri.hedef = { yat: gece dakikası (23:00=1380, 00:30=1470), kalk: gün dakikası (07:30=450), t } */
+function hedefUygula(){
+  var h = veri && veri.hedef; if(!h) return;
+  HEDEF.yatBas = h.yat; HEDEF.yatSon = h.yat + 30; HEDEF.kalk = h.kalk; HEDEF.sure = 1440 + h.kalk - h.yat;
+  HEDEF.hatirlat = ((h.yat - 30) % 1440 + 1440) % 1440;
+}
+function hedefYazi(){ return saatYaz(HEDEF.yatBas)+"–"+saatYaz(HEDEF.yatSon); }
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
 
 /* ---------- veri ---------- */
@@ -383,6 +390,7 @@ function sd(a){ if(a.length<2) return 0; var o = a.reduce(function(x,y){return x
 /* ---------- çizim ---------- */
 function ciz(){
   var simdi = Date.now();
+  hedefUygula(); var hs = document.getElementById("hedefSatir"); if(hs) hs.innerHTML = 'Hedef: <b>'+hedefYazi()+'</b> arası yat · <b>'+saatYaz(HEDEF.kalk)+'</b>\'da kalk';
   document.getElementById("tarih").textContent = gunEt(simdi);
   var b = document.getElementById("buyuk");
   if(veri.aktif){
@@ -390,8 +398,8 @@ function ciz(){
     document.getElementById("durum").textContent = hm(veri.aktif)+"'den beri uyuyorsun · "+sureYaz((simdi-veri.aktif)/60000);
   } else {
     b.classList.remove("uyanik"); document.getElementById("buyukE").textContent = "🌙"; document.getElementById("buyukY").textContent = "Uyuyorum";
-    var m = dk(simdi), kal = HEDEF.yatSon - m;
-    document.getElementById("durum").textContent = (m >= 18*60 && kal > 0) ? "Yatmaya "+sureYaz(kal)+" kaldı" : (m >= HEDEF.yatSon || m < 4*60) ? "Hedef saati geçti, hemen yat 😴" : "İyi günler ☀️";
+    var m = dk(simdi), mm = m < 12*60 ? m + 1440 : m, kal = HEDEF.yatSon - mm, gecti = kal <= 0 && (m >= 18*60 || m < 5*60);
+    document.getElementById("durum").textContent = (m >= 18*60 || m < 5*60) && kal > 0 && kal <= 6*60 ? "Yatmaya "+sureYaz(kal)+" kaldı" : gecti ? "Hedef saati geçti, hemen yat 😴" : "İyi günler ☀️";
   }
   uyariCiz(); istatCiz(); grafCiz(); listeCiz(); hesapCiz();
 }
@@ -455,12 +463,12 @@ function ist(b, s, c){ return '<div class="ist '+c+'"><b>'+b+'</b><span>'+s+'</s
 function grafCiz(){ document.getElementById("graf").innerHTML = grafSvg(sonGeceler(7).reverse()); }
 function grafSvg(l){
   if(!l.length) return '<div class="bos">Grafik ilk geceden sonra çıkar.</div>';
-  var W = 340, H = 230, sol = 40, ust = 10, alt = 26, bas = 21*60, son = 34*60;
+  var W = 340, H = 230, sol = 40, ust = 10, alt = 26, bas = Math.min(21*60, Math.floor((HEDEF.yatBas-60)/120)*120), son = Math.max(34*60, Math.ceil((1440+HEDEF.kalk+60)/120)*120);
   var Y = function(m){ return ust + (Math.min(Math.max(m, bas), son)-bas)/(son-bas)*(H-ust-alt); };
   var s = '<svg class="graf" viewBox="0 0 '+W+' '+H+'">';
   s += '<rect x="'+sol+'" y="'+Y(HEDEF.yatBas)+'" width="'+(W-sol)+'" height="'+(Y(HEDEF.yatSon)-Y(HEDEF.yatBas))+'" fill="rgba(255,217,138,.3)"/>';
   s += '<rect x="'+sol+'" y="'+Y(1440+HEDEF.kalk-HEDEF.kalkTol)+'" width="'+(W-sol)+'" height="'+(Y(1440+HEDEF.kalk+HEDEF.kalkTol)-Y(1440+HEDEF.kalk-HEDEF.kalkTol))+'" fill="rgba(255,217,138,.3)"/>';
-  for(var h=21; h<=34; h+=2){ var y = Y(h*60); s += '<line x1="'+sol+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="rgba(255,255,255,.07)"/><text x="'+(sol-6)+'" y="'+(y+4)+'" fill="#9aa3c7" font-size="10" text-anchor="end">'+pad(h%24)+':00</text>'; }
+  for(var h=bas/60; h<=son/60; h+=2){ var y = Y(h*60); s += '<line x1="'+sol+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="rgba(255,255,255,.07)"/><text x="'+(sol-6)+'" y="'+(y+4)+'" fill="#9aa3c7" font-size="10" text-anchor="end">'+pad(h%24)+':00</text>'; }
   var gw = (W-sol)/7;
   l.forEach(function(g, i){
     var d = degerlendir(g), x = sol + i*gw + gw*.22, w = gw*.56, y1 = Y(geceDk(g.y)), km = dk(g.k), y2 = Y(km < 12*60 ? km+1440 : km);
@@ -566,8 +574,9 @@ function ayarAc(){
   var bd = bildirimDurum();
   sayfa.innerHTML = '<h3>⚙️ Ayarlar</h3>'+
     (kullanici ? '<div class="satir"><div class="yz" style="display:flex;align-items:center">'+(gorunenFoto() ? '<img class="mini" src="'+esc(gorunenFoto())+'" alt="" referrerpolicy="no-referrer">' : '')+'<span>👤 '+esc(gorunenAd() || "Profil")+'<small>Fotoğraf ve isim</small></span></div><button class="kucuk" id="profAc">Düzenle</button></div>' : '')+
-    '<div class="satir"><div class="yz">🔔 22:30 hatırlatması<small>'+(bd==="yok" ? "Bu tarayıcı bildirim desteklemiyor" : bd==="denied" ? "Bildirim izni kapalı, telefon ayarlarından aç" : "Uygulama arka plandayken çalışır. Garanti olsun diye takvime de ekle 👇")+'</small></div><button class="dugme '+(ayar.hatirlat && bd==="granted" ? "on" : "")+'" id="hatDug" aria-label="Hatırlatma"></button></div>'+
-    '<div class="satir"><div class="yz">📅 Takvime her gün 22:30 alarmı ekle<small>Telefonun takvimi her akşam kesin hatırlatır</small></div><button class="kucuk" id="takvim">Ekle</button></div>'+
+    '<div class="satir"><div class="yz">🎯 Uyku hedefim<small>'+hedefYazi()+' yat · '+saatYaz(HEDEF.kalk)+' kalk · '+sureYaz(HEDEF.sure)+'</small></div><button class="kucuk" id="hedefAc">Değiştir</button></div>'+
+    '<div class="satir"><div class="yz">🔔 '+saatYaz(HEDEF.hatirlat)+' hatırlatması<small>'+(bd==="yok" ? "Bu tarayıcı bildirim desteklemiyor" : bd==="denied" ? "Bildirim izni kapalı, telefon ayarlarından aç" : "Uygulama arka plandayken çalışır. Garanti olsun diye takvime de ekle 👇")+'</small></div><button class="dugme '+(ayar.hatirlat && bd==="granted" ? "on" : "")+'" id="hatDug" aria-label="Hatırlatma"></button></div>'+
+    '<div class="satir"><div class="yz">📅 Takvime her gün '+saatYaz(HEDEF.hatirlat)+' alarmı ekle<small>Telefonun takvimi her akşam kesin hatırlatır</small></div><button class="kucuk" id="takvim">Ekle</button></div>'+
     '<div class="satir"><div class="yz">📲 Ana ekrana ekle<small>Uygulama gibi açılır, internetsiz de çalışır</small></div><button class="kucuk" id="anaEkran">Nasıl?</button></div>'+
     '<div class="satir"><div class="yz">📍 Hava için konumumu kullan<small>'+(ayar.konum ? "Bulunduğun yerin havası ve güneşi" : "Kapalıyken İstanbul'a göre")+'</small></div><button class="dugme '+(ayar.konum ? "on" : "")+'" id="konDug" aria-label="Konum"></button></div>'+
     '<div class="satir"><div class="yz">🗑 Çöp kutusu<small>'+(copSayisi() ? copSayisi()+" kayıt · 30 gün sonra kendiliğinden silinir" : "Boş")+'</small></div><button class="kucuk" id="copAc">Aç</button></div>'+
@@ -579,6 +588,7 @@ function ayarAc(){
     '<button class="ana" id="tm" style="margin-top:14px">Kapat</button>';
   ac();
   document.getElementById("tm").onclick = kapat;
+  document.getElementById("hedefAc").onclick = function(){ geriEkle(ayarAc); hedefSayfa(false); };
   var pa = document.getElementById("profAc"); if(pa) pa.onclick = function(){ geriEkle(ayarAc); profilSayfa(); };
   var sa = document.getElementById("sifAyar"); if(sa) sa.onclick = function(){ geriEkle(ayarAc); sifreAyarSayfa(); };
   document.getElementById("paylasB").onclick = paylas;
@@ -587,7 +597,7 @@ function ayarAc(){
   document.getElementById("hatDug").onclick = function(){
     if(ayar.hatirlat){ ayar.hatirlat = false; ayarYaz(); ayarAc(); return; }
     if(!("Notification" in window)){ toast("Bu tarayıcı bildirim desteklemiyor"); return; }
-    Notification.requestPermission().then(function(r){ ayar.hatirlat = r==="granted"; ayarYaz(); hatirlatKur(); ayarAc(); if(r==="granted") toast("Her akşam 22:30'da hatırlatacağım 🌙"); });
+    Notification.requestPermission().then(function(r){ ayar.hatirlat = r==="granted"; ayarYaz(); hatirlatKur(); ayarAc(); if(r==="granted") toast("Her gün "+saatYaz(HEDEF.hatirlat)+"'te hatırlatacağım 🌙"); });
   };
   document.getElementById("takvim").onclick = takvimIndir;
   document.getElementById("anaEkran").onclick = anaEkranTarif;
@@ -609,8 +619,8 @@ function takvimIndir(){
   var d = new Date(), gun = d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
   var ics = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//DolphSleep//TR","CALSCALE:GREGORIAN","BEGIN:VEVENT",
     "UID:dolphsleep-yatma-"+gun+"@dolphsleep","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,""),
-    "DTSTART;TZID=Europe/Istanbul:"+gun+"T223000","DTEND;TZID=Europe/Istanbul:"+gun+"T224500","RRULE:FREQ=DAILY",
-    "SUMMARY:🌙 Yatma vakti yaklaşıyor (DolphSleep)","DESCRIPTION:23:00–23:30 arası yat. Yatarken DolphSleep'te 🌙 butonuna bas.",
+    "DTSTART;TZID=Europe/Istanbul:"+gun+"T"+saatYaz(HEDEF.hatirlat).replace(":","")+"00","DTEND;TZID=Europe/Istanbul:"+gun+"T"+saatYaz(HEDEF.hatirlat+15).replace(":","")+"00","RRULE:FREQ=DAILY",
+    "SUMMARY:🌙 Yatma vakti yaklaşıyor (DolphSleep)","DESCRIPTION:"+hedefYazi()+" arası yat. Yatarken DolphSleep'te 🌙 butonuna bas.",
     "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:Yatma vakti yaklaşıyor 🌙","TRIGGER:PT0M","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
   var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([ics], { type:"text/calendar" })); a.download = "dolphsleep-hatirlatma.ics"; document.body.appendChild(a); a.click(); a.remove();
   toast("Dosyayı aç, takvimine ekle 📅");
@@ -665,7 +675,7 @@ function hatirlatKur(){
     var bugun = new Date().toDateString();
     if(!veri.aktif && ayar.sonHat !== bugun){
       ayar.sonHat = bugun; ayarYaz();
-      var baslik = "🌙 Yarım saat kaldı", govde = "23:00–23:30 arası yat. Yatınca DolphSleep'te 🌙 butonuna bas.";
+      var baslik = "🌙 Yarım saat kaldı", govde = hedefYazi()+" arası yat. Yatınca DolphSleep'te 🌙 butonuna bas.";
       if(navigator.serviceWorker && navigator.serviceWorker.controller) navigator.serviceWorker.ready.then(function(r){ r.showNotification(baslik, { body:govde, icon:"icon-192.png", badge:"icon-192.png", tag:"yatma" }); });
       else try{ new Notification(baslik, { body:govde, icon:"icon-192.png" }); }catch(e){}
     }
@@ -822,7 +832,8 @@ function birlestir(a, b){
   (a.geceler || []).concat(b.geceler || []).forEach(function(g){ if(!g || !g.id) return; if(!m[g.id] || (g.t || 0) > (m[g.id].t || 0)) m[g.id] = g; });
   var geceler = Object.keys(m).map(function(k){ return m[k]; }).filter(function(g){ return !(sil[g.id] && sil[g.id] >= (g.t || 0)); });
   var akt = (a.aktifT || 0) >= (b.aktifT || 0) ? a : b;
-  return { geceler:geceler, aktif:akt.aktif || null, aktifT:akt.aktifT || 0, silinen:sil };
+  var hd = ((a.hedef && a.hedef.t) || 0) >= ((b.hedef && b.hedef.t) || 0) ? a.hedef : b.hedef;
+  return { geceler:geceler, aktif:akt.aktif || null, aktifT:akt.aktifT || 0, silinen:sil, hedef:hd || null };
 }
 function bulutRef(){ return FBS.F.doc(FBS.db, "dolphsleep", kullanici.uid); }
 var bulutBirlesti = false, bulutBekliyor = false, profilYuklendi = false, hesapSiliniyor = false;
@@ -853,7 +864,7 @@ function bulutYukle(){
   veri.profil = pr;
   var ortak = { profil:pr, profilT:veri.profilT || 0, guncel:Date.now(), sonGorulme:Date.now(), surum:SURUM };
   var tam = kilitli() && KRIPTO.key && bulutBirlesti;   // uyku kayıtları sadece şifreli gider
-  var p = tam ? sifrele(KRIPTO.key, { geceler:veri.geceler, aktif:veri.aktif, aktifT:veri.aktifT, silinen:veri.silinen }).then(function(e){ return FBS.F.setDoc(bulutRef(), Object.assign({ enc:e }, ortak)); })
+  var p = tam ? sifrele(KRIPTO.key, { geceler:veri.geceler, aktif:veri.aktif, aktifT:veri.aktifT, silinen:veri.silinen, hedef:veri.hedef || null }).then(function(e){ return FBS.F.setDoc(bulutRef(), Object.assign({ enc:e }, ortak)); })
               : FBS.F.setDoc(bulutRef(), ortak, { merge:true });
   return p.then(function(){ bulutDurum = tam ? "tamam" : (kilitli() && !KRIPTO.key) ? "kilitli" : "yukleniyor"; hesapCiz(); liderSil(); }).catch(bulutHataYaz);
 }
@@ -1815,6 +1826,7 @@ function kapiKontrol(){
   else if(!gizlilikOk()) d = profilYuklendi ? "onay" : "bekle";
   else if(!kilitli()) d = (ozelYuklendi || (R && R.kilit)) ? "kur" : "bekle";
   else if(!KRIPTO.key) d = anahtarYuklendi ? "gir" : "bekle";
+  else if(!veri.hedef && bulutBirlesti) d = "hedef";
   else d = "";
   if(d === kapiDurum && (d !== "bekle")) return;
   kapiDurum = d;
@@ -1847,6 +1859,7 @@ function kapiKontrol(){
     };
     return;
   }
+  if(d === "hedef"){ k.innerHTML = logo+hedefFormHtml(true); hedefFormBagla(true); return; }
   if(d === "gir"){
     k.innerHTML = logo+'<h2>🔒 Şifreni gir</h2><p>Bu cihazda kayıtlarını açmak için şifren gerekiyor. Bir kere girmen yeterli.</p>'+
       '<input type="password" class="sifreIn" id="kSif" placeholder="Şifre" autocomplete="current-password"><button class="ana" id="kAc">Aç</button><button class="ikinci" id="kUnut">Şifremi unuttum</button><button class="ikinci" id="kCik">Çıkış yap</button>';
@@ -2074,6 +2087,43 @@ function gunPaylas(k){
       metin: s.metin ? (kap.metin || "") : (s.ozet ? (kap.analiz || "") : "") };
   });
 }
+
+
+/* ---------- uyku hedefi (kişi kendi belirler) ---------- */
+function hedefFormHtml(ilk){
+  var y = saatYaz(HEDEF.yatBas), k = saatYaz(HEDEF.kalk);
+  return '<h2'+(ilk ? '' : ' style="font-size:20px;margin:0 0 6px"')+'>🎯 Uyku hedefini belirle</h2><p>Genelde kaçta yatıp kaçta kalkmak istiyorsun? İstatistiklerin, serin ve hatırlatmaların buna göre çalışır.</p>'+
+    '<div style="display:flex;gap:10px;margin-top:6px"><label style="flex:1;text-align:left;font-size:13px;color:var(--soluk)">🌙 Yatış<input type="time" step="900" class="sifreIn" id="hYat" value="'+y+'" style="margin-top:6px"></label>'+
+    '<label style="flex:1;text-align:left;font-size:13px;color:var(--soluk)">☀️ Kalkış<input type="time" step="900" class="sifreIn" id="hKalk" value="'+k+'" style="margin-top:6px"></label></div>'+
+    '<p id="hOzet" style="margin:6px 0 0;font-size:15px;color:var(--yazi)"></p><p id="hUyari" style="margin:4px 0 0;font-size:13px;color:#ffd98a"></p>'+
+    '<button class="ana" id="hKay">'+(ilk ? 'Kaydet ve başla' : 'Kaydet')+'</button>'+(ilk ? '' : '<button class="ikinci" id="tm">Vazgeç</button>');
+}
+function hedefOku(){
+  var y = document.getElementById("hYat").value, k = document.getElementById("hKalk").value; if(!y || !k) return null;
+  var ym = +y.slice(0,2)*60 + +y.slice(3,5), km = +k.slice(0,2)*60 + +k.slice(3,5);
+  var yg = ym < 12*60 ? ym + 1440 : ym;   // gece dakikası
+  return { yat:yg, kalk:km, sure:1440 + km - yg, ym:ym, km:km };
+}
+function hedefFormBagla(ilk){
+  function guncelle(){
+    var h = hedefOku(), oz = document.getElementById("hOzet"), uy = document.getElementById("hUyari"), b = document.getElementById("hKay");
+    if(!h){ oz.textContent = ""; uy.textContent = ""; b.disabled = true; return; }
+    var hata = (h.ym >= 12*60 && h.ym < 19*60) ? "Yatış saati 19:00 ile 04:00 arasında olmalı" : (h.ym >= 4*60 && h.ym < 12*60) ? "Yatış saati 19:00 ile 04:00 arasında olmalı" :
+               (h.km < 3*60 || h.km > 14*60) ? "Kalkış saati 03:00 ile 14:00 arasında olmalı" : (h.sure < 3*60 || h.sure > 14*60) ? "Bu aralık uyku için mantıklı görünmüyor" : "";
+    b.disabled = !!hata;
+    oz.innerHTML = hata ? "" : "Hedefin: <b>"+sureYaz(h.sure)+"</b> uyku";
+    uy.textContent = hata || (h.sure < 7*60 ? "⚠️ Yetişkinler için önerilen uyku 7–9 saat." : h.sure > 10*60 ? "Bu biraz fazla olabilir; yetişkinler için önerilen 7–9 saat." : "");
+  }
+  document.getElementById("hYat").oninput = guncelle; document.getElementById("hKalk").oninput = guncelle; guncelle();
+  document.getElementById("hKay").onclick = function(){
+    var h = hedefOku(); if(!h) return;
+    veri.hedef = { yat:h.yat, kalk:h.kalk, t:Date.now() }; yaz(); bulutYukle(); hedefUygula(); ciz(); try{ hatirlatKur(); }catch(e){}
+    toast("🎯 Hedefin kaydedildi");
+    if(ilk){ kapiKontrol(); } else kapat();
+  };
+  var tm = document.getElementById("tm"); if(tm) tm.onclick = kapat;
+}
+function hedefSayfa(){ sayfa.innerHTML = hedefFormHtml(false); ac(); hedefFormBagla(false); }
 
 /* ---------- arka planda 5 dk kalınca rüyaları kilitle ---------- */
 var gizlendi = 0;
