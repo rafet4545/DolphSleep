@@ -29,6 +29,16 @@ header h1{font-size:20px;margin:0;letter-spacing:.2px}
 header small{color:var(--soluk);font-size:13px}
 .hesapBtn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid var(--cizgi);color:var(--yazi);border-radius:99px;padding:6px 12px 6px 6px;font-size:13px;cursor:pointer;max-width:48%}
 #liderBtn[hidden]{display:none!important}
+.anFoto{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.anFoto img{width:64px;height:64px;object-fit:cover;border-radius:12px;background:rgba(255,255,255,.08);cursor:pointer}
+.anFoto img.hata,.fotoK img.hata{opacity:.3}
+.fotoAlan{margin:10px 0 4px;clear:both}.fotoIzg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}.fotoIzg:empty{display:none}
+.fotoK{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.08);display:grid;place-items:center;font-size:22px}
+.fotoK img{width:100%;height:100%;object-fit:cover}.fotoK button{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:13px;cursor:pointer}
+#fotoBak{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.94);display:flex;align-items:center;justify-content:center}
+#fotoBak img{max-width:100%;max-height:100%;object-fit:contain}
+#fotoBak button{position:absolute;border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:50%;width:48px;height:48px;font-size:26px;cursor:pointer}
+#fotoBak .fbKapa{top:calc(14px + env(safe-area-inset-top,0px));right:14px;font-size:20px}#fotoBak .sol{left:10px;top:50%}#fotoBak .sag{right:10px;top:50%}
+#fotoBak .fbSay{position:absolute;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);color:#fff;font-size:14px;opacity:.8}
 .sesBtn{display:inline-flex;align-items:center;gap:8px;margin:6px 0 4px auto;float:right;border:1px solid var(--cizgi);background:rgba(255,255,255,.06);color:var(--soluk);border-radius:999px;padding:7px 14px;font-size:13px;font-family:inherit;cursor:pointer}
 .sesBtn.on{color:#fff;border-color:rgba(255,92,108,.6);background:rgba(255,92,108,.16)}
 .sesNokta{width:10px;height:10px;border-radius:50%;background:#ff5c6c;animation:bbNabiz 1.1s ease-in-out infinite}
@@ -366,7 +376,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 24;
+var SURUM = 25;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 /* kişinin kendi hedefi: veri.hedef = { yat: gece dakikası (23:00=1380, 00:30=1470), kalk: gün dakikası (07:30=450), t } */
@@ -982,8 +992,8 @@ function sekmeAcildi(i){ if(i===S_RUYA) ruyaCiz(); if(i===S_GUN) gunCiz(); guard
 /* ---------- şifreleme (AES-GCM, şifreden PBKDF2 ile anahtar) ---------- */
 var KRIPTO = { key:null, ac:false, yukUid:null, yukSoz:null };
 /* anahtar cihazda IndexedDB'de durur (dışarı aktarılamaz); buluta hiç gitmez */
-function idbIs(mod, f){ return new Promise(function(ok, no){ var r = indexedDB.open("dolphsleep", 1); r.onupgradeneeded = function(){ r.result.createObjectStore("a"); }; r.onerror = function(){ no(r.error); };
-  r.onsuccess = function(){ try{ var t = r.result.transaction("a", mod), q = f(t.objectStore("a")); t.oncomplete = function(){ ok(q && q.result); }; t.onerror = function(){ no(t.error); }; }catch(e){ no(e); } }; }); }
+function idbIs(mod, f, depo){ depo = depo || "a"; return new Promise(function(ok, no){ var r = indexedDB.open("dolphsleep", 2); r.onupgradeneeded = function(){ var db = r.result; if(!db.objectStoreNames.contains("a")) db.createObjectStore("a"); if(!db.objectStoreNames.contains("f")) db.createObjectStore("f"); }; r.onerror = function(){ no(r.error); };
+  r.onsuccess = function(){ try{ var t = r.result.transaction(depo, mod), q = f(t.objectStore(depo)); t.oncomplete = function(){ r.result.close(); ok(q && q.result); }; t.onerror = function(){ no(t.error); }; }catch(e){ no(e); } }; }); }
 function idbAl(uid){ return idbIs("readonly", function(st){ return st.get("k."+uid); }); }
 function idbKoy(uid, k){ return idbIs("readwrite", function(st){ return st.put(k, "k."+uid); }).catch(function(){}); }
 function idbSil(uid){ return idbIs("readwrite", function(st){ return st.delete("k."+uid); }).catch(function(){}); }
@@ -1114,7 +1124,7 @@ function ozelSenk(){
     });
     gYaz();
     if(KRIPTO.key) gunCoz(); else Object.keys(G.gunler).forEach(function(k){ if(!G.gunler[k].b) gBulutaYaz(k); });
-    ozelYuklendi = true; kapiKontrol();
+    ozelYuklendi = true; kapiKontrol(); fotoBekleyenYukle();
     if(aktifSekme===S_RUYA) ruyaCiz(); if(aktifSekme===S_GUN) gunCiz();
   }).catch(ozelHata);
 }
@@ -1550,13 +1560,14 @@ document.addEventListener("visibilitychange", function(){
 /* ---------- şifre ayarları ---------- */
 function kilitKur(sifre){
   var salt = b64(crypto.getRandomValues(new Uint8Array(16))), iter = 250000, key, simdi = Date.now();
-  var tsk = null;
+  var tsk = null, eskiKey = kilitli() ? KRIPTO.key : null;
   return rHazirla().then(gunCoz).then(function(){ return taslakOku().then(function(t){ tsk = t; }); }).then(function(){ return anahtarTuret(sifre, salt, iter); }).then(function(k){ key = k; return sifrele(key, "dolphsleep-ok"); }).then(function(dog){
     var ids = Object.keys(R.kayit).filter(function(id){ return !R.kayit[id].sil && rAcik[id] && !rAcik[id].bozuk; });
     return Promise.all(ids.map(function(id){ return sifrele(key, rAcik[id]).then(function(e){ R.kayit[id] = { id:id, gun:R.kayit[id].gun, t:simdi, enc:e, cop:R.kayit[id].cop }; rAcikT[id] = simdi; }); })).then(function(){
       R.kilit = { aktif:true, salt:salt, iter:iter, dog:dog, t:simdi }; R.soruldu = true; KRIPTO.key = key; KRIPTO.ac = true; rYaz(); idbKoy(uidAnahtar(), key);
       ids.forEach(function(id){ rBulutaYaz(R.kayit[id]); }); kilitBulutaYaz(); gunHepsiniYukle();
       if(tsk) taslakKaydetSimdi(tsk);
+      if(eskiKey) fotoYenidenSifrele(eskiKey, key);
       bulutBekliyor = false; bulutBirlesti = true; bulutYukle(); kapiKontrol();
     });
   });
@@ -1600,6 +1611,7 @@ function unuttumSayfa(){
   };
 }
 function sifreSifirla(){
+    fotoUrl = {}; if(kullanici && FBS) FBS.F.getDocs(altKol("foto")).then(function(q){ q.docs.forEach(function(d){ FBS.F.deleteDoc(d.ref).catch(function(){}); }); }).catch(function(){});
     var simdi = Date.now(); idbSil(uidAnahtar()); KRIPTO.ac = false; bulutBekliyor = false; bulutBirlesti = true;
     Object.keys(R.kayit).forEach(function(id){ if(!R.kayit[id].sil){ R.kayit[id] = { id:id, gun:R.kayit[id].gun || "", t:simdi, sil:true }; rBulutaYaz(R.kayit[id]); } });
     R.kilit = { aktif:false, t:simdi }; R.soruldu = false; KRIPTO.key = null; rAcik = {}; rAcikT = {}; rYaz(); kilitBulutaYaz();
@@ -1647,6 +1659,7 @@ function gunCiz(){
       (sk.length ? '<div class="duyOzet">'+sk.map(function(x){ return '<span>'+DUY[x][1]+' '+DUY[x][2]+(say[x] > 1 ? ' ×'+say[x] : '')+'</span>'; }).join("")+'</div>' : '')+'</section>'+
       '<section class="kart"><h2>Kayıtlar</h2>'+d.anlar.slice().reverse().map(function(a){ var p = p10(a), du = (a.duygu || []).map(function(x){ return DUY[x] ? DUY[x][1] : ''; }).join("");
         return '<div class="an"><span class="anS">'+hm(a.t)+'</span><span class="anE">'+ruh(p)[0]+'<small style="color:'+ruhRenk(p)+'">'+p+'</small></span><span class="anN'+(a.not || du ? '' : ' bosN')+'">'+(du ? '<span class="anD">'+du+'</span>' : '')+(a.not ? esc(a.not) : du ? '' : ruh(p)[1])+
+          ((a.foto || []).length ? '<span class="anFoto">'+a.foto.map(function(f, i){ return '<img data-fid="'+f+'" data-fl="'+a.foto.join(",")+'" data-fi="'+i+'" alt="">'; }).join("")+'</span>' : '')+
           (anYorumIs[a.id] ? '<span class="anAI bekle">💬 Yorumlanıyor…</span>' : a.ai && a.ai.metin ? '<span class="anAI">💬 '+esc(a.ai.metin)+'</span>' : '')+'</span><button data-ap="'+a.id+'" aria-label="Paylaş">📤</button><button data-a="'+a.id+'" aria-label="Düzenle">✎</button></div>'; }).join("")+'</section>';
   }
   if(d.kapanis){
@@ -1661,6 +1674,8 @@ function gunCiz(){
   guardGuncelle();
   document.getElementById("gGeri").onclick = function(){ gGun = gunEkle(gGun, -1); gunCiz(); };
   var gp = document.getElementById("gPay"); if(gp) gp.onclick = function(){ gunPaylas(gGun); };
+  fotoYukleGoster(document.getElementById("gunIc"));
+  document.querySelectorAll("#gunIc .anFoto img").forEach(function(im){ im.onclick = function(e){ e.stopPropagation(); fotoBak(im.getAttribute("data-fl").split(","), +im.getAttribute("data-fi")); }; });
   document.getElementById("gIleri").onclick = function(){ gGun = gunEkle(gGun, 1); gunCiz(); };
   document.getElementById("anYeni").onclick = function(){ anSayfa(null); };
   document.getElementById("bdtYeni").onclick = function(){ bdtSayfa(null); };
@@ -1788,6 +1803,8 @@ function anSayfa(id){
     '<div class="cipler" id="anDu">'+DUYGU.map(function(x){ return '<button data-e="'+x[0]+'" class="'+(du.indexOf(x[0])>=0 ? 'on' : '')+'">'+x[1]+' '+x[2]+'</button>'; }).join("")+'</div>'+
     '<div class="alan" style="grid-template-columns:1fr"><label>Saat · '+gunUzun(gGun)+'<input type="time" id="anSaat" value="'+saat+'"></label></div>'+
     '<textarea class="yaziAlan" id="anNot" style="min-height:96px" placeholder="Not bırak (isteğe bağlı): ne oldu, neden böyle hissediyorsun?">'+esc(a ? a.not : "")+'</textarea>'+
+    '<div class="fotoAlan"><div class="fotoIzg" id="anFotoIzg"></div><div class="ikiBtn" id="anFotoBtn"><button class="ikinci" id="anGal">🖼 Galeriden seç</button><button class="ikinci" id="anKam">📷 Fotoğraf çek</button></div>'+
+    '<input type="file" id="anGalIn" accept="image/*" multiple hidden><input type="file" id="anKamIn" accept="image/*" capture="environment" hidden></div>'+
     (a && a.ai && a.ai.metin ? '<div class="bilgiK" style="margin-top:10px">💬 '+esc(a.ai.metin)+'<div class="ikiBtn" style="margin-top:8px"><button class="ikinci" id="anAIy">🔄 Yeniden yorumla</button><button class="ikinci" id="anAIs">Yorumu sil</button></div></div>' : '')+
     '<button class="ana" id="anKay">Kaydet</button>'+(a ? '<button class="ikinci" id="anSil" style="color:var(--kirmizi)">Sil</button>' : '')+'<button class="ikinci" id="anVaz">Vazgeç</button>';
   ac();
@@ -1795,13 +1812,34 @@ function anSayfa(id){
   function guncelle(){ p = +r.value; document.getElementById("pE").textContent = ruh(p)[0]; document.getElementById("pS").innerHTML = p+'<small>/10</small>'; document.getElementById("pS").style.color = ruhRenk(p); document.getElementById("pA").textContent = ruh(p)[1]; r.style.setProperty("--y", ((p-1)/9*100)+"%"); }
   r.oninput = function(){ guncelle(); titre(5); }; guncelle();
   sayfa.querySelectorAll("#anDu button").forEach(function(b){ b.onclick = function(){ var e = b.getAttribute("data-e"), i = du.indexOf(e); if(i>=0) du.splice(i,1); else du.push(e); b.classList.toggle("on", i<0); }; });
-  document.getElementById("anVaz").onclick = kapat;
+  var fotolar = a ? (a.foto || []).slice() : [], yeniFoto = [], fotoIs = 0;
+  function fotoCiz(){
+    var z = document.getElementById("anFotoIzg"); if(!z) return;
+    z.innerHTML = fotolar.map(function(f, i){ return '<div class="fotoK"><img data-fid="'+f+'" alt=""><button data-fx="'+i+'" aria-label="Kaldır">✕</button></div>'; }).join("")+(fotoIs ? '<div class="fotoK bekle">⏳</div>' : '');
+    document.getElementById("anFotoBtn").style.display = fotolar.length + fotoIs >= FOTO_MAX ? "none" : "";
+    z.querySelectorAll("[data-fx]").forEach(function(b){ b.onclick = function(){ var i = +b.getAttribute("data-fx"), f = fotolar[i]; fotolar.splice(i, 1); if(yeniFoto.indexOf(f) >= 0) fotoSil(f); fotoCiz(); }; });
+    fotoYukleGoster(z);
+  }
+  function fotoEkle(dosyalar){
+    var l = [].slice.call(dosyalar || []), bos = FOTO_MAX - fotolar.length - fotoIs;
+    if(l.length > bos){ toast("En fazla "+FOTO_MAX+" fotoğraf eklenebilir"); l = l.slice(0, Math.max(0, bos)); }
+    l.forEach(function(d){ fotoIs++; fotoCiz();
+      fotoKaydet(d).then(function(fid){ fotolar.push(fid); yeniFoto.push(fid); }).catch(function(){ toast("Bu fotoğraf eklenemedi"); }).then(function(){ fotoIs--; fotoCiz(); }); });
+  }
+  var gi = document.getElementById("anGalIn"), ki = document.getElementById("anKamIn");
+  document.getElementById("anGal").onclick = function(){ gi.click(); }; document.getElementById("anKam").onclick = function(){ ki.click(); };
+  gi.onchange = function(){ fotoEkle(gi.files); gi.value = ""; }; ki.onchange = function(){ fotoEkle(ki.files); ki.value = ""; };
+  fotoCiz();
+  document.getElementById("anVaz").onclick = function(){ yeniFoto.forEach(fotoSil); kapat(); };
   var aiy = document.getElementById("anAIy"), ais = document.getElementById("anAIs");
   if(aiy) aiy.onclick = function(){ gunGuncelle(gGun, function(x){ x.anlar.forEach(function(y){ if(y.id === a.id) delete y.ai; }); }); kapat(); anYorumla(gGun, a.id); };
   if(ais) ais.onclick = function(){ gunGuncelle(gGun, function(x){ x.anlar.forEach(function(y){ if(y.id === a.id){ delete y.ai; y.d = Date.now(); } }); }); kapat(); gunCiz(); toast("Yorum silindi"); };
   document.getElementById("anKay").onclick = function(){
     var s = (document.getElementById("anSaat").value || saat).split(":"), t = new Date(kodTs(gGun)); t.setHours(+s[0], +s[1], 0, 0);
+    if(fotoIs){ toast("Fotoğraflar yükleniyor, bir saniye…"); return; }
     var yeni = { id:a ? a.id : rid(), t:t.getTime(), p:p, v:2, duygu:du, not:document.getElementById("anNot").value.trim(), d:Date.now() };
+    if(fotolar.length) yeni.foto = fotolar.slice();
+    if(a) (a.foto || []).forEach(function(f){ if(fotolar.indexOf(f) < 0) fotoSil(f); });
     if(a && a.ai && a.not === yeni.not && (a.duygu || []).join() === du.join() && a.p === p) yeni.ai = a.ai;   // değişmediyse yorum kalsın
     gunGuncelle(gGun, function(x){ x.anlar = x.anlar.filter(function(y){ return y.id !== yeni.id; }); x.anlar.push(yeni); x.anlar.sort(function(m,n){ return m.t - n.t; }); });
     kapat(); gunCiz(); toast(ruh(p)[0]+" Kaydedildi");
@@ -1979,7 +2017,7 @@ function hesapSilSayfa(){
 }
 function hesapSil(){
   var F = FBS.F, uid = kullanici.uid; hesapSiliniyor = true; clearTimeout(bulutZ);
-  Promise.all(["ruyalar","gunler","ozel","isler"].map(function(kol){ return F.getDocs(altKol(kol)).then(function(q){ return Promise.all(q.docs.map(function(d){ return F.deleteDoc(d.ref); })); }); }))
+  Promise.all(["ruyalar","gunler","ozel","isler","foto"].map(function(kol){ return F.getDocs(altKol(kol)).then(function(q){ return Promise.all(q.docs.map(function(d){ return F.deleteDoc(d.ref); })); }); }))
   .then(function(){ return F.deleteDoc(F.doc(FBS.db, "dolphsleepLider", uid)).catch(function(){}); })
   .then(function(){ return F.deleteDoc(bulutRef()); })
   .then(function(){
@@ -2366,6 +2404,89 @@ function sesEkle(ta){
 }
 new MutationObserver(function(){ document.querySelectorAll("textarea.yaziAlan:not([data-ses])").forEach(sesEkle); if(sesAktif && !document.body.contains(sesAktif.ta)) sesDurdur(); })
   .observe(document.body, { childList:true, subtree:true });
+
+/* ---------- günlük fotoğrafları: küçültülür, şifrelenir, buluta öyle gider ---------- */
+var FOTO_MAX = 4, fotoUrl = {};
+function fotoSikistir(dosya){
+  return new Promise(function(ok, no){
+    var u = URL.createObjectURL(dosya), im = new Image();
+    im.onload = function(){
+      URL.revokeObjectURL(u);
+      var en = 1600, oran = Math.min(1, en/Math.max(im.width, im.height)), w = Math.round(im.width*oran), h = Math.round(im.height*oran);
+      var c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(im, 0, 0, w, h);
+      var q = .8, d = c.toDataURL("image/jpeg", q);
+      while(d.length > 520000 && q > .4){ q -= .1; d = c.toDataURL("image/jpeg", q); }
+      if(d.length > 520000){ var c2 = document.createElement("canvas"); c2.width = Math.round(w*.7); c2.height = Math.round(h*.7); c2.getContext("2d").drawImage(c, 0, 0, c2.width, c2.height); d = c2.toDataURL("image/jpeg", .6); }
+      ok(d);
+    };
+    im.onerror = function(){ URL.revokeObjectURL(u); no(new Error("foto")); };
+    im.src = u;
+  });
+}
+function fotoKaydet(dosya){
+  if(!KRIPTO.key) return Promise.reject(new Error("anahtar"));
+  var fid = "f"+rid().replace(/[^a-z0-9]/gi, ""), key = KRIPTO.key;
+  return fotoSikistir(dosya).then(function(d){ fotoUrl[fid] = d; return sifrele(key, d); }).then(function(e){
+    var doc = { enc:e, t:Date.now(), b:0 };
+    return idbIs("readwrite", function(st){ return st.put(doc, uidAnahtar()+"."+fid); }, "f").then(function(){ fotoBulutaYaz(fid, doc); return fid; });
+  });
+}
+function fotoBulutaYaz(fid, doc){
+  if(!kullanici || !FBS || hesapSiliniyor) return;
+  FBS.F.setDoc(altRef("foto", fid), { enc:doc.enc, t:doc.t }).then(function(){ doc.b = 1; idbIs("readwrite", function(st){ return st.put(doc, uidAnahtar()+"."+fid); }, "f").catch(function(){}); }).catch(function(){});
+}
+function fotoSil(fid){
+  delete fotoUrl[fid];
+  idbIs("readwrite", function(st){ return st.delete(uidAnahtar()+"."+fid); }, "f").catch(function(){});
+  if(kullanici && FBS) FBS.F.deleteDoc(altRef("foto", fid)).catch(function(){});
+}
+function fotoAc(fid){   // önce bellek, sonra cihaz, sonra bulut
+  if(fotoUrl[fid]) return Promise.resolve(fotoUrl[fid]);
+  if(!KRIPTO.key) return Promise.reject(new Error("kilit"));
+  var key = KRIPTO.key, ad = uidAnahtar()+"."+fid;
+  return idbIs("readonly", function(st){ return st.get(ad); }, "f").catch(function(){ return null; }).then(function(doc){
+    if(doc && doc.enc) return doc;
+    if(!kullanici || !FBS) throw new Error("yok");
+    return FBS.F.getDoc(altRef("foto", fid)).then(function(sn){ if(!sn.exists()) throw new Error("yok"); var d = sn.data(); d.b = 1; idbIs("readwrite", function(st){ return st.put(d, ad); }, "f").catch(function(){}); return d; });
+  }).then(function(doc){ return coz(key, doc.enc); }).then(function(d){ fotoUrl[fid] = d; return d; });
+}
+function fotoYukleGoster(kok){
+  if(!kok) return;
+  kok.querySelectorAll("img[data-fid]").forEach(function(im){
+    var f = im.getAttribute("data-fid"); if(im.getAttribute("src")) return;
+    fotoAc(f).then(function(d){ im.src = d; }).catch(function(){ im.classList.add("hata"); im.alt = "Açılamadı"; });
+  });
+}
+function fotoBekleyenYukle(){   // çevrimdışıyken eklenenleri buluta gönder
+  if(!kullanici || !FBS || !KRIPTO.key) return;
+  var on = uidAnahtar()+".";
+  idbIs("readonly", function(st){ return st.getAllKeys(); }, "f").then(function(ks){
+    (ks || []).filter(function(k){ return String(k).indexOf(on) === 0; }).forEach(function(k){
+      idbIs("readonly", function(st){ return st.get(k); }, "f").then(function(doc){ if(doc && !doc.b) fotoBulutaYaz(String(k).slice(on.length), doc); });
+    });
+  }).catch(function(){});
+}
+function fotoYenidenSifrele(eski, yeni){   // şifre değişince fotoğraflar yeni anahtarla yeniden kilitlenir
+  if(!kullanici || !FBS) return;
+  FBS.F.getDocs(altKol("foto")).then(function(q){
+    q.docs.forEach(function(d){ var fid = d.id, x = d.data();
+      coz(eski, x.enc).then(function(u){ fotoUrl[fid] = u; return sifrele(yeni, u); }).then(function(e){ var doc = { enc:e, t:Date.now(), b:0 }; return idbIs("readwrite", function(st){ return st.put(doc, uidAnahtar()+"."+fid); }, "f").then(function(){ fotoBulutaYaz(fid, doc); }); }).catch(function(){});
+    });
+  }).catch(function(){});
+}
+function fotoBak(liste, i){
+  var d = document.createElement("div"); d.id = "fotoBak";
+  function goster(){ d.innerHTML = '<img alt="">'+(liste.length > 1 ? '<button class="fbOk sol">‹</button><button class="fbOk sag">›</button><span class="fbSay">'+(i+1)+'/'+liste.length+'</span>' : '')+'<button class="fbKapa">✕</button>';
+    fotoAc(liste[i]).then(function(u){ var im = d.querySelector("img"); if(im) im.src = u; }).catch(function(){});
+    d.querySelector(".fbKapa").onclick = kapa; var s1 = d.querySelector(".sol"), s2 = d.querySelector(".sag");
+    if(s1) s1.onclick = function(e){ e.stopPropagation(); i = (i - 1 + liste.length) % liste.length; goster(); };
+    if(s2) s2.onclick = function(e){ e.stopPropagation(); i = (i + 1) % liste.length; goster(); }; }
+  function kapa(){ d.remove(); }
+  d.onclick = function(e){ if(e.target === d || e.target.tagName === "IMG") kapa(); };
+  var x0 = null; d.addEventListener("touchstart", function(e){ x0 = e.touches[0].clientX; }, { passive:true });
+  d.addEventListener("touchend", function(e){ if(x0 === null || liste.length < 2) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; if(Math.abs(dx) > 50){ i = (i + (dx < 0 ? 1 : -1) + liste.length) % liste.length; goster(); } });
+  document.body.appendChild(d); goster();
+}
 /* ---------- arka planda 5 dk kalınca rüyaları kilitle ---------- */
 var gizlendi = 0;
 document.addEventListener("visibilitychange", function(){
