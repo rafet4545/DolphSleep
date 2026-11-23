@@ -342,7 +342,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 18;
+var SURUM = 19;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 var KEY = "dolphsleep.v1", AYAR_KEY = "dolphsleep.ayar.v1";
@@ -436,10 +436,20 @@ function istatCiz(){
   if(!l.length){ k.innerHTML = '<div class="bos" style="grid-column:1/-1">Henüz kayıt yok. Bu gece 🌙 butonuna bas.</div>'; return; }
   var h = istatHesap(aktifGeceler()), ort = h.ort, borc = h.borc, duzen = h.duzen || 0, seri = h.seri, hedefte = h.hedefte, d = { length:h.n };
   k.innerHTML =
-    ist(sureYaz(ort), "ortalama uyku", ort>=450?"iyi":ort>=390?"orta":"kotu")+
+    (function(){ var sg = sonGece(); if(!sg) return ist("—", "son gece", "");
+      var m = sg.dk; return ist(sureYaz(m), sg.ad, m>=450?"iyi":m>=390?"orta":"kotu"); })()+
     ist(l.length>1 ? duzen+"/100" : "—", "düzen puanı", l.length<2?"":duzen>=75?"iyi":duzen>=50?"orta":"kotu")+
     ist(borc ? "−"+sureYaz(borc) : "Yok 🎉", "uyku borcu", borc<=60?"iyi":borc<=240?"orta":"kotu")+
     ist(seri+" 🔥", "seri · "+hedefte+"/"+d.length+" gece hedefte", seri>=3?"iyi":seri>=1?"orta":"kotu");
+}
+/* son gece: en son uyanılan gecenin uykusu (gece bölünmüşse parçalar toplanır, şekerlemeler hariç) */
+function sonGece(){
+  var l = gercekGeceler().filter(function(g){ return g.k; }).sort(function(a,b){ return b.k - a.k; }); if(!l.length) return null;
+  var u = new Date(l[0].k); u.setHours(0,0,0,0); var bas = u.getTime() - 6*36e5, son = u.getTime() + 16*36e5;   // önceki gün 18:00 – o gün 16:00
+  var top = l.filter(function(g){ return g.k > bas && g.k <= son; }).reduce(function(t,g){ return t + (g.k - g.y)/60000; }, 0);
+  var bugun = new Date(); bugun.setHours(0,0,0,0), fark = Math.round((bugun - u)/864e5);
+  var ad = fark===0 ? "dün gece uyudun" : fark===1 ? "önceki gece uyudun" : u.getDate()+" "+AY[u.getMonth()]+" sabahına kadar";
+  return { dk:top, ad:ad };
 }
 function ist(b, s, c){ return '<div class="ist '+c+'"><b>'+b+'</b><span>'+s+'</span></div>'; }
 function grafCiz(){ document.getElementById("graf").innerHTML = grafSvg(sonGeceler(7).reverse()); }
