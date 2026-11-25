@@ -377,7 +377,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 26;
+var SURUM = 27;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 /* kişinin kendi hedefi: veri.hedef = { yat: gece dakikası (23:00=1380, 00:30=1470), kalk: gün dakikası (07:30=450), t } */
@@ -1172,7 +1172,7 @@ function ruyaCiz(){
     function dene(){
       if(!inp.value) return;
       btn.disabled = true; btn.textContent = "Açılıyor…";
-      kilitAc(inp.value).then(function(){ ruyaCiz(); }).catch(function(){ btn.disabled = false; btn.textContent = "Aç"; inp.value = ""; toast("Şifre yanlış"); try{ navigator.vibrate && navigator.vibrate([60,40,60]); }catch(e){} });
+      kilitAc(inp.value).then(function(){ ruyaCiz(); bioTeklif(); }).catch(function(){ btn.disabled = false; btn.textContent = "Aç"; inp.value = ""; toast("Şifre yanlış"); try{ navigator.vibrate && navigator.vibrate([60,40,60]); }catch(e){} });
     }
     btn.onclick = dene; inp.onkeydown = function(e){ if(e.key==="Enter") dene(); };
     document.getElementById("rUnuttum").onclick = unuttumSayfa;
@@ -1650,7 +1650,7 @@ function gunCiz(){
     bioBagla("gBio", gunCiz);
     var gsa = document.getElementById("gSifAc"), gsi = document.getElementById("gSif");
     var gDene = function(){ if(!gsi.value) return; gsa.disabled = true; gsa.textContent = "Açılıyor…";
-      kilitAc(gsi.value).then(function(){ gunCiz(); }).catch(function(){ gsa.disabled = false; gsa.textContent = "Aç"; gsi.value = ""; toast("Şifre yanlış"); try{ navigator.vibrate && navigator.vibrate([60,40,60]); }catch(e){} }); };
+      kilitAc(gsi.value).then(function(){ gunCiz(); bioTeklif(); }).catch(function(){ gsa.disabled = false; gsa.textContent = "Aç"; gsi.value = ""; toast("Şifre yanlış"); try{ navigator.vibrate && navigator.vibrate([60,40,60]); }catch(e){} }); };
     gsa.onclick = gDene; gsi.onkeydown = function(e){ if(e.key==="Enter") gDene(); };
     return;
   }
@@ -2505,6 +2505,22 @@ function fotoBak(liste, i){
    Şifreleme anahtarı zaten bu cihazda (IndexedDB) duruyor; biyometri veri telefondan çıkmaz. ---------- */
 function bioAnahtar(){ return "dolphsleep.bio."+uidAnahtar(); }
 function bioKayit(){ try{ return localStorage.getItem(bioAnahtar()) || ""; }catch(e){ return ""; } }
+function bioTeklif(){
+  if(bioKayit() || babaanneMi()) return;
+  var ek = "dolphsleep.bioErt."+uidAnahtar(); try{ if(+localStorage.getItem(ek) > Date.now()) return; }catch(e){}
+  bioDestek().then(function(var_){ if(!var_ || bioKayit()) return;
+    setTimeout(function(){ if(perde.classList.contains("ac")) return;
+      sayfa.innerHTML = '<div style="text-align:center;font-size:44px;margin:6px 0">🔓</div><h3 style="text-align:center">Bir dahakine parmak izi / Face ID ile açılsın mı?</h3>'+
+        '<p style="text-align:center">Şifre yazmadan açarsın. Şifren yine yedek olarak kalır. Sadece bu telefonda geçerli.</p>'+
+        '<button class="ana" id="btEvet">Evet, aç</button><button class="ikinci" id="btHayir">Şimdi değil</button>';
+      ac();
+      document.getElementById("btHayir").onclick = function(){ try{ localStorage.setItem(ek, String(Date.now() + 7*864e5)); }catch(e){} kapat(); };
+      document.getElementById("btEvet").onclick = function(){ var bt = this; bt.disabled = true; bt.textContent = "Bekleniyor…";
+        bioKur().then(function(){ kapat(); toast("Parmak izi / Face ID açıldı ✓"); })
+          .catch(function(){ bt.disabled = false; bt.textContent = "Evet, aç"; toast("Olmadı, istersen Ayarlar'dan tekrar dene"); }); };
+    }, 600);
+  });
+}
 function bioSil(){ try{ localStorage.removeItem(bioAnahtar()); }catch(e){} }
 var bioVarSoz = null;
 function bioDestek(){
@@ -2532,7 +2548,10 @@ function bioBagla(id, sonra){
   if(!bioKayit() || !KRIPTO.key) return;
   bioDestek().then(function(var_){ var b = document.getElementById(id); if(!b || !var_) return; b.style.display = "";
     b.onclick = function(){ bioAc().then(function(){ sonra(); }).catch(function(e){ if(!(e && e.name === "NotAllowedError")) toast("Olmadı, şifreyle aç"); }); };
-    if(!bioBagla.oto){ bioBagla.oto = 1; setTimeout(function(){ if(document.body.contains(b)) b.click(); }, 350); }   /* sekme ilk açıldığında kendiliğinden sorar */
+    /* sekmeye her girişte kendiliğinden sorar (iPhone dokunuş istediği için orada sadece buton) */
+    if(!iosMu() && !bioBagla.bekle && Date.now() - (bioBagla.son || 0) > 4000){ bioBagla.son = Date.now(); bioBagla.bekle = 1;
+      setTimeout(function(){ if(!document.getElementById(id) || kilitAcikMi()){ bioBagla.bekle = 0; return; }
+        bioAc().then(function(){ bioBagla.bekle = 0; sonra(); }).catch(function(){ bioBagla.bekle = 0; }); }, 350); }
   });
 }
 /* ---------- arka planda 5 dk kalınca rüyaları kilitle ---------- */
