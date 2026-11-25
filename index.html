@@ -29,6 +29,7 @@ header h1{font-size:20px;margin:0;letter-spacing:.2px}
 header small{color:var(--soluk);font-size:13px}
 .hesapBtn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid var(--cizgi);color:var(--yazi);border-radius:99px;padding:6px 12px 6px 6px;font-size:13px;cursor:pointer;max-width:48%}
 #liderBtn[hidden]{display:none!important}
+.bioBtn{display:block;width:100%;margin:0 0 12px;padding:15px;border-radius:16px;border:1px solid rgba(159,180,255,.45);background:rgba(159,180,255,.14);color:var(--yazi);font-size:16px;font-weight:700;font-family:inherit;cursor:pointer}
 .anFoto{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.anFoto img{width:64px;height:64px;object-fit:cover;border-radius:12px;background:rgba(255,255,255,.08);cursor:pointer}
 .anFoto img.hata,.fotoK img.hata{opacity:.3}
 .fotoAlan{margin:10px 0 4px;clear:both}.fotoIzg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}.fotoIzg:empty{display:none}
@@ -376,7 +377,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 25;
+var SURUM = 26;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 /* kişinin kendi hedefi: veri.hedef = { yat: gece dakikası (23:00=1380, 00:30=1470), kalk: gün dakikası (07:30=450), t } */
@@ -1165,7 +1166,8 @@ function ruyaCiz(){
   }
   if(!kilitAcikMi()){
     k.innerHTML = '<div class="kilitEkran"><div class="kilitI">🔒</div><h3>Rüyaların kilitli</h3><p>Açmak için şifreni gir.</p>'+
-      '<input type="password" class="sifreIn" id="rSif" placeholder="Şifre" autocomplete="current-password"><button class="ana" id="rAc">Aç</button><button class="ikinci" id="rUnuttum">Şifremi unuttum</button></div>';
+      bioDugme("rBio")+'<input type="password" class="sifreIn" id="rSif" placeholder="Şifre" autocomplete="current-password"><button class="ana" id="rAc">Aç</button><button class="ikinci" id="rUnuttum">Şifremi unuttum</button></div>';
+    bioBagla("rBio", ruyaCiz);
     var inp = document.getElementById("rSif"), btn = document.getElementById("rAc");
     function dene(){
       if(!inp.value) return;
@@ -1597,8 +1599,18 @@ function sifreKoySayfa(){
 }
 function sifreAyarSayfa(){
   if(!kilitli()){ sifreKoySayfa(); return; }
-  sayfa.innerHTML = '<h3>🔒 Şifre ayarları</h3><p>Uyku, rüya ve gün kayıtların şifreli. Şifre zorunlu, kaldırılamaz.</p><button class="ana" id="sDeg">Şifreyi değiştir</button><button class="ikinci" id="tm">Kapat</button>';
+  sayfa.innerHTML = '<h3>🔒 Şifre ayarları</h3><p>Uyku, rüya ve gün kayıtların şifreli. Şifre zorunlu, kaldırılamaz.</p>'+
+    '<div class="satir" id="bioSatir" style="display:none"><div class="yz">🔓 Parmak izi / Face ID ile aç<small id="bioAlt">Rüyalar ve Gün sekmesini şifre yazmadan aç</small></div><button class="kucuk" id="bioDug"></button></div>'+
+    '<button class="ana" id="sDeg">Şifreyi değiştir</button><button class="ikinci" id="tm">Kapat</button>';
   ac(); document.getElementById("tm").onclick = kapat; document.getElementById("sDeg").onclick = function(){ geriEkle(sifreAyarSayfa); sifreKoySayfa(); };
+  bioDestek().then(function(var_){ var st = document.getElementById("bioSatir"), d = document.getElementById("bioDug"); if(!st || !var_) return; st.style.display = "";
+    function ciz(){ var acik = !!bioKayit(); d.textContent = acik ? "Kapat" : "Aç"; document.getElementById("bioAlt").textContent = acik ? "Bu cihazda açık ✓" : "Rüyalar ve Gün sekmesini şifre yazmadan aç"; }
+    ciz();
+    d.onclick = function(){
+      if(bioKayit()){ bioSil(); ciz(); toast("Parmak izi / Face ID kapatıldı"); return; }
+      if(!KRIPTO.key){ toast("Önce şifrenle kilidi aç"); return; }
+      d.disabled = true; bioKur().then(function(){ ciz(); toast("🔓 Açıldı, artık parmak izi / Face ID ile açabilirsin"); }).catch(function(e){ toast(e && e.name === "NotAllowedError" ? "İptal edildi" : "Bu cihazda kurulamadı"); }).then(function(){ d.disabled = false; });
+    }; });
 }
 function unuttumSayfa(){
   sayfa.innerHTML = '<h3>Şifreni mi unuttun?</h3><p>Rüyaların ve gün kayıtların senin şifrenle kilitli, bu yüzden kimse (biz dahil) açamaz. Hatırlamaya çalış: büyük/küçük harf, Türkçe karakter…</p>'+
@@ -1634,7 +1646,8 @@ function gunCiz(){
   if(!kilitAcikMi()){   // gün kayıtları da şifreyle açılır
     var kk = document.getElementById("gunIc");
     kk.innerHTML = '<div class="kilitEkran"><div class="kilitI">🔒</div><h3>Günlüğün kilitli</h3><p>Duygu kayıtların, notların ve düşünce kayıtların şifreli. Açmak için şifreni gir.</p>'+
-      '<input type="password" class="sifreIn" id="gSif" placeholder="Şifre" autocomplete="current-password"><button class="ana" id="gSifAc">Aç</button></div>';
+      bioDugme("gBio")+'<input type="password" class="sifreIn" id="gSif" placeholder="Şifre" autocomplete="current-password"><button class="ana" id="gSifAc">Aç</button></div>';
+    bioBagla("gBio", gunCiz);
     var gsa = document.getElementById("gSifAc"), gsi = document.getElementById("gSif");
     var gDene = function(){ if(!gsi.value) return; gsa.disabled = true; gsa.textContent = "Açılıyor…";
       kilitAc(gsi.value).then(function(){ gunCiz(); }).catch(function(){ gsa.disabled = false; gsa.textContent = "Aç"; gsi.value = ""; toast("Şifre yanlış"); try{ navigator.vibrate && navigator.vibrate([60,40,60]); }catch(e){} }); };
@@ -2486,6 +2499,41 @@ function fotoBak(liste, i){
   var x0 = null; d.addEventListener("touchstart", function(e){ x0 = e.touches[0].clientX; }, { passive:true });
   d.addEventListener("touchend", function(e){ if(x0 === null || liste.length < 2) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; if(Math.abs(dx) > 50){ i = (i + (dx < 0 ? 1 : -1) + liste.length) % liste.length; goster(); } });
   document.body.appendChild(d); goster();
+}
+
+/* ---------- parmak izi / Face ID (WebAuthn): sadece bu cihazda, telefonun kendi doğrulamasıyla arayüz kilidini açar.
+   Şifreleme anahtarı zaten bu cihazda (IndexedDB) duruyor; biyometri veri telefondan çıkmaz. ---------- */
+function bioAnahtar(){ return "dolphsleep.bio."+uidAnahtar(); }
+function bioKayit(){ try{ return localStorage.getItem(bioAnahtar()) || ""; }catch(e){ return ""; } }
+function bioSil(){ try{ localStorage.removeItem(bioAnahtar()); }catch(e){} }
+var bioVarSoz = null;
+function bioDestek(){
+  if(bioVarSoz) return bioVarSoz;
+  bioVarSoz = (window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) ? PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(function(){ return false; }) : Promise.resolve(false);
+  return bioVarSoz;
+}
+function bioKur(){
+  var rnd = function(n){ return crypto.getRandomValues(new Uint8Array(n)); };
+  return navigator.credentials.create({ publicKey:{
+    challenge:rnd(32), rp:{ name:"DolphSleep", id:location.hostname },
+    user:{ id:rnd(16), name:(kullanici && kullanici.email) || "dolphsleep", displayName:gorunenAd() || "DolphSleep" },
+    pubKeyCredParams:[{ type:"public-key", alg:-7 }, { type:"public-key", alg:-257 }],
+    authenticatorSelection:{ authenticatorAttachment:"platform", userVerification:"required", residentKey:"discouraged" },
+    timeout:60000, attestation:"none" } }).then(function(c){ if(!c) throw new Error("yok"); try{ localStorage.setItem(bioAnahtar(), b64(c.rawId)); }catch(e){} return true; });
+}
+function bioAc(){
+  var id = bioKayit(); if(!id) return Promise.reject(new Error("kayit"));
+  if(!KRIPTO.key) return Promise.reject(new Error("anahtar"));
+  return navigator.credentials.get({ publicKey:{ challenge:crypto.getRandomValues(new Uint8Array(32)), allowCredentials:[{ type:"public-key", id:unb64(id) }], userVerification:"required", timeout:60000 } })
+    .then(function(a){ if(!a) throw new Error("yok"); KRIPTO.ac = true; gunCoz(); return true; });
+}
+function bioDugme(id){ return '<button class="bioBtn" id="'+id+'" style="display:none">🔓 Parmak izi / Face ID ile aç</button>'; }
+function bioBagla(id, sonra){
+  if(!bioKayit() || !KRIPTO.key) return;
+  bioDestek().then(function(var_){ var b = document.getElementById(id); if(!b || !var_) return; b.style.display = "";
+    b.onclick = function(){ bioAc().then(function(){ sonra(); }).catch(function(e){ if(!(e && e.name === "NotAllowedError")) toast("Olmadı, şifreyle aç"); }); };
+    if(!bioBagla.oto){ bioBagla.oto = 1; setTimeout(function(){ if(document.body.contains(b)) b.click(); }, 350); }   /* sekme ilk açıldığında kendiliğinden sorar */
+  });
 }
 /* ---------- arka planda 5 dk kalınca rüyaları kilitle ---------- */
 var gizlendi = 0;
