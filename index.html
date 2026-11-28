@@ -109,6 +109,19 @@ svg.graf{width:100%;height:auto;display:block}
 .gece.sek .s{color:var(--soluk)}
 .etk.ok{color:var(--yesil)}.etk.no{color:var(--kirmizi)}.etk.er{color:var(--sari)}
 .gece button{background:none;border:0;color:var(--soluk);font-size:16px;cursor:pointer;padding:6px}
+.tak{margin-top:14px;padding-top:12px;border-top:1px solid var(--cizgi)}
+.takUst{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.takUst b{font-size:15px}.takUst .kucuk{padding:6px 14px;font-size:16px}.takUst .kucuk:disabled{opacity:.35}
+.takIzgara{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
+.takBas{font-size:11px;color:var(--soluk);padding-bottom:2px}
+.takGun{position:relative;aspect-ratio:1;border-radius:10px;border:1px solid transparent;background:rgba(255,255,255,.04);color:var(--yazi);font:inherit;font-size:13px;font-variant-numeric:tabular-nums;cursor:pointer;padding:0}
+.takGun:disabled{color:var(--soluk);opacity:.55;cursor:default}
+.takGun.ok{background:rgba(79,224,160,.4)}.takGun.er{background:rgba(255,200,87,.4)}.takGun.no{background:rgba(255,107,127,.42)}
+.takGun.bugun{border-color:var(--ay)}
+.takGun i{position:absolute;right:1px;bottom:0;font-style:normal;font-size:10px}
+.takAlt{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;font-size:11px;color:var(--soluk);margin-top:10px}
+.nok{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.nok.ok{background:var(--yesil)}.nok.er{background:var(--sari)}.nok.no{background:var(--kirmizi)}
 .kucuk{background:rgba(255,255,255,.07);border:1px solid var(--cizgi);color:var(--yazi);border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer;font-family:inherit}
 .bos{color:var(--soluk);font-size:14px;text-align:center;padding:10px 0}
 .alt{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
@@ -340,7 +353,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
   <div id="uyariKutu"></div>
 
   <section class="kart">
-    <h2>Uyku özetin <small>diğerleri son 7 gece</small></h2>
+    <h2>Uyku özetin <small>puan ve seri son 7 gece</small></h2>
     <div class="istat" id="istat"></div>
   </section>
 
@@ -377,7 +390,7 @@ input.baslikIn{width:100%;padding:12px 13px;border-radius:14px;border:1px solid 
 <div class="toast" id="toast"></div>
 
 <script>
-var SURUM = 27;
+var SURUM = 28;
 document.getElementById("surum").textContent = SURUM;
 var HEDEF = { yatBas: 23*60, yatSon: 23*60+30, kalk: 7*60+30, kalkTol: 15, sure: 8*60, hatirlat: 22*60+30 };
 /* kişinin kendi hedefi: veri.hedef = { yat: gece dakikası (23:00=1380, 00:30=1470), kalk: gün dakikası (07:30=450), t } */
@@ -417,7 +430,8 @@ function degerlendir(g){
 }
 function aktifGeceler(l){ return (l || veri.geceler).filter(function(g){ return !g.cop; }); }
 function sirali(){ return aktifGeceler().slice().sort(function(a,b){ return b.y-a.y; }); }
-function sekMi(g){ if(g.sek != null) return !!g.sek; var m = dk(g.y); return m >= 11*60 && m < 20*60 && (g.k - g.y) <= 4*36e5; }
+function sekMi(g){ if(g.k && (g.k - g.y) < 3*36e5) return true;   // 3 saatten kısa kayıt her zaman şekerleme
+  if(g.sek != null) return !!g.sek; var m = dk(g.y); return m >= 11*60 && m < 20*60 && (g.k - g.y) <= 4*36e5; }
 function gercekGeceler(l){ return aktifGeceler(l).filter(function(g){ return !sekMi(g); }); }
 function sonGeceler(n){ return sirali().filter(function(g){ return !sekMi(g); }).slice(0, n); }
 function sd(a){ if(a.length<2) return 0; var o = a.reduce(function(x,y){return x+y;},0)/a.length; return Math.sqrt(a.reduce(function(x,y){return x+(y-o)*(y-o);},0)/a.length); }
@@ -442,15 +456,13 @@ function uyariCiz(){
   var k = document.getElementById("uyariKutu"), simdi = Date.now(), m = dk(simdi), h = "";
   if(veri.aktif && simdi - veri.aktif > 16*36e5){
     h = '<div class="uyari"><span>⏰</span><div><b>Uyandım\'a basmayı unuttun</b>'+gunEt(veri.aktif)+' '+hm(veri.aktif)+'\'den beri açık.</div><button class="kucuk" id="uyFix">Düzelt</button></div>';
-  } else if(!veri.aktif && m >= 5*60 && m < 15*60){
-    var bugun = new Date(); bugun.setHours(0,0,0,0);
-    var var_ = gercekGeceler().some(function(g){ return g.k >= bugun.getTime(); });
-    var dun = (ayar.unuttumGec || "") === bugun.toDateString();
-    if(!var_ && !dun) h = '<div class="uyari"><span>🌙</span><div><b>Dün gece butona basmadın</b>Kaçta yattın, kaçta kalktın?</div><button class="kucuk" id="uyEkle">Ekle</button></div>';
+  }
+  if(!h && (ayar.gorSurum || 0) < SURUM){
+    h = '<div class="uyari"><span>🆕</span><div><b>v'+SURUM+' yenilikleri</b>• Uyku borcu artık günlük: sadece dün geceye bakar, şekerleme yaparsan kapanır, ertesi gün sıfırlanır.<br>• Geceler takvimde: güne bas, kayıtları gör. Kayıtların silinmez.<br>• 3 saatten kısa kayıtlar şekerleme sayılır.<br>• "Dün gece butona basmadın" uyarısı kaldırıldı.</div><button class="kucuk" id="yenTamam">Tamam</button></div>';
   }
   k.innerHTML = h;
   var f = document.getElementById("uyFix"); if(f) f.onclick = function(){ var d = new Date(veri.aktif + 8*36e5); duzenle(null, { y:veri.aktif, k:d.getTime(), aktifKapat:true }); };
-  var e = document.getElementById("uyEkle"); if(e) e.onclick = function(){ duzenle(null); };
+  var yt = document.getElementById("yenTamam"); if(yt) yt.onclick = function(){ ayar.gorSurum = SURUM; ayarYaz(); uyariCiz(); };
 }
 function istatHesap(geceler){
   var sekler = geceler.filter(sekMi); geceler = geceler.filter(function(g){ return !sekMi(g); });
@@ -480,19 +492,34 @@ function istatCiz(){
   var h = istatHesap(aktifGeceler()), ort = h.ort, borc = h.borc, duzen = h.duzen || 0, seri = h.seri, hedefte = h.hedefte, d = { length:h.n };
   k.innerHTML =
     (function(){ var sg = sonGece(); if(!sg) return ist("—", "son gece", "");
-      var m = sg.dk; return ist(sureYaz(m), sg.ad, m>=450?"iyi":m>=390?"orta":"kotu"); })()+
+      var m = sg.dk; return ist(sureYaz(m), sg.ad+" · "+hm(sg.ilk)+"–"+hm(sg.son), m>=450?"iyi":m>=390?"orta":"kotu"); })()+
     ist(l.length>1 ? duzen+"/100" : "—", "düzen puanı", l.length<2?"":duzen>=75?"iyi":duzen>=50?"orta":"kotu")+
-    ist(borc ? "−"+sureYaz(borc) : "Yok 🎉", "uyku borcu", borc<=60?"iyi":borc<=240?"orta":"kotu")+
+    (function(){ var gb = gunlukBorc();
+      if(!gb) return ist("—", "bugünkü uyku borcu · bu sabah kayıt yok", "");
+      if(!gb.eksik) return ist("Yok 🎉", "bugünkü uyku borcu", "iyi");
+      if(!gb.kalan) return ist("Kapandı ✓", "bugünkü borç · şekerlemeyle", "iyi");
+      return ist("−"+sureYaz(gb.kalan), "bugünkü uyku borcu"+(gb.sek ? " · şekerleme düşüldü" : ""), gb.kalan<=60?"orta":"kotu"); })()+
     ist(seri+" 🔥", "seri · "+hedefte+"/"+d.length+" gece hedefte", seri>=3?"iyi":seri>=1?"orta":"kotu");
 }
 /* son gece: en son uyanılan gecenin uykusu (gece bölünmüşse parçalar toplanır, şekerlemeler hariç) */
 function sonGece(){
   var l = gercekGeceler().filter(function(g){ return g.k; }).sort(function(a,b){ return b.k - a.k; }); if(!l.length) return null;
   var u = new Date(l[0].k); u.setHours(0,0,0,0); var bas = u.getTime() - 6*36e5, son = u.getTime() + 16*36e5;   // önceki gün 18:00 – o gün 16:00
-  var top = l.filter(function(g){ return g.k > bas && g.k <= son; }).reduce(function(t,g){ return t + (g.k - g.y)/60000; }, 0);
+  var par = l.filter(function(g){ return g.k > bas && g.k <= son; });
+  var top = par.reduce(function(t,g){ return t + (g.k - g.y)/60000; }, 0);
+  var ilk = Math.min.apply(null, par.map(function(g){ return g.y; })), sonK = Math.max.apply(null, par.map(function(g){ return g.k; }));
   var bugun = new Date(); bugun.setHours(0,0,0,0), fark = Math.round((bugun - u)/864e5);
   var ad = fark===0 ? "dün gece uyudun" : fark===1 ? "önceki gece uyudun" : u.getDate()+" "+AY[u.getMonth()]+" sabahına kadar";
-  return { dk:top, ad:ad };
+  return { dk:top, ad:ad, ilk:ilk, son:sonK, fark:fark };
+}
+/* günlük uyku borcu: sadece dün gece. Hedef süreden eksik kalan kısım, o gün kalktıktan sonraki şekerlemelerle kapanır.
+   Ertesi gün sıfırlanır, birikmez. Kayıtlara dokunmaz. */
+function gunlukBorc(){
+  var sg = sonGece(); if(!sg || sg.fark !== 0) return null;
+  var gun = isoGun(sg.son);
+  var sek = aktifGeceler().filter(function(g){ return sekMi(g) && g.k && g.y >= sg.son && isoGun(g.y) === gun; }).reduce(function(t,g){ return t + (g.k - g.y)/60000; }, 0);
+  var eksik = Math.max(0, HEDEF.sure - sg.dk);
+  return { eksik:eksik, sek:sek, kalan:Math.max(0, eksik - sek) };
 }
 function ist(b, s, c){ return '<div class="ist '+c+'"><b>'+b+'</b><span>'+s+'</span></div>'; }
 function grafCiz(){ document.getElementById("graf").innerHTML = grafSvg(sonGeceler(7).reverse()); }
@@ -513,19 +540,49 @@ function grafSvg(l){
   });
   return s + '</svg>';
 }
+function geceSatir(g){
+  var d = degerlendir(g), yuz = ["","😫","😕","😐","🙂","😄"], uy = ["Hiç uyanmadım","1–2 kez uyandım","Çok uyandım"];
+  if(sekMi(g)) return '<div class="gece sek"><div class="g"><b>'+gunEt(g.y).split(" ").slice(1).join(" ")+'</b>'+GUN[new Date(g.y).getDay()]+'</div><div class="s">'+hm(g.y)+' → '+hm(g.k)+' · '+sureYaz(d.sure)+'<small>Şekerleme</small></div><span class="etk">😴 şekerleme</span><button data-d="'+esc(g.id)+'" aria-label="Düzenle">✎</button></div>';
+  var yat = d.yat==="ok" ? '<span class="etk ok">✅ zamanında</span>' : d.yat==="er" ? '<span class="etk er">⏰ erken</span>' : '<span class="etk no">❌ geç yattın</span>';
+  return '<div class="gece"><div class="g"><b>'+gunEt(g.k).split(" ").slice(1).join(" ")+'</b>'+GUN[new Date(g.k).getDay()]+'</div>'+
+    '<div class="s">'+hm(g.y)+' → '+hm(g.k)+' · '+sureYaz(d.sure)+'<small>'+(g.p?yuz[g.p]+" ":"")+(g.u!=null?uy[g.u]:"")+'</small></div>'+yat+
+    '<button data-d="'+esc(g.id)+'" aria-label="Düzenle">✎</button></div>';
+}
+function duzBagla(k){ k.querySelectorAll("[data-d]").forEach(function(b){ b.onclick = function(){ duzenle(b.getAttribute("data-d")); }; }); }
+/* kaydın takvimdeki günü: gece → kalktığın gün, şekerleme → başladığı gün */
+function kayitGun(g){ return isoGun(sekMi(g) ? g.y : g.k); }
+var takAy = null;   // takvimde gösterilen ay (ayın 1'i)
 function listeCiz(){
-  var l = sirali().slice(0, 30), k = document.getElementById("liste");
+  var l = sirali(), k = document.getElementById("liste");
   if(!l.length){ k.innerHTML = '<div class="bos">Kayıt yok.</div>'; return; }
-  var yuz = ["","😫","😕","😐","🙂","😄"], uy = ["Hiç uyanmadım","1–2 kez uyandım","Çok uyandım"];
-  k.innerHTML = l.map(function(g){
-    var d = degerlendir(g);
-    if(sekMi(g)) return '<div class="gece sek"><div class="g"><b>'+gunEt(g.y).split(" ").slice(1).join(" ")+'</b>'+GUN[new Date(g.y).getDay()]+'</div><div class="s">'+hm(g.y)+' → '+hm(g.k)+' · '+sureYaz(d.sure)+'<small>Uyku borcundan düşüldü</small></div><span class="etk">😴 şekerleme</span><button data-d="'+esc(g.id)+'" aria-label="Düzenle">✎</button></div>';
-    var yat = d.yat==="ok" ? '<span class="etk ok">✅ zamanında</span>' : d.yat==="er" ? '<span class="etk er">⏰ erken</span>' : '<span class="etk no">❌ geç yattın</span>';
-    return '<div class="gece"><div class="g"><b>'+gunEt(g.k).split(" ").slice(1).join(" ")+'</b>'+GUN[new Date(g.k).getDay()]+'</div>'+
-      '<div class="s">'+hm(g.y)+' → '+hm(g.k)+' · '+sureYaz(d.sure)+'<small>'+(g.p?yuz[g.p]+" ":"")+(g.u!=null?uy[g.u]:"")+'</small></div>'+yat+
-      '<button data-d="'+esc(g.id)+'" aria-label="Düzenle">✎</button></div>';
-  }).join("");
-  k.querySelectorAll("[data-d]").forEach(function(b){ b.onclick = function(){ duzenle(b.getAttribute("data-d")); }; });
+  var h = '<div class="sonUc">'+l.slice(0, 3).map(geceSatir).join("")+'</div>';
+  if(!takAy){ takAy = new Date(); takAy.setDate(1); takAy.setHours(0,0,0,0); }
+  var gunler = {};
+  l.forEach(function(g){ if(!g.k) return; var t = kayitGun(g); (gunler[t] = gunler[t] || []).push(g); });
+  var yil = takAy.getFullYear(), ay = takAy.getMonth(), ilk = (new Date(yil, ay, 1).getDay() + 6) % 7, son = new Date(yil, ay+1, 0).getDate(), bugun = isoGun(Date.now());
+  var bu = new Date(); var ileriYok = yil > bu.getFullYear() || (yil === bu.getFullYear() && ay >= bu.getMonth());
+  h += '<div class="tak"><div class="takUst"><button class="kucuk" id="takGeri" aria-label="Önceki ay">‹</button><b>'+["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"][ay]+' '+yil+'</b><button class="kucuk" id="takIleri" aria-label="Sonraki ay"'+(ileriYok?' disabled':'')+'>›</button></div>';
+  h += '<div class="takIzgara">'+["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"].map(function(x){ return '<span class="takBas">'+x+'</span>'; }).join("");
+  for(var i=0;i<ilk;i++) h += '<span></span>';
+  for(var gn=1; gn<=son; gn++){
+    var t = yil+"-"+pad(ay+1)+"-"+pad(gn), kay = gunler[t] || [], gece = kay.filter(function(g){ return !sekMi(g); }), sek = kay.some(sekMi), sinif = "";
+    if(gece.length){ var uz = gece.slice().sort(function(a,b){ return (b.k-b.y)-(a.k-a.y); })[0], d = degerlendir(uz); sinif = d.tam ? "ok" : (d.yat==="no" && d.kalk==="no") ? "no" : "er"; }
+    h += '<button class="takGun '+sinif+(t===bugun?' bugun':'')+'"'+(kay.length?' data-t="'+t+'"':' disabled')+'>'+gn+(sek?'<i>😴</i>':'')+'</button>';
+  }
+  h += '</div><div class="takAlt"><span><i class="nok ok"></i>hedefte</span><span><i class="nok er"></i>biraz kaçtı</span><span><i class="nok no"></i>geç</span><span>😴 şekerleme</span></div></div>';
+  k.innerHTML = h;
+  duzBagla(k.querySelector(".sonUc"));
+  document.getElementById("takGeri").onclick = function(){ takAy = new Date(yil, ay-1, 1); listeCiz(); };
+  document.getElementById("takIleri").onclick = function(){ if(!ileriYok){ takAy = new Date(yil, ay+1, 1); listeCiz(); } };
+  k.querySelectorAll(".takGun[data-t]").forEach(function(b){ b.onclick = function(){ gunKayitlari(b.getAttribute("data-t"), gunler[b.getAttribute("data-t")]); }; });
+}
+function gunKayitlari(t, kay){
+  var p = t.split("-"), d = new Date(+p[0], +p[1]-1, +p[2]);
+  kay = (kay || []).slice().sort(function(a,b){ return a.y-b.y; });
+  sayfa.innerHTML = '<h3>'+GUN[d.getDay()]+' '+d.getDate()+' '+AY[d.getMonth()]+' '+d.getFullYear()+'</h3><div id="gunKay">'+kay.map(geceSatir).join("")+'</div><button class="ana" id="tm" style="margin-top:12px">Kapat</button>';
+  ac();
+  document.getElementById("tm").onclick = kapat;
+  duzBagla(document.getElementById("gunKay"));
 }
 
 /* ---------- akış ---------- */
@@ -565,8 +622,8 @@ function sabahSor(g, yeni, aktifKapat){
 }
 function sonucGoster(g){
   var d = degerlendir(g);
-  if(sekMi(g)){ var h = istatHesap(gercekGeceler().concat(aktifGeceler().filter(sekMi)));
-    sayfa.innerHTML = '<div class="sonuc"><div class="b">😴</div><h3>'+sureYaz(d.sure)+' şekerleme</h3><p>Uyku borcundan düşüldü'+(h ? ' · kalan borç: '+(h.borc ? sureYaz(h.borc) : 'yok 🎉') : '')+'</p></div><button class="ana" id="tm">Harika</button>';
+  if(sekMi(g)){ var gb = gunlukBorc();
+    sayfa.innerHTML = '<div class="sonuc"><div class="b">😴</div><h3>'+sureYaz(d.sure)+' şekerleme</h3><p>'+(gb && gb.eksik ? (gb.kalan ? 'Bugünkü borçtan düşüldü · kalan: '+sureYaz(gb.kalan) : 'Bugünkü uyku borcun kapandı ✓') : 'Kaydedildi')+'</p></div><button class="ana" id="tm">Harika</button>';
     document.getElementById("tm").onclick = kapat; return; }
   var b = d.tam ? "🏆" : d.yat==="no" ? "🦉" : "☕";
   var m = d.tam ? "Mükemmel gece! Hedefe tam uydun." : d.yat==="no" ? "Geç yattın. Bu akşam 23:30'u kaçırma." : "Kalkış saatin kaçtı. Yarın 07:30'u dene.";
@@ -583,10 +640,9 @@ function duzenle(id, onDeger){
   sayfa.innerHTML = '<h3>'+(g ? (sekMi(g) ? "Şekerlemeyi düzenle" : "Geceyi düzenle") : o.aktifKapat ? "Ne zaman uyandın?" : o.sek ? "😴 Şekerleme ekle" : "Unuttuğun geceyi ekle")+'</h3><p>Butona basmayı unuttuysan saatleri buradan gir.</p>'+
     '<div class="alan"><label>Yattığın gün<input type="date" id="yg" value="'+isoGun(y0)+'"></label><label>Saat<input type="time" id="ys" value="'+hm(y0)+'"></label>'+
     '<label>Kalktığın gün<input type="date" id="kg" value="'+isoGun(k0)+'"></label><label>Saat<input type="time" id="ks" value="'+hm(k0)+'"></label></div>'+
-    '<div class="satir" style="border:0;padding:4px 0 12px"><div class="yz">😴 Bu bir şekerleme<small>Gündüz uykusu: uyku borcundan düşer, gece hedefini bozmaz</small></div><button type="button" class="dugme'+((g ? sekMi(g) : (o.sek || false)) ? ' on' : '')+'" id="sekDug" aria-label="Şekerleme"></button></div>'+
+    '<div class="satir" style="border:0;padding:4px 0 12px"><div class="yz">😴 Bu bir şekerleme<small>Bugünkü uyku borcundan düşer, gece hedefini bozmaz. 3 saatten kısa kayıtlar zaten şekerleme sayılır</small></div><button type="button" class="dugme'+((g ? sekMi(g) : (o.sek || false)) ? ' on' : '')+'" id="sekDug" aria-label="Şekerleme"></button></div>'+
     '<button class="ana" id="ileri">Devam</button>'+
-    (g ? '<button class="ikinci" id="sil" style="color:var(--kirmizi)">Bu geceyi sil</button>' : '')+
-    (!g && !o.aktifKapat && !o.sek && dk(simdi) >= 5*60 && dk(simdi) < 15*60 ? '<button class="ikinci" id="gec">Dün gece kayıt tutmayayım</button>' : '');
+    (g ? '<button class="ikinci" id="sil" style="color:var(--kirmizi)">Bu geceyi sil</button>' : '');
   ac();
   var v = function(i){ return document.getElementById(i).value; };
   document.getElementById("sekDug").onclick = function(){ this.classList.toggle("on"); };
@@ -598,7 +654,6 @@ function duzenle(id, onDeger){
     else sabahSor({ id:"g"+y, y:y, k:k, sek:sek }, true, o.aktifKapat);
   };
   if(g) document.getElementById("sil").onclick = function(){ g.cop = Date.now(); g.t = g.cop; yaz(); ciz(); kapat(); toast("🗑 Çöp kutusuna taşındı (Ayarlar)"); };
-  var gc = document.getElementById("gec"); if(gc) gc.onclick = function(){ ayar.unuttumGec = new Date().toDateString(); ayarYaz(); kapat(); ciz(); };
 }
 document.getElementById("ekleBtn").onclick = function(){ duzenle(null); };
 document.getElementById("sekBtn").onclick = function(){ var k = Date.now(); duzenle(null, { y:k - 30*60000, k:k, sek:true }); };
