@@ -186,9 +186,63 @@ async function isYaz(uid, id, token, gorev, c, anahtar) {
   });
 }
 
+/* ---------- sesli okuma (babaanne modu): Gemini TTS, doğal kadın sesi ---------- */
+const SES_MODELLER = ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts"];
+const SES_SES = "Sulafat";   // sıcak kadın sesi
+const SES_STIL = "Yaşlı bir hanımefendiye okuyorsun. Sakin, sıcak ve şefkatli bir kadın sesiyle, normalden biraz yavaş, her kelimeyi açık ve net telaffuz ederek, doğal Türkçe vurgu ve tonlamayla oku. Cümle aralarında kısa doğal duraklamalar yap.";
+function wavYap(pcm, hz) {
+  const h = new ArrayBuffer(44), d = new DataView(h), yz = (o, t) => { for (let i = 0; i < t.length; i++) d.setUint8(o + i, t.charCodeAt(i)); };
+  yz(0, "RIFF"); d.setUint32(4, 36 + pcm.length, true); yz(8, "WAVE"); yz(12, "fmt "); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, 1, true);
+  d.setUint32(24, hz, true); d.setUint32(28, hz * 2, true); d.setUint16(32, 2, true); d.setUint16(34, 16, true); yz(36, "data"); d.setUint32(40, pcm.length, true);
+  const o = new Uint8Array(44 + pcm.length); o.set(new Uint8Array(h), 0); o.set(pcm, 44); return o;
+}
+async function sesUret(env, model, metin, sesAdi, stil) {
+  const ctrl = new AbortController(), zaman = setTimeout(() => ctrl.abort(), 45000);
+  try {
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent", {
+      method: "POST", signal: ctrl.signal,
+      headers: { "content-type": "application/json", "x-goog-api-key": env.GEMINI_KEY },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [stil ? { text: metin, speech_metadata: { style: stil } } : { text: metin }] }],
+        generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { voice: sesAdi } } },
+      }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { const e = new Error((j.error && j.error.message) || ("HTTP " + r.status)); e.durum = r.status; throw e; }
+    const p = ((j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || []).filter((x) => x.inlineData && x.inlineData.data)[0];
+    if (!p) { const e = new Error("ses yok"); e.durum = 422; throw e; }
+    const ham = atob(p.inlineData.data), b = new Uint8Array(ham.length);
+    for (let i = 0; i < ham.length; i++) b[i] = ham.charCodeAt(i);
+    const tur = String(p.inlineData.mimeType || "");
+    if (/wav/i.test(tur) || (b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46)) return b;   // zaten WAV
+    const hz = +((tur.match(/rate=(\d+)/) || [])[1] || 24000);
+    return wavYap(b, hz);   // ham PCM ise başlık ekle
+  } finally { clearTimeout(zaman); }
+}
+async function ses(req, env) {
+  if (!env.GEMINI_KEY) return json({ hata: "anahtar-yok" }, 503);
+  const uid = await girisDogrula(req);
+  if (!uid) return json({ hata: "giris" }, 401);
+  let v; try { v = await req.json(); } catch (_) { return json({ hata: "istek" }, 400); }
+  const metin = String((v && v.metin) || "").trim().slice(0, 1500);
+  if (!metin) return json({ hata: "bos" }, 400);
+  let son;
+  // önce asıl ayar; olmazsa başka model / bilinen ses / stilsiz dene
+  const denemeler = [[SES_MODELLER[0], SES_SES, SES_STIL], [SES_MODELLER[0], "Kore", SES_STIL], [SES_MODELLER[1], SES_SES, SES_STIL], [SES_MODELLER[1], "Kore", null]];
+  for (const [m, sa, st] of denemeler) {
+    try { const wav = await sesUret(env, m, metin, sa, st); return new Response(wav, { headers: { "content-type": "audio/wav", "cache-control": "no-store" } }); }
+    catch (e) { son = e; if (e.durum === 401 || e.durum === 403 || e.durum === 429) break; }
+  }
+  return json({ hata: "ses", detay: String(son && son.message || "") }, 502);
+}
+
 export default {
   async fetch(req, env, ctx) {
     const u = new URL(req.url);
+    if (u.pathname === "/api/ses") {
+      if (req.method !== "POST") return json({ hata: "yontem" }, 405);
+      try { return await ses(req, env); } catch (e) { return json({ hata: "sunucu", detay: String(e && e.message || e) }, 500); }
+    }
     if (u.pathname === "/api/ai") {
       if (req.method !== "POST") return json({ hata: "yontem" }, 405);
       try { return await ai(req, env, ctx); } catch (e) { return json({ hata: "sunucu", detay: String(e && e.message || e) }, 500); }
